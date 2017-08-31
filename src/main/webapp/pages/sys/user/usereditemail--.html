@@ -1,0 +1,156 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link href="${ctx}/pages/sys/css/bootstrap.min.css" rel="stylesheet" />
+<script src="${ctx}/pages/sys/js/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/pages/sys/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+var hassendemail = false;
+
+$().ready(function()
+{
+	$("#emailForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element.parent());
+		},
+		rules:
+		{
+			email:
+			{
+				required:true,
+				email:true
+			}
+		},
+		messages:
+		{
+			email:
+			{
+				required:"请输入邮箱地址",
+				email:"请输入正确格式的邮箱地址"
+			}
+		},
+		submitHandler:function(form)
+		{
+			if(hassendemail)
+			{
+				$.ajax
+				({
+					url:"${ctx}/user/checkEmailCode?code="+$("#code").val(),
+					type:"post",
+					async:false,
+					success:function(result)
+					{
+						if(result=="ok")
+						{
+							form.submit();
+						}
+						else
+						{
+							document.getElementById("id_td_email").innerHTML = "邮箱验证码不正确";
+							document.getElementById("id_td_email").style.display = "";
+							document.getElementById("id_td_email").style.color = "red";
+						}
+					},
+					fail:function(err,status)
+					{
+						alert(err);
+					}
+				});
+			}
+			else
+			{
+				$.ajax
+				({
+					url:"${ctx}/user/checkEmail?email="+$("#email").val(),
+					type:"post",
+					async:false,
+					success:function(result)
+					{
+						if(result=="no")
+						{
+							document.getElementById("id_td_email").innerHTML = "已发送验证码到邮箱，请查收";
+							document.getElementById("id_tr_code").style.display = "";
+							document.getElementById("id_td_email").style.display = "";
+							document.getElementById("id_td_email").style.color = "blue";
+							document.getElementById("email").readOnly = true;
+							hassendemail = true;
+						}
+						else if(result=="self")
+						{
+							document.getElementById("id_td_email").innerHTML = "请选择不同的邮箱";
+							document.getElementById("id_td_email").style.display = "";
+							document.getElementById("id_td_email").style.color = "red";
+						}
+						else if(result=="yes")
+						{
+							document.getElementById("id_td_email").innerHTML = "邮箱已存在";
+							document.getElementById("id_td_email").style.display = "";
+							document.getElementById("id_td_email").style.color = "red";
+						}
+					},
+					fail:function(err,status)
+					{
+						alert(err);
+					}
+				});
+			}
+		}
+	});
+});
+
+function change_email()
+{
+	document.getElementById("id_td_email").style.display = "none";
+}
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	margin-top:8px;
+}
+
+</style>
+</head>
+<body>
+<form id="emailForm" action="${ctx}/user/userEmailUpdate" method="post">
+  <table border="0" width="600" align="center">
+    <tr>
+      <td height="40" align="center" colspan="2">修改注册邮箱</td>
+    </tr>
+    <tr>
+      <td width="140" height="40">邮箱地址：</td>
+      <td>
+        <input type="text" name="email" id="email" value="${email}" onchange="change_email()" class="form-control" style="width:270px;">
+      </td>
+    </tr>
+    <tr id="id_tr_code" style="display:none;">
+      <td width="140" height="40">验证码：</td>
+      <td>
+        <input type="text" name="code" id="code" class="form-control" style="width:270px;">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" height="40" id="id_td_email" style="color:red;display:none;font-weight:bold;"></td>
+    </tr>
+  </table>
+  <table border="0" align="center" width="600">
+    <tr>
+      <td align="center">
+        <input type="submit" value="提交" style="margin-right:20px;">
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

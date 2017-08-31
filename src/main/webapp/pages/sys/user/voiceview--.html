@@ -1,0 +1,64 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link href="${ctx}/pages/sys/css/bootstrap.min.css" rel="stylesheet" />
+<script src="${ctx}/pages/sys/js/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/pages/sys/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	margin-top:8px;
+}
+
+</style>
+</head>
+<body>
+<table border="0" width="600" align="center">
+  <tr>
+    <td height="40" align="center" colspan="2">语音信息查看</td>
+  </tr>
+  <tr>
+    <td width="140" height="50">文件名：</td>
+    <td>
+      <input type="text" class="form-control" name="filename" id="filename" value="${filename}" readonly style="width:280px;">
+    </td>
+  </tr>
+  <tr>
+    <td width="140" height="50">语音名称：</td>
+    <td>
+      <input type="text" class="form-control" name="voicename" id="voicename" value="${voicename}" readonly style="width:280px;">
+    </td>
+  </tr>
+  <tr>
+    <td colsnap="2" height="6"></td>
+  </tr>
+  <tr>
+    <td width="140">语音内容：</td>
+    <td>
+      <textarea rows="10" cols="33" name="content" id="content" readonly>${content}</textarea>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" height="50">审核状态：</td>
+    <td style="font-weight:bold;">${status_text}</td>
+  </tr>
+</table>
+<table border="0" align="center" width="600">
+  <tr>
+    <td align="center">
+      <input type="button" value="返回" style="margin-right:20px;" onclick="javascript:history.back();">
+    </td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link href="${ctx}/pages/sys/css/bootstrap.min.css" rel="stylesheet" />
+<script src="${ctx}/pages/sys/js/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/pages/sys/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+jQuery.validator.addMethod("isUserNameHas",function(value,element)
+{
+	var ok = true;
+	$.ajax
+	({
+		url:"${ctx}/user/checkUserName?username="+$("#username").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			//不存在
+			if(result=="no")
+			{
+			}
+			//已存在
+			else
+			{
+				ok = false;
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	return ok;
+},"用户名已存在");
+
+$().ready(function()
+{
+	$("#userForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element.parent());
+		},
+		rules:
+		{
+			username:
+			{
+				required:true,
+				isUserNameHas:true
+			},
+			name:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			username:
+			{
+				required:"请输入用户名",
+				isUserNameHas:"用户名已存在"
+			},
+			name:
+			{
+				required:"请输入姓名"
+			}
+		},
+		submitHandler:function(form)
+		{
+			form.submit();
+		}
+	});
+});
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	margin-top:8px;
+}
+
+</style>
+</head>
+<body>
+<form id="userForm" action="${ctx}/user/userProfileUpdate" method="post">
+  <table border="0" width="600" align="center">
+    <tr>
+      <td height="40" align="center" colspan="2">修改用户信息</td>
+    </tr>
+    <tr>
+      <td width="140" height="40">手机号码：</td>
+      <td>${phone}</td>
+    </tr>
+    <tr>
+      <td width="140" height="40">邮箱：</td>
+      <td>
+        ${email}
+      </td>
+    </tr>
+    <tr>
+      <td width="140" height="40">用户名：</td>
+      <td>
+        <#if username=="">
+          <input type="text" class="form-control" name="username" id="username" style="width:270px;" placeholder="用户名设置后不能修改">
+        <#else>
+          ${username}
+          <input type="hidden" name="usernamehas" id="usernamehas" value="yes">
+        </#if>
+      </td>
+    </tr>
+    <tr>
+      <td width="140" height="40">姓名：</td>
+      <td>
+        <input type="text" class="form-control" name="name" id="name" value="${name}" style="width:270px;">
+      </td>
+    </tr>
+  </table>
+  <table border="0" align="center" width="600">
+    <tr>
+      <td align="center">
+        <input type="submit" value="提交" style="margin-right:20px;">
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

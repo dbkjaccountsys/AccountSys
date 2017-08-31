@@ -1,0 +1,224 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+function check()
+{
+	return $("#voiceInfoForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element);
+		},
+		rules:
+		{
+			filename:
+			{
+				required:true
+			},
+			voicename:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			filename:
+			{
+				required:"请输入文件名称"
+			},
+			voicename:
+			{
+				required:"请输入语音说明"
+			}
+		},
+		submitHandler:function(form)
+		{
+		}
+	});
+}
+
+function checkform()
+{
+	check().form();
+}
+
+function submitvoiceinfo()
+{
+	var ok = true;
+	if(document.getElementById("h_voice").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_voice").style.display = "";
+	}
+	if(check().form() && ok)
+	{
+		document.getElementById("voice").value = document.getElementById("h_voice").value;
+		document.getElementById("voiceInfoForm").submit();
+	}
+}
+
+function submitvoiceinfoandaudit()
+{
+	var ok = true;
+	if(document.getElementById("h_voice").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_voice").style.display = "";
+	}
+	if(check().form() && ok)
+	{
+		document.getElementById("voice").value = document.getElementById("h_voice").value;
+		document.getElementById("audit").value = "yes";
+		document.getElementById("voiceInfoForm").submit();
+	}
+}
+
+function testupload(id,id_text)
+{
+	var dom = document.getElementById(id);
+	var name = dom.value;
+	var pos = name.lastIndexOf(".");
+	if(pos==-1)
+	{
+		alert("请上传正确格式的语音文件，文件类型为：wav");
+		return false;
+	}
+	else
+	{
+		var ext = name.substring(pos+1);
+		if(ext=="wav")
+		{
+		}
+		else
+		{
+			alert("请上传正确格式的语音文件，文件类型为：wav");
+			return false;
+		}
+	}
+	
+	pos = name.lastIndexOf("\\");
+	var filename = name.substring(pos+1);
+	document.getElementById(id_text).value = filename;
+}
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:16px;
+	padding-left:30px;
+}
+
+</style>
+</head>
+<body style="background-color:#FFFFFF;height:500px;">
+<form id="voiceInfoForm" action="${ctx}/user/voiceInfoEnter" method="post">
+  <input type="hidden" id="voice" name="voice">
+  <input type="hidden" id="audit" name="audit">
+  <table border="0" width="700" align="center">
+    <tr>
+      <td height="50" align="center" colspan="3">语音信息新增</td>
+    </tr>
+    <tr>
+      <td width="140" height="50" align="right">文件名</td>
+      <td width="30"></td>
+      <td>
+        <input type="text" class="col-xs-10 col-sm-5" name="filename" id="filename" style="width:280px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td height="50" align="right">语音名称</td>
+      <td width="30"></td>
+      <td>
+        <input type="text" class="col-xs-10 col-sm-5" name="voicename" id="voicename" style="width:280px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3" height="6"></td>
+    </tr>
+    <tr>
+      <td align="right">语音内容</td>
+      <td width="30"></td>
+      <td>
+        <textarea rows="10" cols="36" name="content" id="content"></textarea>
+      </td>
+    </tr>
+  </table>
+</form>
+<table border="0" width="700" align="center">
+  <tr>
+    <td width="140" height="50" align="right" style="padding-bottom:12px;">语音上传</td>
+    <td width="30"></td>
+    <td>
+      <form id="voiceForm" name="voiceForm" onsubmit="return testupload('f_voice','id_text_voice');" action="${ctx}/user/uploadFileVoice" enctype="multipart/form-data" method="post" target="frame_upload">
+        <input type="hidden" id="h_voice" name="h_voice">
+        <table border="0">
+          <tr>
+            <td>
+              <input type="file" name="f_voice" id="f_voice" style="width:170px;display:none;" onchange="testupload('f_voice','id_text_voice');">
+              <input type="text" id="id_text_voice" readonly style="width:176px;height:42px;">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="button" value="选择文件" class="btn btn-info" onclick="document.getElementById('f_voice').click();">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="上传" class="btn btn-info">
+            </td>
+            <td width="30"></td>
+            <td id="id_td_voice" style="color:red;display:none;">请上传语音文件</td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+</table>
+<div class="clearfix form-actions">
+    <table border="0" align="center">
+      <tr>
+        <td>
+          <button class="btn btn-info" type="button" onclick="submitvoiceinfo();">
+            <i class="icon-ok bigger-110"></i>
+        保存
+          </button>
+        </td>
+        <td width="40"></td>
+        <td>
+          <button class="btn btn-info" type="button" onclick="submitvoiceinfoandaudit();">
+            <i class="icon-ok bigger-110"></i>
+        保存并提交审核
+          </button>
+        </td>
+        <td width="40"></td>
+        <td>
+          <button class="btn" type="button" onclick="javascript:history.back();">
+            <i class="icon-undo bigger-110"></i>
+        返回
+          </button>
+        </td>
+      </tr>
+    </table>
+</div>
+<iframe id="frame_upload" name="frame_upload" style="display:none;"></iframe>
+</body>
+</html>

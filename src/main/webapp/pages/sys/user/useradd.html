@@ -1,0 +1,319 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+jQuery.validator.addMethod("isMobile",function(value,element)
+{
+	var length = value.length;
+	var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
+	var ok = true;
+	if(length==0)
+	{
+		ok = false;
+		document.getElementById("id_send_sms").style.color = "#AAAAAA";
+		document.getElementById("id_send_sms").disabled = true;
+		return ok;
+	}
+	ok = this.optional(element) || (length == 11 && mobile.test(value));
+	if(!ok)
+	{
+		document.getElementById("id_send_sms").style.color = "#AAAAAA";
+		document.getElementById("id_send_sms").disabled = true;
+		return ok;
+	}
+    return ok;
+},"请正确填写您的手机号码");
+
+
+jQuery.validator.addMethod("isMobileHas",function(value,element)
+{
+	var ok = true;
+	$.ajax
+	({
+		url:"${ctx}/user/checkPhone?phone="+$("#phone").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="no")
+			{
+				document.getElementById("id_send_sms").style.color = "#AAAAAA";
+				document.getElementById("id_send_sms").disabled = true;
+				ok = false;
+			}
+			else
+			{
+				document.getElementById("id_send_sms").style.color = "#000000";
+				document.getElementById("id_send_sms").disabled = false;
+				ok = true;
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	return ok;
+},"手机号存在");
+
+function checkRandomCode()
+{
+	var ok = false;
+	
+	$.ajax
+	({
+		url:"${ctx}/user/checkRandomCode?vertifyCode="+$("#vertifyCode").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="false")
+			{
+				document.getElementById("id_td_code").style.color = "red";
+				document.getElementById("id_td_code").innerHTML = "图片验证码不正确";
+			}
+			else
+			{
+				document.getElementById("id_td_code").style.color = "blue";
+				document.getElementById("id_td_code").innerHTML = "图片验证码正确";
+				ok = true;
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	
+	//console.log($("#vertifyCode").val());
+	
+	return ok;
+}
+
+$().ready(function()
+{
+	$("#registerForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element);
+		},
+		rules:
+		{
+			phone:
+			{
+				isMobile:true,
+				isMobileHas:true
+			},
+			password:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			phone:
+			{
+				isMobile:"请输入正确格式的手机号",
+				isMobileHas:"手机号已存在"
+			},
+			password:
+			{
+				required:"请输入密码"
+			}
+		},
+		submitHandler:function(form)
+		{
+			var ok1 = true;
+			$.ajax
+			({
+				url:"${ctx}/user/checkCode?phone="+$("#phone").val()+"&code="+$("#code").val(),
+				type:"post",
+				async:false,
+				success:function(result)
+				{
+					if(result=="no")
+					{
+						document.getElementById("td_phone_send").style.color = "red";
+						document.getElementById("td_phone_send").innerHTML = "短信验证码不正确";
+						ok1 = false;
+					}
+					else
+					{
+						document.getElementById("td_phone_send").style.color = "blue";
+						document.getElementById("td_phone_send").innerHTML = "短信验证码正确";
+						document.getElementById("h_phone").value = document.getElementById("phone").value;
+					}
+				},
+				fail:function(err,status)
+				{
+					alert(err);
+				}
+			});
+			
+			var ok2 = checkRandomCode();
+			if(ok1 && ok2)
+			{
+				form.submit();
+			}
+		}
+	});
+});
+
+function getRandomImage(im)
+{
+	im.src = "${ctx}/user/randomImage?"+Math.random();
+}
+
+var sendtime = 60;
+
+var intervalsms = null;
+
+function resendsms()
+{
+	//console.log(sendtime);
+	sendtime -= 1;
+	document.getElementById("id_send_sms").value = sendtime+"秒后点击重新发送";
+	if(sendtime==0)
+	{
+		clearInterval(intervalsms);
+		document.getElementById("id_send_sms").value = "免费获取短信验证码";
+		document.getElementById("id_send_sms").disabled = false;
+		document.getElementById("id_send_sms").style.color = "#000000";
+		document.getElementById("phone").disabled = false;
+	}
+}
+
+function sendsms()
+{
+	$.ajax
+	({
+		url:"${ctx}/user/sendsms?phone="+$("#phone").val(),
+		type:"post",
+		success:function(result)
+		{
+			document.getElementById("td_phone_send").innerHTML = "短信已发送";
+			document.getElementById("td_phone_send").style.color = "blue";
+			document.getElementById("id_send_sms").value = "60秒后点击重新发送";
+			document.getElementById("id_send_sms").disabled = true;
+			document.getElementById("id_send_sms").style.color = "#AAAAAA";
+			document.getElementById("phone").disabled = true;
+			sendtime = 60;
+			intervalsms = setInterval("resendsms()",1000);
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+}
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:16px;
+	padding-left:30px;
+}
+
+</style>
+</head>
+<body style="background-color:#FFFFFF;height:500px;">
+<div style="height:70px;"></div>
+<form id="registerForm" method="post" action="${ctx}/user/useraddok">
+  <input type="hidden" name="h_phone" id="h_phone" value="">
+  <table border="0" width="700" align="center">
+    <tr>
+      <td colspan="4" height="40" style="font-weight:bold;font-size:14px;" align="center">用户注册</td>
+    </tr>
+    <tr>
+      <td width="140" height="40" align="right">手机号码</td>
+      <td width="30"></td>
+      <td colspan="2">
+        <input type="text" class="col-xs-10 col-sm-5" name="phone" id="phone" style="width:270px;">
+      </td>
+    </tr>
+    <tr>
+      <td height="40" align="right">密码</td>
+      <td></td>
+      <td colspan="2">
+        <input type="password" class="col-xs-10 col-sm-5" name="password" id="password" style="width:270px;">
+      </td>
+    </tr>
+    <tr>
+      <td height="40" align="right">手机验证码</td>
+      <td></td>
+      <td colspan="2">
+        <input type="text" class="col-xs-10 col-sm-5" name="code" id="code" maxlength="4" style="width:270px;">
+      </td>
+    </tr>
+    <tr>
+      <td height="40" align="right">图片验证码</td>
+      <td></td>
+      <td width="300">
+        <input type="text" maxlength="4" class="col-xs-10 col-sm-5" name="vertifyCode" id="vertifyCode" style="width:60px;height:34px;display:inline;" onchange="checkRandomCode();">
+        <a href="javascript:void(0);" title="点击刷新">
+		    <img alt="验证码" id="img_vertify" src="${ctx}/user/randomImage" onclick="getRandomImage(this);" width="95px" height="33px" style="margin-left:4px;border:1px solid blue;">
+	      </a>
+      </td>
+      <td id="id_td_code"></td>
+    </tr>
+    <tr>
+      <td height="10" colspan="4"></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td colspan="2">
+        <table border="0">
+          <tr>
+            <td width="190">
+              <input type="button" id="id_send_sms" disabled value="免费获取短信验证码" onclick="sendsms();" style="width:180px;color:#AAAAAA">
+            </td>
+            <td width="110"></td>
+            <td style="color:blue;" id="td_phone_send"></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td height="10" colspan="4"></td>
+    </tr>
+  </table>
+  <table border="0" align="center" width="700">
+    <tr>
+      <td width="170" height="50"></td>
+      <td width="60">
+        <button class="btn btn-info" type="submit">
+        提交
+          </button>
+      </td>
+      <td width="30"></td>
+      <td>
+        <button class="btn" type="button" onclick="javascript:history.back();">
+        返回
+          </button>
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>
