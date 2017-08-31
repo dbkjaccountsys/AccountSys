@@ -13,15 +13,22 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dbkj.account.interceptor.AdminAuthorityTemplateDirectiveInterceptor;
+import com.dbkj.account.interceptor.AuthInterceptor;
+import com.dbkj.account.interceptor.LoginInterceptor;
+import com.dbkj.account.interceptor.ResetPasswordInterceptor;
+import com.dbkj.account.interceptor.UserAuthorityTemplateDirectiveInterceptor;
 import com.dbkj.account.sys.form.UserEmailForm;
 import com.dbkj.account.sys.form.UserLoginForm;
 import com.dbkj.account.sys.form.UserPhoneForm;
 import com.dbkj.account.sys.form.VoiceForm;
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.upload.UploadFile;
 
+@Clear({LoginInterceptor.class,AuthInterceptor.class,AdminAuthorityTemplateDirectiveInterceptor.class,UserAuthorityTemplateDirectiveInterceptor.class,ResetPasswordInterceptor.class})
 public class UserController extends Controller
 {
 	//是否发送短信，测试用

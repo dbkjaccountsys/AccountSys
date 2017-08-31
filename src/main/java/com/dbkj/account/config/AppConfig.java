@@ -73,8 +73,6 @@ public class AppConfig extends JFinalConfig{
 
 	@Override
 	public void configInterceptor(Interceptors me) {
-//		自己测试注释掉
-//		me.add(new LoginInterceptor());
 		me.add(new LoginInterceptor());
 		me.add(new AuthInterceptor());
 		me.addGlobalActionInterceptor(new AdminAuthorityTemplateDirectiveInterceptor());
