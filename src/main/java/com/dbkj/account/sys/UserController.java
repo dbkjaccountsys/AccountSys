@@ -673,7 +673,7 @@ public class UserController extends Controller
 			safety = record.getStr("safety");
 			ispass = record.getStr("ispass");
 		}
-		
+
 		if(ispass.equals("0"))
 		{
 			ispass_text = "审核中";
@@ -686,7 +686,7 @@ public class UserController extends Controller
 		{
 			ispass_text = "<span style='color:red;'>审核不通过</span>";
 		}
-		
+
 		setAttr("companyname",companyname);
 		setAttr("contact",contact);
 		setAttr("contactphone",contactphone);
