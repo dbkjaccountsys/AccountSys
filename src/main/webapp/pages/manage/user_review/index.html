@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>客户审核列表</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="${ctx!}/content/ui/global/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link href="${ctx!}/content/ui/global/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/skins/_all-skins.min.css">
+    <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
+
+    <link href="${ctx!}/content/plugins/jqgrid/jqgrid.css" rel="stylesheet" />
+    <link href="${ctx!}/content/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+    	.gridPanel{
+    		margin-top: 20px;
+    	}
+    </style>
+    <!--全局通用框架样式 end-->
+</head>
+<body data-context="${ctx!}">
+	<section class="content-header">
+        <h1>
+                      客户审核列表
+        </h1>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i> 审核管理</li>
+            <li class="active">客户审核列表</li>
+        </ol>
+    </section>
+	<!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <hr style="margin-top:0;">
+                <div class="box-body">
+                	<div>
+                		<form class="form-inline">
+                			<div class="form-group">
+                				<label >开始日期：</label>
+		                		<div class="input-group date" id="from_datetime">
+		                			<input type="text" size="16" readonly="readonly" class="form-control"/>
+		                			<span class="input-group-btn">
+		                				<button class="btn default date-reset" type="button">
+		                                    <i class="fa fa-times"></i>
+		                                </button>
+		                                <button class="btn default date-set" type="button">
+		                                    <i class="fa fa-calendar"></i>
+		                                </button>
+		                			</span>
+		                		</div>
+                			</div>
+                			<div class="form-group">
+                				<label >结束日期：</label>
+		                		<div class="input-group date" id="to_datetime">
+		                			<input type="text" size="16" readonly="readonly" class="form-control"/>
+		                			<span class="input-group-btn">
+		                				<button class="btn default date-reset" type="button">
+		                                    <i class="fa fa-times"></i>
+		                                </button>
+		                                <button class="btn default date-set" type="button">
+		                                    <i class="fa fa-calendar"></i>
+		                                </button>
+		                			</span>
+		                		</div>
+                			</div>
+                			<div class="form-group">
+                				<label>用户名：</label>
+                				<input type="text" class="form-control" id="username" />
+                			</div>
+                			<button type="button" id="btn_search" class="btn btn-default">搜索</button>
+                		</form>
+                	</div>
+                    <div class="gridPanel">
+                        <table id="gridTable"></table>
+                        <div id="gridPager"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="${ctx!}/content/ui/global/jQuery/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+
+<script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+
+<script src="${ctx!}/content/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="${ctx!}/content/plugins/jqgrid/jqgrid.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="${ctx!}/js/common.js"></script>
+<script src="${ctx!}/js/manage/user_review.js"></script>
+<script>
+	$(function(){
+		$("#from_datetime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd", //选择日期后，文本框显示的日期格式
+            pickerPosition: ("bottom-left")
+        });
+		$("#to_datetime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd", //选择日期后，文本框显示的日期格式
+            pickerPosition: ("bottom-left")
+        });
+		$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+		
+		urp.initTable();
+		//查询
+		$("#btn_search").click(function(){
+			urp.search();
+		});
+		//审核
+		$("#gridTable").on("click",".review",function(){
+			urp.review(this);
+		});
+	});
+</script>
+</body>
+</html>

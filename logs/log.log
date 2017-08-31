@@ -1,0 +1,2 @@
+2017-08-25 09:11:00  [ main:0 ] - [ INFO ]  发送短信:{"servId":"CzGMlIbPq4nyXdOvNS7pgRqtDE1OZ7Dd","longSms":"2001","mobile":"13277054876","smsContent":"测试短信","action":10000,"servAuth":"AzKUXzsjFlyyamPCb1leytkmcalXuKPG9DdDBX6d0jZochTsMFQaDXysk9uKXE3S","reqId":"i0t93idx1l13lxw15dg57o57krx2llxf"}
+2017-08-25 09:11:01  [ main:780 ] - [ INFO ]  发送短信结果:{"action":"10000","content":"短信已发送","reqId":"i0t93idx1l13lxw15dg57o57krx2llxf","status":"4000"}

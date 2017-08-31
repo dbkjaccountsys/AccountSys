@@ -1,0 +1,20 @@
+.bg-gray {
+    background-color: #F7F7F5;
+}
+.signin-container {
+    background-color: #ffffff;
+    vertical-align: middle;
+    padding-top: 30px;
+    padding-bottom: 65px;
+    position: relative;
+    margin-top: 50%;
+    top: -185px;
+}
+.signin-container .title {
+    font-size: 30px;
+    color: #666666;
+    margin-bottom: 20px;
+}
+.signin-container form{
+    margin: 0 95px;
+}
