@@ -8,6 +8,8 @@ import com.dbkj.account.interceptor.LoginInterceptor;
 import com.dbkj.account.interceptor.UserAuthorityTemplateDirectiveInterceptor;
 import com.dbkj.account.model._MappingKit;
 import com.dbkj.account.service.OperaTypeService;
+import com.dbkj.account.sys.SysRoutes;
+import com.dbkj.account.sys.UserPhoneThread;
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;
@@ -40,9 +42,15 @@ public class AppConfig extends JFinalConfig{
 
 	@Override
 	public void configRoute(Routes me) {
+		me.add(new SysRoutes());
+		
 		me.add("/vertifyCode",VertifyCodeController.class);
 		me.add("/forget",ForgetPasswordController.class);
 		me.add(new ManageRoute());
+		
+		UserPhoneThread th = new UserPhoneThread();
+		Thread rth = new Thread(th);
+		rth.start();
 	}
 
 	@Override
@@ -65,6 +73,8 @@ public class AppConfig extends JFinalConfig{
 
 	@Override
 	public void configInterceptor(Interceptors me) {
+//		自己测试注释掉
+//		me.add(new LoginInterceptor());
 		me.add(new LoginInterceptor());
 		me.add(new AuthInterceptor());
 		me.addGlobalActionInterceptor(new AdminAuthorityTemplateDirectiveInterceptor());
@@ -81,7 +91,6 @@ public class AppConfig extends JFinalConfig{
 		//初始化操作类型信息
 		OperaTypeService.init();
 	}
-	
 	
 	public static void main(String[] args) {
 		JFinal.start("src/main/webapp", 80, "/");
