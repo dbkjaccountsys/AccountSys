@@ -119,7 +119,8 @@ public class ManageLoginService {
 	
 	
 	public static void main(String[] args) {
-		String encoded=DigestUtils.md5Hex("123456");
+		//c4ca4238a0b923820dcc509a6f75849b
+		String encoded=DigestUtils.md5Hex("dbkjadmin");
 		System.out.println(encoded);
 	}
 }

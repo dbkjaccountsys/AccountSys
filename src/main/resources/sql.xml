@@ -66,5 +66,9 @@
     	<sql id="getCount">
     		select count(1) as `count` from user_info inner join `user` on user_info.userid=`user`.id where user_info.available=1
     	</sql>
+    	<sql id="findById">
+    		select t1.id,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.publicaccount,t1.licence,t1.idcard,t1.safety 
+			from user_info t1 inner join `user` t2 on t1.userid=t2.id where t1.ispass=0 and t1.id=?
+    	</sql>
     </group>
 </sql-list>

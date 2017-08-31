@@ -37,6 +37,9 @@ public class UserReviewController extends Controller{
 	}
 	
 	public void userinfo(){
+		long id=getParaToLong();
+		UserReviewDto userReviewDto=userReviewService.getUserInfo(id);
+		setAttr("u", userReviewDto);
 		render("userinfo.html");
 	}
 }

@@ -129,9 +129,26 @@ public class UserReviewService {
 		return jsFunction.toString();
 	}
 	
-	
-	public void getUserInfo(long id){
-		
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public UserReviewDto getUserInfo(long id){
+		UserReviewDto userReviewDto=new UserReviewDto();
+		Record userInfo = Db.findFirst(SqlUtil.getSql(UserInfo.class, "findById"), id);
+		if(userInfo!=null){
+			userReviewDto.setId(userInfo.getLong("id"));
+			userReviewDto.setUsername(userInfo.getStr("username"));
+			userReviewDto.setCompanyname(userInfo.getStr("companyname"));
+			userReviewDto.setContact(userInfo.getStr("contact"));
+			userReviewDto.setContactphone(userInfo.getStr("contactphone"));
+			userReviewDto.setPublicaccount(userInfo.getStr("publicaccount"));
+			userReviewDto.setSafety(userInfo.getStr("safety"));
+			userReviewDto.setLicence(userInfo.getStr("licence"));
+			userReviewDto.setIdcard(userInfo.getStr("idcard"));
+		}
+		return userReviewDto;
 	}
 	
 	public static void main(String[] args) {
