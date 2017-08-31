@@ -81,12 +81,12 @@ public abstract class BaseUserInfo<M extends BaseUserInfo<M>> extends Model<M> i
 		return getStr("safety");
 	}
 
-	public void setIspass(java.lang.Boolean ispass) {
+	public void setIspass(java.lang.Integer ispass) {
 		set("ispass", ispass);
 	}
 
-	public java.lang.Boolean getIspass() {
-		return get("ispass");
+	public java.lang.Integer getIspass() {
+		return getInt("ispass");
 	}
 
 	public void setChecktime(java.util.Date checktime) {
