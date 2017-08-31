@@ -18,7 +18,7 @@ public class ForgetPasswordService {
 
 	
 	public Result<?> getCode(String mobile,String code,Controller controller){
-		Result<?> result=new Result<>();
+		Result<?> result=new Result<Object>();
 		if(StrKit.isBlank(mobile)||!ValidateUtil.validateMobilePhone(mobile)){
 			result.setSuccess(false);
 			result.setReason("请输入正确的手机号码");

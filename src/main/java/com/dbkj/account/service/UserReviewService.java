@@ -34,7 +34,7 @@ public class UserReviewService {
 		String str1=sql.substring(0,index);
 		String str2=sql.substring(index);
 		
-		List<Object> params=new ArrayList<>();
+		List<Object> params=new ArrayList<Object>();
 		StringBuilder where=new StringBuilder(80);
 		if(!StrKit.isBlank(fromDate)&&!StrKit.isBlank(toDate)){
 			where.append(" user_info.modify_time between ? and ? and");
@@ -83,7 +83,7 @@ public class UserReviewService {
 		paramsArray=params.toArray(new Object[params.size()]);
 		
 		List<Record> list=Db.find(sql,paramsArray);
-		List<UserReviewDto> data=new ArrayList<>(list.size());
+		List<UserReviewDto> data=new ArrayList<UserReviewDto>(list.size());
 		String opera=getOpera(roleId);
 		
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

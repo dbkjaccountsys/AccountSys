@@ -23,7 +23,7 @@ public class UserReviewController extends Controller{
 	
 	public void list(){
 		Admin admin=getSessionAttr(Constant.CURRENT_USER);
-		Page<UserReviewDto> page=new Page<>();
+		Page<UserReviewDto> page=new Page<UserReviewDto>();
 		int pageNum=getParaToInt("page",1);
 		page.setCurrentPage(pageNum);
 		int rows=getParaToInt("rows",20);

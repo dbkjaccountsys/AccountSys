@@ -21,7 +21,7 @@ public class ManageHomeService {
 	 * @return
 	 */
 	public List<MenuNode> getAdminMenuList(final Long roleId){
-		List<MenuNode> menuList=new ArrayList<>();
+		List<MenuNode> menuList=new ArrayList<MenuNode>();
 		MenuNode mn=new MenuNode();
 		mn.setId("0");
 		mn.setText("我的工作台");
@@ -54,7 +54,7 @@ public class ManageHomeService {
 	
 	private void getChildren(Record r,MenuNode menu,List<Record> list){
 		Long id=r.getLong("id");
-		List<MenuNode> children=new ArrayList<>();
+		List<MenuNode> children=new ArrayList<MenuNode>();
 		for(Record record:list){
 			Long parentId=record.getLong("parent_id");
 			if(parentId!=null&&parentId.longValue()==id.longValue()){
@@ -81,7 +81,6 @@ public class ManageHomeService {
 	
 	private class MenuComparator implements Comparator<MenuNode>{
 
-		@Override
 		public int compare(MenuNode o1, MenuNode o2) {
 			return o1.getOrder()-o2.getOrder();
 		}

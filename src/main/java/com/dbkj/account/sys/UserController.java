@@ -1,14 +1,9 @@
 package com.dbkj.account.sys;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,7 +17,6 @@ import com.dbkj.account.sys.form.UserEmailForm;
 import com.dbkj.account.sys.form.UserLoginForm;
 import com.dbkj.account.sys.form.UserPhoneForm;
 import com.dbkj.account.sys.form.VoiceForm;
-import com.google.gson.JsonObject;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
