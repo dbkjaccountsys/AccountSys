@@ -175,7 +175,11 @@ public class UserReviewService {
 	 * @return
 	 */
 	public boolean validateReview(UserReviewDto userReviewDto){
-		if(userReviewDto.getId()==null||StrKit.isBlank(userReviewDto.getIspass())||StrKit.isBlank(userReviewDto.getRemark())){
+		if(userReviewDto.getId()==null||StrKit.isBlank(userReviewDto.getIspass())){
+			return false;
+		}
+		if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(userReviewDto.getIspass())&&
+				StrKit.isBlank(userReviewDto.getRemark())){
 			return false;
 		}
 		return true;
@@ -228,6 +232,7 @@ public class UserReviewService {
 		history.setContact(userInfo.getContact());
 		history.setContactphone(userInfo.getContactphone());
 		history.setPublicaccount(userInfo.getPublicaccount());
+		history.setCheckuser(uid);
 		//复制证件图片到备份文件夹
 		String licencePath=null;
 		String idCardPath=null;
@@ -277,7 +282,7 @@ public class UserReviewService {
 	private String copyImage(String path,HttpServletRequest request) throws IOException{
 		//获取文件后缀即文件类型
 		String extension=path.substring(path.lastIndexOf("."));
-		path=WebUtil.getRootPath(request)+File.separator+path;
+		path=WebUtil.getRootPath(request)+File.separator+"uploadimages"+File.separator+path;
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd");
 		Date date=new Date();
 		
@@ -314,4 +319,5 @@ public class UserReviewService {
 		String toPath=sb.toString();
 		System.out.println(toPath);
 	}
+	
 }

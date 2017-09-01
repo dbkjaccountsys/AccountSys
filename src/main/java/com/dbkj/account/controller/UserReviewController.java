@@ -55,12 +55,18 @@ public class UserReviewController extends Controller{
 			result = userReviewService.review(userReviewDto,getRequest(), uid);
 			if(result){
 				redirect("/manage/userReview");
+				return;
 			}else{
 				setAttr("errorMsg", "操作失败！");
 			}
 		}else{//验证不通过
 			setAttr("errorMsg", "缺少必要的参数");
 		}
+		UserReviewDto u = userReviewService.getUserInfo(userReviewDto.getId());
+		u.setIspass(userReviewDto.getIspass());
+		u.setRemark(userReviewDto.getRemark());
+		setAttr("u", u);
 		render("userinfo.html");
 	}
+	
 }

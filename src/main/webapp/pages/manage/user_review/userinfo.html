@@ -42,7 +42,7 @@
             <div class="col-md-12">
                 <hr style="margin-top:0;">
                 <div class="box-body">
-                	<form class="form-horizontal" method="post" id="reviewForm">
+                	<form class="form-horizontal" method="post" action="${ctx!}/manage/userReview/review" id="reviewForm">
                 		<div class="box-body">
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">账号：</label>
@@ -78,20 +78,20 @@
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">身份证：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/showImage?filepath=${u.idcard}"/>
+                					<img src="${ctx!}/user/showImage?filepath=${u.idcard}"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">安全责任书：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/showImage?filepath=${u.safety}"/>
+                					<img src="${ctx!}/user/showImage?filepath=${u.safety}"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">是否通过：</label>
                 				<div class="col-md-4 col-sm-4">
                 					<label><input type="radio" class="minimal" name="u.ispass" value="1" checked="checked"/>&nbsp;&nbsp;通过</label>
-                					&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" class="minimal" name="u.ispass" value="0"/>&nbsp;&nbsp;驳回</label>
+                					&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" class="minimal" name="u.ispass" value="2"/>&nbsp;&nbsp;驳回</label>
                 				</div>
                 			</div>
                 			<div class="form-group" id="turnDown" style="display: none;">
@@ -134,10 +134,10 @@
 	    });
 		
 		var validateOptions={
-				debug:true,
+				debug:false,
 				rules:{
 					"u.ispass":"required",
-					"u.reason":"required"
+					"u.remark":"required"
 				},
 				messages:{
 					"u.remark":"请填写驳回原因"
