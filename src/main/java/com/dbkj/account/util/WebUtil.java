@@ -55,4 +55,13 @@ public class WebUtil {
 		}
 		return requestURI;
 	}
+	
+	/**
+	 * 获取项目根路径的绝对路径
+	 * @param request
+	 * @return
+	 */
+	public static String getRootPath(HttpServletRequest request){
+		return request.getSession().getServletContext().getRealPath("/");
+	}
 }

@@ -13,7 +13,7 @@ public class UserReviewDto {
 	private String licence;
 	private String idcard;
 	private String safety;
-	private boolean isPass;
+	private String ispass;
 	private Date checktime;
 	private String checkuser;
 	private String remark;
@@ -21,6 +21,7 @@ public class UserReviewDto {
 	private String appSecret;
 	private String createTime;
 	private String modifyTime;
+	private String reason;
 	private String opera;
 	public String getOpera() {
 		return opera;
@@ -82,11 +83,17 @@ public class UserReviewDto {
 	public void setSafety(String safety) {
 		this.safety = safety;
 	}
-	public boolean isPass() {
-		return isPass;
+	public String getIspass() {
+		return ispass;
 	}
-	public void setPass(boolean isPass) {
-		this.isPass = isPass;
+	public void setIspass(String ispass) {
+		this.ispass = ispass;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	public Date getChecktime() {
 		return checktime;

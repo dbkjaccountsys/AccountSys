@@ -13,15 +13,22 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dbkj.account.interceptor.AdminAuthorityTemplateDirectiveInterceptor;
+import com.dbkj.account.interceptor.AuthInterceptor;
+import com.dbkj.account.interceptor.LoginInterceptor;
+import com.dbkj.account.interceptor.ResetPasswordInterceptor;
+import com.dbkj.account.interceptor.UserAuthorityTemplateDirectiveInterceptor;
 import com.dbkj.account.sys.form.UserEmailForm;
 import com.dbkj.account.sys.form.UserLoginForm;
 import com.dbkj.account.sys.form.UserPhoneForm;
 import com.dbkj.account.sys.form.VoiceForm;
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.upload.UploadFile;
 
+@Clear({LoginInterceptor.class,AuthInterceptor.class,AdminAuthorityTemplateDirectiveInterceptor.class,UserAuthorityTemplateDirectiveInterceptor.class,ResetPasswordInterceptor.class})
 public class UserController extends Controller
 {
 	//是否发送短信，测试用
@@ -673,7 +680,7 @@ public class UserController extends Controller
 			safety = record.getStr("safety");
 			ispass = record.getStr("ispass");
 		}
-		
+
 		if(ispass.equals("0"))
 		{
 			ispass_text = "审核中";
@@ -686,7 +693,7 @@ public class UserController extends Controller
 		{
 			ispass_text = "<span style='color:red;'>审核不通过</span>";
 		}
-		
+
 		setAttr("companyname",companyname);
 		setAttr("contact",contact);
 		setAttr("contactphone",contactphone);
@@ -877,7 +884,7 @@ public class UserController extends Controller
 			String phone = getPara("h_phone");
 			String password = getPara("password");
 			//String sql = "insert into user (phone,password,trycount) values ('"+phone+"','"+password+"',0)";
-			String sql = "insert into user (phone,password) values ('"+phone+"','"+password+"')";
+			String sql = "insert into user (phone,password,create_time) values ('"+phone+"','"+password+"',now())";
 			Db.update(sql);
 			getSession().setAttribute("phone",phone);
 			

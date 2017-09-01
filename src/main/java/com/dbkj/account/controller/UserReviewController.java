@@ -15,6 +15,10 @@ public class UserReviewController extends Controller{
 	private Logger logger=LoggerFactory.getLogger(this.getClass());
 	
 	private UserReviewService userReviewService=new UserReviewService();
+	
+	private Admin getAdmin(){
+		return getSessionAttr(Constant.CURRENT_USER);
+	}
 
 	
 	public void index(){
@@ -22,7 +26,7 @@ public class UserReviewController extends Controller{
 	}
 	
 	public void list(){
-		Admin admin=getSessionAttr(Constant.CURRENT_USER);
+		Admin admin=getAdmin();
 		Page<UserReviewDto> page=new Page<UserReviewDto>();
 		int pageNum=getParaToInt("page",1);
 		page.setCurrentPage(pageNum);
@@ -40,6 +44,23 @@ public class UserReviewController extends Controller{
 		long id=getParaToLong();
 		UserReviewDto userReviewDto=userReviewService.getUserInfo(id);
 		setAttr("u", userReviewDto);
+		render("userinfo.html");
+	}
+	
+	public void review(){
+		long uid=getAdmin().getId();
+		UserReviewDto userReviewDto=getBean(UserReviewDto.class,"u");
+		boolean result=userReviewService.validateReview(userReviewDto);
+		if(result){
+			result = userReviewService.review(userReviewDto,getRequest(), uid);
+			if(result){
+				redirect("/manage/userReview");
+			}else{
+				setAttr("errorMsg", "操作失败！");
+			}
+		}else{//验证不通过
+			setAttr("errorMsg", "缺少必要的参数");
+		}
 		render("userinfo.html");
 	}
 }

@@ -72,19 +72,19 @@
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">营业执照：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/admin.png"/>
+                					<img src="${ctx!}/user/showImage?filepath=${u.licence}"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">身份证：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/admin.png"/>
+                					<img src="${ctx!}/images/showImage?filepath=${u.idcard}"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">安全责任书：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/admin.png"/>
+                					<img src="${ctx!}/images/showImage?filepath=${u.safety}"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
@@ -97,7 +97,10 @@
                 			<div class="form-group" id="turnDown" style="display: none;">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">驳回原因：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<textarea class="form-control" name="u.reason" rows="5" placeholder="驳回原因"></textarea>
+                					<textarea class="form-control" name="u.remark" rows="5" placeholder="驳回原因"></textarea>
+                					<#if errorMsg??>
+			                        	<em id="errorMsg" class="error help-block" style="color:#a94442;">${errorMsg}</em>
+			                        </#if>
                 				</div>
                 			</div>
                 			<div class="form-group">
@@ -137,7 +140,7 @@
 					"u.reason":"required"
 				},
 				messages:{
-					"u.reason":"请填写驳回原因"
+					"u.remark":"请填写驳回原因"
 				}
 		}
 		
@@ -149,10 +152,10 @@
 			if(ispass=="1"){
 				$("#turnDown").hide();
 				//删除验证规则
-				delete validateOptions.rules["u.reason"];
+				delete validateOptions.rules["u.remark"];
 			}else{
 				$("#turnDown").show();
-				validateOptions.rules["u.reason"]="required";
+				validateOptions.rules["u.remark"]="required";
 			}
 		});
 	});

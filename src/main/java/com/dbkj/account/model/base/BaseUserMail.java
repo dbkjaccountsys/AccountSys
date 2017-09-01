@@ -17,12 +17,12 @@ public abstract class BaseUserMail<M extends BaseUserMail<M>> extends Model<M> i
 		return getLong("id");
 	}
 
-	public void setUserid(java.lang.Integer userid) {
+	public void setUserid(java.lang.Long userid) {
 		set("userid", userid);
 	}
 
-	public java.lang.Integer getUserid() {
-		return getInt("userid");
+	public java.lang.Long getUserid() {
+		return getLong("userid");
 	}
 
 	public void setTime(java.util.Date time) {
