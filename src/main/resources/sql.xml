@@ -60,7 +60,7 @@
     <group class="com.dbkj.account.model.UserInfo">
     	<sql id="getList">
     		select t1.id,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.modify_time from user_info t1 inner join `user` t2 on t1.userid=t2.id 
-			where t1.id >= (select user_info.id from user_info inner join `user` on user_info.userid=`user`.id where ispass=0 and user_info.available=1 
+			where t1.id >= (select user_info.id from user_info inner join `user` on user_info.userid=`user`.id where ispass<![CDATA[<>]]>0 and user_info.available=1 
 			order by user_info.modify_time desc limit ?,1) order by t1.modify_time desc limit ?;
     	</sql>
     	<sql id="getCount">
@@ -69,6 +69,19 @@
     	<sql id="findById">
     		select t1.id,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.publicaccount,t1.licence,t1.idcard,t1.safety 
 			from user_info t1 inner join `user` t2 on t1.userid=t2.id where t1.ispass<![CDATA[<>]]>1 and t1.id=?
+    	</sql>
+    </group>
+    <group class="com.dbkj.account.model.UserInfoHistory">
+    	<sql id="getList">
+    		select t1.id,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.publicaccount,t1.ispass,t1.checktime,t3.username as checkuser,t1.remark
+			from user_info_history t1 inner join `user` t2 on t1.userid=t1.id inner join admin t3 on t1.checkuser=t3.id where t1.userid=? order by checktime desc;
+    	</sql>
+    	<sql id="findById">
+    		select t1.id,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.publicaccount,t1.licence,t1.idcard,t1.safety,t1.ispass,t3.username as checkuser,t1.checktime,t1.remark
+			from user_info_history t1 inner join `user` t2 on t1.userid=t2.id inner join admin t3 on t1.checkuser=t3.id where t1.id=?
+    	</sql>
+    	<sql id="getImg">
+    		select * from user_info_history where id=?
     	</sql>
     </group>
 </sql-list>

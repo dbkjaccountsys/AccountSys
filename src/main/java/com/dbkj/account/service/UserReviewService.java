@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +27,7 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.SqlPara;
 
 public class UserReviewService {
 	
@@ -140,7 +140,7 @@ public class UserReviewService {
 			jsFunction.append("content+=\"&nbsp;&nbsp;<a class=\\\"review\\\" href=\\\"javascript:;\\\" title=\\\"审核\\\"><i class=\\\"fa fa-edit fa-2\\\"></i></a>&nbsp;&nbsp;\";");
 		}
 		//判断用户是否查看审核历史的权限
-		if(authorityService.isPermissionOfAdmin(roleId, "/user/delete")){
+		if(authorityService.isPermissionOfAdmin(roleId, "/manage/userReview/history")){
 			jsFunction.append("content+=\"&nbsp;&nbsp;<a class=\\\"history\\\" href=\\\"javascript:;\\\" title=\\\"审核历史\\\"><i class=\\\"fa fa-history fa-2\\\"></i></a>&nbsp;&nbsp;\";");
 		}
 		jsFunction.append("return content;}");
@@ -283,23 +283,95 @@ public class UserReviewService {
 		//获取文件后缀即文件类型
 		String extension=path.substring(path.lastIndexOf("."));
 		path=WebUtil.getRootPath(request)+File.separator+"uploadimages"+File.separator+path;
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyyMM");
 		Date date=new Date();
 		
-		String basePath=Thread.currentThread().getContextClassLoader().getResource("userImages").getPath();
-		if(basePath.startsWith("/")){
-			basePath=basePath.substring(1);
-		}
+		String basePath=getHistoryBasePath();
 		StringBuilder sb=new StringBuilder(basePath);
 		sb.append(File.separator);
-		sb.append(sdf.format(date));
+		String dir=sdf.format(date);
+		sb.append(dir);
 		sb.append(File.separator);
 		String uuid=RandomUtil.getUUIDString();
 		sb.append(uuid);
 		sb.append(extension);
 		String toPath=sb.toString();
 		FileUtil.copyFile(new File(path), new File(toPath));
-		return uuid+File.separator+extension;
+		return dir+File.separator+uuid+extension;
+	}
+	
+	private String getHistoryBasePath(){
+		String basePath=Thread.currentThread().getContextClassLoader().getResource("userImages").getPath();
+		if(basePath.startsWith("/")){
+			basePath=basePath.substring(1);
+		}
+		return basePath;
+	}
+	
+	/**
+	 * 获取客户审核历史记录信息
+	 * @param id 用户id
+	 * @return
+	 */
+	public List<UserReviewDto> getHistoryList(long id){
+		List<Record> rlist=Db.find(SqlUtil.getSql(UserInfoHistory.class, "getList"),id);
+		List<UserReviewDto> resultList=new ArrayList<UserReviewDto>();
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		for(Record r:rlist){
+			UserReviewDto usDto=new UserReviewDto();
+			usDto.setId(r.getLong("id"));
+			usDto.setUsername(r.getStr("username"));
+			usDto.setCompanyname(r.getStr("companyname"));
+			usDto.setContact(r.getStr("contact"));
+			usDto.setContactphone(r.getStr("contactphone"));
+			usDto.setChecktime(sdf.format(r.getDate("checktime")));
+			usDto.setIspass(r.getInt("ispass")==ReviewStatus.PASS.getCode()?"通过":"驳回");
+			usDto.setCheckuser(r.getStr("checkuser"));
+			usDto.setRemark(r.getStr("remark"));
+			resultList.add(usDto);
+		}
+		return resultList;
+	}
+	
+	/**
+	 * 获取审核历史记录详情
+	 * @param id
+	 * @return
+	 */
+	public UserReviewDto getUserInfoHistoryDetail(long id){
+		Record r=Db.findFirst(SqlUtil.getSql(UserInfoHistory.class, "findById"),id);
+		UserReviewDto userReviewDto=new UserReviewDto();
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if(r!=null){
+			userReviewDto.setId(r.getLong("id"));
+			userReviewDto.setUsername(r.getStr("username"));
+			userReviewDto.setCompanyname(r.getStr("companyname"));
+			userReviewDto.setContact(r.getStr("contact"));
+			userReviewDto.setContactphone(r.getStr("contactphone"));
+			userReviewDto.setLicence(r.getStr("licence"));
+			userReviewDto.setIdcard(r.getStr("idcard"));
+			userReviewDto.setSafety(r.getStr("safety"));
+			userReviewDto.setChecktime(sdf.format(r.getDate("checktime")));
+			userReviewDto.setIspass(r.getInt("ispass")==ReviewStatus.PASS.getCode()?"通过":"驳回");
+			userReviewDto.setCheckuser(r.getStr("checkuser"));
+			userReviewDto.setRemark(r.getStr("remark"));
+		}
+		return userReviewDto;
+	}
+	
+	
+	public File getHistoryImage(long id,String type){
+		if(!"licence".equals(type)&&!"idcard".equals(type)&&!"safety".equals(type)){
+			return null;
+		}
+		String sql=SqlUtil.getSql(UserInfoHistory.class, "getImg");
+		sql=sql.replace("*", type);
+		String path=UserInfoHistory.dao.findFirst(sql,id).getStr(type);
+		if(path!=null){
+			path=getHistoryBasePath()+File.separator+path;
+			return new File(path);
+		}
+		return null;
 	}
 	
 	public static void main(String[] args) {

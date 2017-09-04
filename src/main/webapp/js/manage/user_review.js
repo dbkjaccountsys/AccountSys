@@ -53,5 +53,10 @@ var urp={
 	review:function(dom){
 		var id=$(dom).closest("tr").find("td:eq(1)").text();
 		location.href=common.getContext()+"/manage/userReview/userinfo/"+id;
+	},
+	//获取审核历史记录
+	getHistory:function(dom){
+		var id=$(dom).closest("tr").find("td:eq(1)").text();
+		location.href=common.getContext()+"/manage/userReview/history/"+id;
 	}
 }

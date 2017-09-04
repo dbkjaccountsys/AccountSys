@@ -14,7 +14,7 @@ public class UserReviewDto {
 	private String idcard;
 	private String safety;
 	private String ispass;
-	private Date checktime;
+	private String checktime;
 	private String checkuser;
 	private String remark;
 	private String appId;
@@ -95,10 +95,10 @@ public class UserReviewDto {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-	public Date getChecktime() {
+	public String getChecktime() {
 		return checktime;
 	}
-	public void setChecktime(Date checktime) {
+	public void setChecktime(String checktime) {
 		this.checktime = checktime;
 	}
 	public String getCheckuser() {
