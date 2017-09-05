@@ -49,7 +49,7 @@ public class VoiceReviewService {
 	 * @param roleId
 	 */
 	public void getPage(Page<VoiceReviewDto> page,String fromDate,String toDate,String username,long roleId){
-		String sql=SqlUtil.getSql(UserVoice.class, "getList");
+		String sql=SqlUtil.getSql(UserVoice.class, "getList").toLowerCase();
 		int index=sql.lastIndexOf("where")+"where".length();
 		String str1=sql.substring(0,index);
 		String str2=sql.substring(index);
@@ -178,7 +178,8 @@ public class VoiceReviewService {
 				StrKit.isBlank(voiceReviewDto.getReason())){
 			return res.get("review.parameter.lack");
 		}
-		if(voiceReviewDto.getReason().length()>70){
+		if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(voiceReviewDto.getStatus())&&
+				voiceReviewDto.getReason().length()>70){
 			return res.get("review.remark.length.more.than.70");
 		}
 		return null;

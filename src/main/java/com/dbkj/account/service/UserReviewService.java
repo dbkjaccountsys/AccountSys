@@ -47,7 +47,7 @@ public class UserReviewService {
 	 * @param username
 	 */
 	public void getPage(Page<UserReviewDto> page,String fromDate,String toDate,String username,long roleId){
-		String sql=SqlUtil.getSql(UserInfo.class, "getList");
+		String sql=SqlUtil.getSql(UserInfo.class, "getList").toLowerCase();
 		int index=sql.lastIndexOf("where")+"where".length();
 		String str1=sql.substring(0,index);
 		String str2=sql.substring(index);
@@ -187,7 +187,8 @@ public class UserReviewService {
 				StrKit.isBlank(userReviewDto.getRemark())){
 			return res.get("review.parameter.lack");
 		}
-		if(userReviewDto.getRemark().length()>70){
+		if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(userReviewDto.getIspass())&&
+				userReviewDto.getRemark().length()>70){
 			return res.get("review.remark.length.more.than.70");
 		}
 		return null;
