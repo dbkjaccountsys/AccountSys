@@ -10,6 +10,7 @@ var urp={
             autowidth: true,
             colModel: [
                 { label: "id", name: "id", index: "id", hidden: true },
+                { label: "userId", name: "userId", index: "userId", hidden: true },
                 { label: "账号", name: "username", index: "username",align:"left" },
                 { label: "公司名称", name: "companyname", index: "companyname", align: "left" },
                 { label: "联系人", name: "contact", index: "contact", align: "left" },
@@ -56,7 +57,7 @@ var urp={
 	},
 	//获取审核历史记录
 	getHistory:function(dom){
-		var id=$(dom).closest("tr").find("td:eq(1)").text();
+		var id=$(dom).closest("tr").find("td:eq(2)").text();
 		location.href=common.getContext()+"/manage/userReview/history/"+id;
 	}
 }

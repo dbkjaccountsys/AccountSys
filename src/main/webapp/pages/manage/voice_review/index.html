@@ -17,7 +17,11 @@
     <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
 
     <link href="${ctx!}/content/plugins/jqgrid/jqgrid.css" rel="stylesheet" />
+    <link href="${ctx!}/content/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
+    	.gridPanel{
+    		margin-top: 20px;
+    	}
     </style>
     <!--全局通用框架样式 end-->
 </head>
@@ -37,6 +41,43 @@
             <div class="col-md-12">
                 <hr style="margin-top:0;">
                 <div class="box-body">
+                	<div>
+                		<form class="form-inline">
+                			<div class="form-group">
+                				<label >开始日期：</label>
+		                		<div class="input-group date" id="from_datetime">
+		                			<input type="text" size="16" readonly="readonly" class="form-control"/>
+		                			<span class="input-group-btn">
+		                				<button class="btn default date-reset" type="button">
+		                                    <i class="fa fa-times"></i>
+		                                </button>
+		                                <button class="btn default date-set" type="button">
+		                                    <i class="fa fa-calendar"></i>
+		                                </button>
+		                			</span>
+		                		</div>
+                			</div>
+                			<div class="form-group">
+                				<label >结束日期：</label>
+		                		<div class="input-group date" id="to_datetime">
+		                			<input type="text" size="16" readonly="readonly" class="form-control"/>
+		                			<span class="input-group-btn">
+		                				<button class="btn default date-reset" type="button">
+		                                    <i class="fa fa-times"></i>
+		                                </button>
+		                                <button class="btn default date-set" type="button">
+		                                    <i class="fa fa-calendar"></i>
+		                                </button>
+		                			</span>
+		                		</div>
+                			</div>
+                			<div class="form-group">
+                				<label>用户名：</label>
+                				<input type="text" class="form-control" id="username" />
+                			</div>
+                			<button type="button" id="btn_search" class="btn btn-default">搜索</button>
+                		</form>
+                	</div>
                     <div class="gridPanel">
                         <table id="gridTable"></table>
                         <div id="gridPager"></div>
@@ -53,11 +94,43 @@
 
 <script src="${ctx!}/content/plugins/jqgrid/grid.locale-cn.js"></script>
 <script src="${ctx!}/content/plugins/jqgrid/jqgrid.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
 <script src="${ctx!}/js/common.js"></script>
+<script src="${ctx!}/js/manage/voice_review_list.js"></script>
 <script>
 	$(function(){
+		$("#from_datetime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd", //选择日期后，文本框显示的日期格式
+            pickerPosition: ("bottom-left")
+        });
+		$("#to_datetime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd", //选择日期后，文本框显示的日期格式
+            pickerPosition: ("bottom-left")
+        });
+		$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
 		
+		//初始化GridTable
+		vrl.initTable();
 		
+		//查询
+		$("#btn_search").click(function(){
+			vrl.search();
+		});
+		//审核
+		$("#gridTable").on("click",".review",function(){
+			vrl.review(this);
+		});
+		//查看历史记录
+		$("#gridTable").on("click",".history",function(){
+			vrl.getHistory(this);
+		});
 	});
 </script>
 </body>

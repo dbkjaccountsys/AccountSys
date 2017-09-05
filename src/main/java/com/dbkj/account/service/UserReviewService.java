@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dic.ReviewStatus;
 import com.dbkj.account.dto.Page;
 import com.dbkj.account.dto.UserReviewDto;
+import com.dbkj.account.model.User;
 import com.dbkj.account.model.UserInfo;
 import com.dbkj.account.model.UserInfoHistory;
 import com.dbkj.account.model.UserMail;
@@ -23,11 +25,12 @@ import com.dbkj.account.util.FileUtil;
 import com.dbkj.account.util.RandomUtil;
 import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.WebUtil;
+import com.jfinal.i18n.I18n;
+import com.jfinal.i18n.Res;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.SqlPara;
 
 public class UserReviewService {
 	
@@ -114,6 +117,7 @@ public class UserReviewService {
 			dto.setContactphone(r.getStr("contactphone"));
 			dto.setModifyTime(sdf.format(r.getDate("modify_time")));
 			dto.setOpera(opera);
+			dto.setUserId(r.getLong("userid"));
 			data.add(dto);
 		}
 		page.setData(data);
@@ -174,15 +178,19 @@ public class UserReviewService {
 	 * @param userReviewDto
 	 * @return
 	 */
-	public boolean validateReview(UserReviewDto userReviewDto){
+	public String validateReview(UserReviewDto userReviewDto){
+		Res res=I18n.use("zh_CN");
 		if(userReviewDto.getId()==null||StrKit.isBlank(userReviewDto.getIspass())){
-			return false;
+			return res.get("review.parameter.lack");
 		}
 		if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(userReviewDto.getIspass())&&
 				StrKit.isBlank(userReviewDto.getRemark())){
-			return false;
+			return res.get("review.parameter.lack");
 		}
-		return true;
+		if(userReviewDto.getRemark().length()>70){
+			return res.get("review.remark.length.more.than.70");
+		}
+		return null;
 	}
 	
 	/**
@@ -259,7 +267,8 @@ public class UserReviewService {
 					history.save();
 					userMail.save();
 					userInfo.update();
-					logService.addLog(request, "审核用户id为"+userInfo.getUserid()+"的用户资料，审核结果为"+
+					String username=User.dao.findById(userInfo.getUserid()).getUsername();
+					logService.addLog(request, "审核用户id为"+userInfo.getUserid()+"用户名为"+username+"的用户资料，审核结果为"+
 							(userInfo.getIspass()==ReviewStatus.PASS.getCode()?"通过审核":"驳回"),
 							OperaResult.SUCCESS, null);
 					return true;
@@ -280,13 +289,14 @@ public class UserReviewService {
 	 * @return 
 	 */
 	private String copyImage(String path,HttpServletRequest request) throws IOException{
+		String dirName="uploadimages";
 		//获取文件后缀即文件类型
 		String extension=path.substring(path.lastIndexOf("."));
-		path=WebUtil.getRootPath(request)+File.separator+"uploadimages"+File.separator+path;
+		path=WebUtil.getRootPath(request)+File.separator+dirName+File.separator+path;
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyyMM");
 		Date date=new Date();
 		
-		String basePath=getHistoryBasePath();
+		String basePath=FileUtil.getAbsolutePath("userImages");
 		StringBuilder sb=new StringBuilder(basePath);
 		sb.append(File.separator);
 		String dir=sdf.format(date);
@@ -300,13 +310,6 @@ public class UserReviewService {
 		return dir+File.separator+uuid+extension;
 	}
 	
-	private String getHistoryBasePath(){
-		String basePath=Thread.currentThread().getContextClassLoader().getResource("userImages").getPath();
-		if(basePath.startsWith("/")){
-			basePath=basePath.substring(1);
-		}
-		return basePath;
-	}
 	
 	/**
 	 * 获取客户审核历史记录信息
@@ -368,7 +371,7 @@ public class UserReviewService {
 		sql=sql.replace("*", type);
 		String path=UserInfoHistory.dao.findFirst(sql,id).getStr(type);
 		if(path!=null){
-			path=getHistoryBasePath()+File.separator+path;
+			path=FileUtil.getAbsolutePath("uploadimages")+File.separator+path;
 			return new File(path);
 		}
 		return null;

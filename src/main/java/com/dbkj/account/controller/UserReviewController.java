@@ -57,17 +57,17 @@ public class UserReviewController extends Controller{
 	public void review(){
 		long uid=getAdmin().getId();
 		UserReviewDto userReviewDto=getBean(UserReviewDto.class,"u");
-		boolean result=userReviewService.validateReview(userReviewDto);
-		if(result){
-			result = userReviewService.review(userReviewDto,getRequest(), uid);
-			if(result){
+		String result=userReviewService.validateReview(userReviewDto);
+		if(null==result){
+			boolean flag = userReviewService.review(userReviewDto,getRequest(), uid);
+			if(flag){
 				redirect("/manage/userReview");
 				return;
 			}else{
 				setAttr("errorMsg", "操作失败！");
 			}
 		}else{//验证不通过
-			setAttr("errorMsg", "缺少必要的参数");
+			setAttr("errorMsg", result);
 		}
 		UserReviewDto u = userReviewService.getUserInfo(userReviewDto.getId());
 		u.setIspass(userReviewDto.getIspass());
@@ -105,7 +105,7 @@ public class UserReviewController extends Controller{
 		long id=getParaToLong("id");
 		String type=getPara("type");
 		File file=userReviewService.getHistoryImage(id, type);
-		if(file!=null){
+		if(file!=null&&file.exists()){
 			renderFile(file);
 		}else{
 			HttpServletResponse response = getResponse();

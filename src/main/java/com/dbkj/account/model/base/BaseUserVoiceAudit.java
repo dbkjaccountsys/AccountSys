@@ -17,36 +17,68 @@ public abstract class BaseUserVoiceAudit<M extends BaseUserVoiceAudit<M>> extend
 		return getLong("id");
 	}
 
-	public void setVoiceid(java.lang.Integer voiceid) {
-		set("voiceid", voiceid);
-	}
-
-	public java.lang.Integer getVoiceid() {
-		return getInt("voiceid");
-	}
-
-	public void setTime(java.util.Date time) {
-		set("time", time);
-	}
-
-	public java.util.Date getTime() {
-		return get("time");
-	}
-
-	public void setUserid(java.lang.Integer userid) {
+	public void setUserid(java.lang.Long userid) {
 		set("userid", userid);
 	}
 
-	public java.lang.Integer getUserid() {
-		return getInt("userid");
+	public java.lang.Long getUserid() {
+		return getLong("userid");
 	}
 
-	public void setRemark(java.lang.String remark) {
-		set("remark", remark);
+	public void setVId(java.lang.Long vId) {
+		set("v_id", vId);
 	}
 
-	public java.lang.String getRemark() {
-		return getStr("remark");
+	public java.lang.Long getVId() {
+		return getLong("v_id");
+	}
+
+	public void setUpdatetime(java.util.Date updatetime) {
+		set("updatetime", updatetime);
+	}
+
+	public java.util.Date getUpdatetime() {
+		return get("updatetime");
+	}
+
+	public void setFilename(java.lang.String filename) {
+		set("filename", filename);
+	}
+
+	public java.lang.String getFilename() {
+		return getStr("filename");
+	}
+
+	public void setVoicename(java.lang.String voicename) {
+		set("voicename", voicename);
+	}
+
+	public java.lang.String getVoicename() {
+		return getStr("voicename");
+	}
+
+	public void setContent(java.lang.String content) {
+		set("content", content);
+	}
+
+	public java.lang.String getContent() {
+		return getStr("content");
+	}
+
+	public void setChecktime(java.util.Date checktime) {
+		set("checktime", checktime);
+	}
+
+	public java.util.Date getChecktime() {
+		return get("checktime");
+	}
+
+	public void setCheckuser(java.lang.Long checkuser) {
+		set("checkuser", checkuser);
+	}
+
+	public java.lang.Long getCheckuser() {
+		return getLong("checkuser");
 	}
 
 	public void setStatus(java.lang.Integer status) {
@@ -55,6 +87,14 @@ public abstract class BaseUserVoiceAudit<M extends BaseUserVoiceAudit<M>> extend
 
 	public java.lang.Integer getStatus() {
 		return getInt("status");
+	}
+
+	public void setReason(java.lang.String reason) {
+		set("reason", reason);
+	}
+
+	public java.lang.String getReason() {
+		return getStr("reason");
 	}
 
 }

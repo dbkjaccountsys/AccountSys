@@ -16,7 +16,7 @@ public class ManageRoute extends Routes{
 		add("/manage/login",ManageLoginController.class);		
 		add("/manage/user",UserManageController.class,"/user");
 		add("/manage/userReview",UserReviewController.class,"/user_review");
-		add("/manage/voiceReview",VoiceReviewController.class);
+		add("/manage/voiceReview",VoiceReviewController.class,"/voice_review");
 	}
 
 }

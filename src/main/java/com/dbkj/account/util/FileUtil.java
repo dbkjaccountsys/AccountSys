@@ -94,4 +94,17 @@ public class FileUtil {
 			}
 		}
 	}
+	
+	/**
+	 * 获取classpath下文件夹的绝对路径
+	 * @param dirName
+	 * @return
+	 */
+	public static String getAbsolutePath(String dirName){
+		String basePath=Thread.currentThread().getContextClassLoader().getResource(dirName).getPath();
+		if(basePath.startsWith("/")){
+			basePath=basePath.substring(1);
+		}
+		return basePath;
+	}
 }

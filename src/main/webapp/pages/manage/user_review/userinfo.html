@@ -97,7 +97,7 @@
                 			<div class="form-group" id="turnDown" style="display: none;">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">驳回原因：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<textarea class="form-control" name="u.remark" rows="5" placeholder="驳回原因">${u.remark}</textarea>
+                					<textarea class="form-control" name="u.remark" rows="5" placeholder="驳回原因">${(u.remark)!}</textarea>
                 					<#if errorMsg??>
 			                        	<em id="errorMsg" class="error help-block" style="color:#a94442;">${errorMsg}</em>
 			                        </#if>
@@ -137,10 +137,15 @@
 				debug:false,
 				rules:{
 					"u.ispass":"required",
-					"u.remark":"required"
+					"u.remark":{
+						"required":true,
+						"maxlength":70
+					}
 				},
 				messages:{
-					"u.remark":"请填写驳回原因"
+					"u.remark":{
+						"required":"请填写驳回原因"
+					}
 				}
 		}
 		

@@ -31,8 +31,8 @@ public class _MappingKit {
 		arp.addMapping("user_auth", "id", UserAuth.class);
 		arp.addMapping("user_info", "id", UserInfo.class);
 		arp.addMapping("user_info_history", "id", UserInfoHistory.class);
+		arp.addMapping("user_info_reset", "id", UserInfoReset.class);
 		arp.addMapping("user_log", "id", UserLog.class);
-		arp.addMapping("user_log_201708", "id", UserLog201708.class);
 		arp.addMapping("user_mail", "id", UserMail.class);
 		arp.addMapping("user_recharge", "id", UserRecharge.class);
 		arp.addMapping("user_role", "id", UserRole.class);

@@ -1,10 +1,9 @@
 package com.dbkj.account.dto;
 
-import java.util.Date;
-
 public class UserReviewDto {
 
 	private Long id;
+	private Long userId;
 	private String username;
 	private String companyname;
 	private String contact;
@@ -23,6 +22,12 @@ public class UserReviewDto {
 	private String modifyTime;
 	private String reason;
 	private String opera;
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 	public String getOpera() {
 		return opera;
 	}
