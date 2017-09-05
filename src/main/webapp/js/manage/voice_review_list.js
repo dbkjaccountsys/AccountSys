@@ -38,6 +38,11 @@ var vrl={
 	                records: "records"
 	            }
 			});
+			setTimeout(function(){
+				var height=$(window).height()-$("#gridTable").offset().top-55;
+				console.log(height);
+				 $("#gridTable").setGridHeight(height);
+			},100);
 		},
 		//查询
 		search:function(){

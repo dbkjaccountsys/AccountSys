@@ -6,7 +6,7 @@ var urp={
 		$("#gridTable").jqGrid({
             datatype: "json",
             url: common.getContext()+"/manage/userReview/list",
-//            height: $.fn.getGridHeight(),
+//            height: $(window).height()-$("#gridTable").offset().top,
             autowidth: true,
             colModel: [
                 { label: "id", name: "id", index: "id", hidden: true },
@@ -37,6 +37,11 @@ var urp={
                 records: "records"
             }
         });
+		setTimeout(function(){
+			var height=$(window).height()-$("#gridTable").offset().top-55;
+			console.log(height);
+			 $("#gridTable").setGridHeight(height);
+		},100);
 	},
 	//查询
 	search:function(){

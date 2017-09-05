@@ -52,7 +52,7 @@ public class LogService {
 	 * @param content
 	 */
 	public void addLog(HttpServletRequest request,String content,Integer operaTypeId,OperaResult operaResult,String exceptionMsg){
-		Object obj=request.getAttribute(Constant.CURRENT_USER);
+		Object obj=request.getSession().getAttribute(Constant.CURRENT_USER);
 		if(obj!=null){
 			Long id=null;
 			UserType userType=null;

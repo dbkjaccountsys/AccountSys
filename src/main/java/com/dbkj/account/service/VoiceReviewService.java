@@ -246,9 +246,10 @@ public class VoiceReviewService {
 			
 			public boolean run() throws SQLException {
 				try{
-					userVoiceAudit.save();
 					userMail.save();
 					userVoice.update();
+					userVoiceAudit.setVId(userVoice.getId());
+					userVoiceAudit.save();
 					String username=User.dao.findById(userVoice.getUserid()).getUsername();
 					logService.addLog(request, "审核用户id为"+userVoice.getUserid()+"的用户名"+username+"用户资料，审核结果为"+
 							(userVoice.getStatus()==ReviewStatus.PASS.getCode()?"通过审核":"驳回"),

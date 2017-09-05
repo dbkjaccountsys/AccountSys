@@ -27,5 +27,10 @@ var hp={
 	            shrinkToFit: false,
 	            altclass: 'altRowsColour'
 	        });
+			setTimeout(function(){
+				var height=$(window).height()-$("#gridTable").offset().top-55;
+				console.log(height);
+				 $("#gridTable").setGridHeight(height);
+			},100);
 		}	
 }

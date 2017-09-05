@@ -69,7 +69,7 @@ public class VoiceReviewController extends Controller{
 		v.setStatus(voiceReviewDto.getStatus());
 		v.setReason(voiceReviewDto.getReason());
 		setAttr("v",v);
-		render("userinfo.html");
+		render("review.html");
 	}
 	
 	public void history(){//用户资料审核历史
