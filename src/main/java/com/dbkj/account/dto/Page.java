@@ -12,12 +12,12 @@ public class Page<T> {
 	private int currentPage;//当前页
 	private int pageSize;//每页显示的数据行数
 	private int totalCount;//总页数
-	private int records;//总数据行数
+	private long records;//总数据行数
 	private List<T> data;//分页数据
-	public int getRecords() {
+	public long getRecords() {
 		return records;
 	}
-	public void setRecords(int records) {
+	public void setRecords(long records) {
 		this.records = records;
 	}
 	public int getCurrentPage() {

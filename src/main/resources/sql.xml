@@ -109,4 +109,12 @@
 			INNER JOIN `user` t2 ON t1.userid=t2.id INNER JOIN admin t3 ON t1.checkuser=t3.id 
     	</sql>
     </group>
+    <group class="com.dbkj.account.model.Favorable">
+    	<sql id="getPage">
+    		SELECT t2.* FROM (SELECT id FROM favorable WHERE `status`=1 AND endtime>=NOW() LIMIT ?,?) t1 INNER JOIN favorable t2 ON t1.id=t2.id ORDER BY t2.id DESC;
+    	</sql>
+    	<sql id="getCount">
+    		SELECT COUNT(1) AS `count` FROM favorable
+    	</sql>
+    </group>
 </sql-list>

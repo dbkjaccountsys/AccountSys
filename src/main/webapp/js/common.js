@@ -49,7 +49,7 @@ if(jQuery&&jQuery.validator){
 				error.insertAfter( element.parent( "label" ) );
 			} else {
 				//如果是输入框组
-				if(element.parent().attr("class")=="input-group"){
+				if(element.parent().attr("class").indexOf("input-group")!=-1){
 					error.insertAfter(element.parent());
 				}else{
 					error.insertAfter( element );
@@ -239,3 +239,29 @@ String.prototype.rtrim = function()
 {  
 	return this.replace(/(\s*$)/g, "");  
 }  
+
+/**
+ * 将日期转为指定格式字符串
+ * 如：format:'yyyy-MM-dd h:m:s
+ */
+Date.prototype.format = function(format) {
+    var date = {
+       "M+": this.getMonth() + 1,
+       "d+": this.getDate(),
+       "h+": this.getHours(),
+       "m+": this.getMinutes(),
+       "s+": this.getSeconds(),
+       "q+": Math.floor((this.getMonth() + 3) / 3),
+       "S+": this.getMilliseconds()
+    };
+    if (/(y+)/i.test(format)) {
+       format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+    }
+    for (var k in date) {
+       if (new RegExp("(" + k + ")").test(format)) {
+           format = format.replace(RegExp.$1, RegExp.$1.length == 1
+              ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+       }
+    }
+    return format;
+}

@@ -90,13 +90,13 @@ public class VoiceReviewService {
 		page.setTotalCount(new Double(Math.ceil(d)).intValue());
 		
 		int limit=(page.getCurrentPage()-1)*page.getPageSize();
-		//当limit等于0时，去掉子查询中desc，改为升序排序
-		if(limit==0){
-			int n=str2.indexOf("desc");
-			String s1=str2.substring(0, n);
-			String s2=str2.substring(n+"desc".length());
-			str2=s1.concat(s2);
-		}
+//		//当limit等于0时，去掉子查询中desc，改为升序排序
+//		if(limit==0){
+//			int n=str2.indexOf("desc");
+//			String s1=str2.substring(0, n);
+//			String s2=str2.substring(n+"desc".length());
+//			str2=s1.concat(s2);
+//		}
 		sql=str1.concat(whereStr).concat(str2);
 		if(logger.isInfoEnabled()){
 			logger.info("分页Sql:{}，分页条件:page:{},fromDate:{},toDate:{},username:{}",sql,page.toString(),fromDate,toDate,username);

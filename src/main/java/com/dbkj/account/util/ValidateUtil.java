@@ -1,5 +1,8 @@
 package com.dbkj.account.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,5 +57,36 @@ public class ValidateUtil {
         Pattern pattern=Pattern.compile(regex);
         Matcher matcher=pattern.matcher(value);
         return matcher.find();
+    }
+    
+    /**
+     * 判断日期字符串是否指定格式
+     * @param dateStr
+     * @param format
+     * @return
+     */
+    public static boolean validateDateFormat(String dateStr,String format){
+    	SimpleDateFormat sdf=new SimpleDateFormat(format);
+    	try {
+			Date date = sdf.parse(dateStr);
+			String newDateStr=sdf.format(date);
+			return dateStr.equals(newDateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return false;
+		}
+    }
+    
+    /**
+     * 验证有n位小数的正实数
+     * @param str
+     * @param n
+     * @return
+     */
+    public static boolean validatePositivRealNumber(String str,int n){
+    	String regex="^[0-9]+(.[0-9]{"+n+"})?$";
+    	Pattern pattern=Pattern.compile(regex);
+    	Matcher matcher=pattern.matcher(str);
+    	return matcher.matches();
     }
 }
