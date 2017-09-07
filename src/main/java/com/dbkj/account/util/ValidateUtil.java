@@ -89,4 +89,20 @@ public class ValidateUtil {
     	Matcher matcher=pattern.matcher(str);
     	return matcher.matches();
     }
+    
+    /**
+     * 验证是否是有效数字格式，包括正负数、小数
+     * @param str
+     * @return
+     */
+    public static boolean isDigital(String str){
+    	String regex="^[\\+-]?\\d*[\\.\\d]{0,}$";
+    	Pattern pattern=Pattern.compile(regex);
+    	Matcher matcher=pattern.matcher(str);
+    	return matcher.matches();
+    }
+    
+    public static void main(String[] args) {
+		System.out.println(isDigital("60.00"));
+	}
 }

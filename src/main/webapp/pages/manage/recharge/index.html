@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>充值</title>
+	<title>充值管理</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta content="" name="description" />
@@ -15,20 +15,31 @@
     <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/skins/_all-skins.min.css">
     <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
-
+	
     <link href="${ctx!}/content/plugins/jqgrid/jqgrid.css" rel="stylesheet" />
+    <!-- Select2 -->
+  	<link rel="stylesheet" href="../content/plugins/select2/select2.min.css">
     <style type="text/css">
+    	#searchForm .select2-container--default .select2-selection--single .select2-selection__arrow b{
+    		margin-top: 0px;
+    	}
+    	#searchForm .select2-container--default .select2-selection--single{
+    		height:34px;
+    	}
+    	.gridPanel{
+    		margin-top: 20px;
+    	}
     </style>
     <!--全局通用框架样式 end-->
 </head>
 <body data-context="${ctx!}">
 	<section class="content-header">
         <h1>
-                      充值
+                      充值管理
         </h1>
         <ol class="breadcrumb">
             <li><i class="fa fa-home"></i> 资费管理</li>
-            <li class="active">充值</li>
+            <li class="active">充值管理</li>
         </ol>
     </section>
 	<!-- Main content -->
@@ -37,7 +48,21 @@
             <div class="col-md-12">
                 <hr style="margin-top:0;">
                 <div class="box-body">
-                    
+                	<form class="form-inline" id="searchForm">
+                		<div class="form-group">
+                			<label>公司：</label>
+                			<select class="form-control select2" id="companyName">
+                				<#list clist as item>
+                					<option value="${item.userId}">${item.companyName}</option>
+                				</#list>
+                			</select>
+                		</div>
+                		<button type="button" id="btn_search" class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                	</form>
+                    <div class="gridPanel">
+                        <table id="gridTable"></table>
+                        <div id="gridPager"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,11 +72,27 @@
 
 <script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
 <script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+<script src="${ctx!}/content/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="${ctx!}/content/plugins/jqgrid/jqgrid.min.js"></script>
+<!-- Select2 -->
+<script src="../content/plugins/select2/select2.full.min.js"></script>
 <script src="${ctx!}/js/common.js"></script>
+<script src="${ctx!}/js/manage/recharge_list.js"></script>
 <script>
 	$(function(){
+		//Initialize Select2 Elements
+	    $(".select2").select2();
 		
+		rp.initTable("${hasOpera?string('yes', 'no')}");
 		
+		$("#btn_search").click(function(){
+			rp.search();
+		});
+		
+		//充值
+		$("#gridTable").on("click",".recharge",function(){
+			rp.charge(this);
+		});
 	});
 </script>
 </body>

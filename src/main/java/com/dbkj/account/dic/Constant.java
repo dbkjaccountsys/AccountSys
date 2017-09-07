@@ -18,4 +18,8 @@ public interface Constant {
 	
 	String SUCCESS="3000";
 	String FAIL="3001";
+	/**
+	 * 通用cache key
+	 */
+	String COMMON_CACHE_KEY="otherCache";
 }

@@ -11,9 +11,22 @@
     		select count(1) from admin where phone=? and available=1
     	</sql>
     </group>
-    <group id="com.dbkj.account.model.User">
+    <group class="com.dbkj.account.model.User">
     	<sql id="isExistsPhone">
     		select count(1) from user where phone=? and available=1
+    	</sql>
+    	<select id="getRechargeList">
+    		SELECT t2.id,t2.username,t1.companyname,t2.charge FROM (
+    			SELECT userid,companyname FROM user_info WHERE ispass=1 AND available=1 ORDER BY id DESC LIMIT ?,?
+    		) t1 INNER JOIN `user` t2 ON t1.userid=t2.id
+    	</select>
+    	<select id="getRechargeCount">
+    		SELECT COUNT(1) AS `count` FROM user_info WHERE ispass=1 AND available=1
+    	</select>
+    	<sql id="getRechargeInfo">
+    		SELECT t2.id,t2.username,t1.companyname FROM (
+    			SELECT userid,companyname FROM user_info WHERE ispass=1 AND available=1 AND userid=?
+    		) t1 INNER JOIN `user` t2 ON t1.userid=t2.id
     	</sql>
     </group>
     <group class="com.dbkj.account.model.AdminAuth">
@@ -69,6 +82,12 @@
     	<sql id="findById">
     		select t1.id,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.publicaccount,t1.licence,t1.idcard,t1.safety 
 			from user_info t1 inner join `user` t2 on t1.userid=t2.id where t1.ispass=0 and t1.id=?
+    	</sql>
+    	<sql id="getCompanys">
+    		SELECT userid,companyname FROM user_info WHERE ispass=1 AND available=1
+    	</sql>
+    	<sql id="getCompanyNameByUserId">
+    		select companyname from user_info where userid=?
     	</sql>
     </group>
     <group class="com.dbkj.account.model.UserInfoHistory">
