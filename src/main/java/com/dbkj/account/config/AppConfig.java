@@ -35,7 +35,7 @@ public class AppConfig extends JFinalConfig{
 	    //设置上传最大限制尺寸
 	    me.setMaxPostSize(1024*1024*10);
 	    me.setViewType(ViewType.FREE_MARKER);
-	    me.setErrorView(403, "/pages/other/403.html");
+	    me.setErrorView(401, "/pages/other/401.html");
 	    me.setErrorView(404, "/pages/other/404.html");
 	    me.setErrorView(500, "/pages/other/500.html");
 	}

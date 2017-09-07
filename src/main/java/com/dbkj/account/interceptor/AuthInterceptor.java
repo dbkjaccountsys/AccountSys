@@ -37,7 +37,7 @@ public class AuthInterceptor implements Interceptor{
 				response.setStatus(403);
 				controller.renderNull();
 			}else{
-				controller.renderError(403, "/pages/other/403.html");
+				controller.renderError(401, "/pages/other/401.html");
 			}
 		}
 		
