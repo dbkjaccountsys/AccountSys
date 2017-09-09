@@ -11,7 +11,13 @@ var common={
 	//获取上下文context
 	getContext:function(){
 		return $("body").data("context");
-	}
+	},
+	//密码验证表达式，长度在6~18之间，只能包含字符、数字和'!@#$^'等特殊字符
+	passwordRegex:/^[0-9a-zA-Z!@#$^]{6,18}$/,
+	//座机正则表达式
+	phoneRegex:/^([0-9]{3,4})?(-)?([0-9]{7,9}|[0-9]{5})$/,
+	//支持的图片格式
+	imageFormats:["jpg","jpeg","png","bmp"]
 }
 
 /**
@@ -38,6 +44,17 @@ if(jQuery&&jQuery.validator){
 		return this.optional(element)||(value.length>=param[0]&&value.length<=param[1]);
 	},"请确保输入的值的长度在{0}-{1}之间");
 	
+	//验证字符长度返回
+	jQuery.validator.addMethod("password",function(value,element,param){
+		return this.optional(element)||common.passwordRegex.test(value);
+	},"密码长度在6~18之间，只能包含字符、数字和'!@#$^'");
+	
+	//验证字符长度返回
+	jQuery.validator.addMethod("phone",function(value,element,param){
+		var flag=common.phoneRegex.test(value)||common.mobilePhoneRegex.test(value);
+		return this.optional(element)||flag;
+	},"电话号码格式不正确");
+	
 	//设置表单验证的默认值
 	jQuery.validator.setDefaults({
 		errorElement:"em",
@@ -45,16 +62,17 @@ if(jQuery&&jQuery.validator){
 			// Add the `help-block` class to the error element
 			error.addClass( "help-block" );
 
-			if ( element.prop( "type" ) === "checkbox" ) {
-				error.insertAfter( element.parent( "label" ) );
-			} else {
-				//如果是输入框组
-				if(element.parent().attr("class").indexOf("input-group")!=-1){
-					error.insertAfter(element.parent());
-				}else{
-					error.insertAfter( element );
-				}
-			}
+//			if ( element.prop( "type" ) === "checkbox" ) {
+//				error.insertAfter( element.parent( "label" ) );
+//			} else {
+//				//如果是输入框组
+//				if(element.parent().attr("class").indexOf("input-group")!=-1){
+//					error.insertAfter(element.parent());
+//				}else{
+//					error.insertAfter( element );
+//				}
+//			}
+			$(element).closest("div[class*='col']").append(error);
 		},
 		highlight: function ( element, errorClass, validClass ) {
 			$( element ).parents( ".form-group" ).addClass( "has-error" ).removeClass( "has-success" );
@@ -64,8 +82,9 @@ if(jQuery&&jQuery.validator){
 		}
 	});
 }
-//添加自定义弹出层
+
 if($.fn&&undefined!==layer){
+	//添加自定义弹出层
 	//弹出iframe
 	$.fn.modalOpen = function (options) {
         var defaults = {
@@ -181,6 +200,69 @@ if($.fn&&undefined!==layer){
         }
     }
 
+    //自定义图片预览
+    $.fn.preview=function(file){
+    	if(!file){
+    		return;
+    	}
+    	var ext=file.value.substring(file.value.lastIndexOf(".")+1).toLowerCase();
+    	//gif在IE浏览器暂时无法显示
+    	if(ext!='png'&&ext!='jpg'&&ext!='jpeg'&&ext!="bmp"){
+            alert("图片的格式不支持预览！"); 
+            return;
+        }
+    	 var isIE = navigator.userAgent.match(/MSIE/)!= null,
+         isIE6 = navigator.userAgent.match(/MSIE 6.0/)!= null;
+    	 
+    	 var $img=$("<img style='height:100%;width:100%'/>");
+    	 var width,height;
+    	 if(isIE){
+    		 file.select();
+    		 var reallocalpath=document.selection.createRange().text;
+    		 
+    		 //IE6浏览器设置img的src为本地路径可以直接显示图片
+    		 if(isIE6){
+    			 $img.attr("src",reallocalpath);
+    		 }else{
+    			 //非IE6版本的IE由于安全问题直接设置img的src无法显示本地图片，但是可以通过滤镜来实现
+    			 $img.get(0).style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src=\"" + reallocalpath + "\")";
+    			 //设置img的src为base64编码的透明图片 取消显示浏览器默认图片
+    			 $img.attr("src",'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+    		 }
+    	 }else{
+    		 var f=file.files[0];
+    		 var reader=new FileReader();
+    		 var image = new Image();
+             image.onload = function () {
+                 width = image.width;
+                 height=image.height;
+                 console.log("width:"+width+",height:"+height);
+             };
+    		 reader.readAsDataURL(f);
+    		 reader.onload=function(e){
+//    			 console.log(reader.result);
+                 image.src=reader.result;
+    			 $img.get(0).src=reader.result;
+    		 }
+    		
+    	 }
+    	 	
+    	 height=height||500;
+    	 top.layer.open({
+    		  type: 1,
+    		  title: false,
+    		  closeBtn: 0,
+    		  area: width&&width+"px"||"500px",
+    		  skin: 'layui-layer-nobg', //没有背景色
+    		  shadeClose: true,
+    		  content: "<div id='preview_container' style='height:"+height+"px'></div>",
+    		  success:function(layero, index){
+    			  $("#preview_container",layero).append($img);
+    		  }
+    	 });
+    	 
+    	 
+    }
 }
 
 //ajax操作全局监测，用户session失效

@@ -10,10 +10,23 @@
     	<sql id="isExistsPhone">
     		select count(1) from admin where phone=? and available=1
     	</sql>
+    	<sql id="getPageList">		
+			SELECT t1.*,t2.rolename,t2.remark FROM (
+				SELECT id,username,`name`,phone,email,role_id,create_time FROM admin WHERE available=1 ORDER BY id DESC LIMIT ?,?
+			) t1 INNER JOIN admin_role t2 ON t1.role_id=t2.id
+    	</sql>
+    	<sql id="getCount">
+			SELECT COUNT(1) FROM admin WHERE available=1
+    	</sql>
+    </group>
+    <group class="com.dbkj.account.model.AdminRole">
+    	<sql id="getList">
+    		select id,rolename,remark,available from admin_role where available=1
+    	</sql>
     </group>
     <group class="com.dbkj.account.model.User">
     	<sql id="isExistsPhone">
-    		select count(1) from user where phone=? and available=1
+    		select count(1) as `count` from user where phone=? and available=1
     	</sql>
     	<select id="getRechargeList">
     		SELECT t2.id,t2.username,t1.companyname,t2.charge FROM (
@@ -27,6 +40,17 @@
     		SELECT t2.id,t2.username,t1.companyname FROM (
     			SELECT userid,companyname FROM user_info WHERE ispass=1 AND available=1 AND userid=?
     		) t1 INNER JOIN `user` t2 ON t1.userid=t2.id
+    	</sql>
+    	<sql id="getUserList">
+    		SELECT t1.id,t1.username,t1.name,t1.phone,t1.email,t1.charge,t2.companyname,t2.contact,t2.contactphone,t2.publicaccount,t2.ispass FROM 
+			(SELECT id,username,`name`,phone,email,charge FROM `user` where available=1 ORDER BY id DESC LIMIT ?,?) t1 LEFT JOIN user_info t2 ON t1.id=t2.userid
+    	</sql>
+    	<sql id="getCount">
+    		SELECT COUNT(1) AS `count` FROM `user` WHERE available=1
+    	</sql>
+    	<sql id="getUserById">
+    		SELECT t1.id,t1.username,t1.name,t1.phone,t1.email,t1.charge,t2.companyname,t2.contact,t2.contactphone,t2.publicaccount FROM 
+			(SELECT id,username,`name`,phone,email,charge FROM `user` WHERE available=1 AND id=?) t1 LEFT JOIN user_info t2 ON t1.id=t2.userid
     	</sql>
     </group>
     <group class="com.dbkj.account.model.AdminAuth">
@@ -88,6 +112,9 @@
     	</sql>
     	<sql id="getCompanyNameByUserId">
     		select companyname from user_info where userid=?
+    	</sql>
+    	<sql id="findByUserId">
+    		SELECT * FROM user_info WHERE userid=?
     	</sql>
     </group>
     <group class="com.dbkj.account.model.UserInfoHistory">

@@ -80,7 +80,7 @@ public class LogService {
 	public void addLog(HttpServletRequest request,String content,OperaResult operaResult,String exceptionMsg){
 		String action=WebUtil.getAction(request);
 		Integer operaType=OperaTypeService.getOperaType(action);
-		if(operaResult==null){
+		if(operaType==null){
 			throw new RuntimeException("找不到对应操作类型");
 		}
 		addLog(request, content, operaType, operaResult, exceptionMsg);

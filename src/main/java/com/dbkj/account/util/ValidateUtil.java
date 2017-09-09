@@ -36,6 +36,26 @@ public class ValidateUtil {
     }
     
     /**
+     * 验证座机号码
+     * @param str
+     * @return
+     */
+    public static boolean validatePhone(String str){
+    	 String regex="^([0-9]{3,4})?(-)?([0-9]{7,9}|[0-9]{5})$";
+         Pattern pattern=Pattern.compile(regex);
+         Matcher matcher=pattern.matcher(str);
+         return matcher.matches();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static boolean validatePhoneAndMobileNum(String str){
+    	return validatePhone(str)||validateMobilePhone(str);
+    }
+    
+    /**
      * 验证电子邮箱
      * @param str
      * @return
@@ -101,6 +121,19 @@ public class ValidateUtil {
     	Matcher matcher=pattern.matcher(str);
     	return matcher.matches();
     }
+    
+    /**
+     * 验证密码格式是否正确
+     * @param str
+     * @return
+     */
+    public static boolean validatePassword(String str){
+    	String regex="^[0-9a-zA-Z!@#$^]{6,18}$";
+    	Pattern pattern=Pattern.compile(regex);
+    	Matcher matcher=pattern.matcher(str);
+    	return matcher.matches();
+    }
+    
     
     public static void main(String[] args) {
 		System.out.println(isDigital("60.00"));

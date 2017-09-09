@@ -107,4 +107,16 @@ public class FileUtil {
 		}
 		return basePath;
 	}
+	
+	/**
+	 * 获取文件大小
+	 * @param file
+	 * @return
+	 */
+	public static long getFileSize(File file){
+		if(file.exists()){
+			return file.length();
+		}
+		return 0;
+	}
 }

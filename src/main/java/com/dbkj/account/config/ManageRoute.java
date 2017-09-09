@@ -1,5 +1,6 @@
 package com.dbkj.account.config;
 
+import com.dbkj.account.controller.BackUserManageController;
 import com.dbkj.account.controller.FavorableController;
 import com.dbkj.account.controller.ManageHomeController;
 import com.dbkj.account.controller.ManageLoginController;
@@ -16,11 +17,12 @@ public class ManageRoute extends Routes{
 		setBaseViewPath("/pages/manage");
 		add("/manage",ManageHomeController.class);
 		add("/manage/login",ManageLoginController.class);		
-		add("/manage/user",FrontUserManageController.class,"/user");
+		add("/manage/frontUser",FrontUserManageController.class,"/front_user");
 		add("/manage/userReview",UserReviewController.class,"/user_review");
 		add("/manage/voiceReview",VoiceReviewController.class,"/voice_review");
 		add("/manage/favorable",FavorableController.class,"/favorable");
 		add("/manage/recharge",RechargeController.class,"/recharge");
+		add("/manage/backUser",BackUserManageController.class,"/back_user");
 	}
 
 }
