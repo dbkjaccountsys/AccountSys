@@ -93,6 +93,28 @@ public class FrontUserValidator extends Validator{
 			addError(publicAccountMsg, res.get("frontuser.public.account.empty"));
 		}
 		
+		String accountName=fvo.getAccountName();
+		String accountNameMsg="accountNameMsg";
+		if(StrKit.isBlank(accountName)){
+			addError(accountNameMsg, res.get("frontuser.accountname.empty"));
+		}else if(ValidateUtil.validateSpecialString(accountName)){
+			addError(accountNameMsg, res.get("illegal.char.msg"));
+		}
+		
+		String bank=fvo.getBank();
+		String bankMsg="bankMsg";
+		if(StrKit.isBlank(bank)){
+			addError(bankMsg, res.get("frontuser.bank.empty"));
+		}else if(ValidateUtil.validateSpecialString(bank)){
+			addError(bankMsg, res.get("illegal.char.msg"));
+		}
+		
+		String taxAccount=fvo.getTaxAccount();
+		String taxAccountMsg="taxAccountMsg";
+		if(StrKit.isBlank(taxAccount)){
+			addError(taxAccountMsg, res.get("frontuser.taxaccount.empty"));
+		}
+		
 		String licenseMsg="licenseMsg";
 		if(addAction.equals(actionKey)&&license==null){
 			addError(licenseMsg, res.get("frontuser.license.empty"));

@@ -18,7 +18,10 @@ public class FrontUserFormVo {
 	private String license;
 	private String idcard;
 	private String safety;
+	private String accountName;
 	private String publicAccount;
+	private String bank;
+	private String taxAccount;
 	public String getPublicAccount() {
 		return publicAccount;
 	}
@@ -101,6 +104,24 @@ public class FrontUserFormVo {
 		this.safety = safety;
 	}
 	
+	public String getAccountName() {
+		return accountName;
+	}
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+	public String getBank() {
+		return bank;
+	}
+	public void setBank(String bank) {
+		this.bank = bank;
+	}
+	public String getTaxAccount() {
+		return taxAccount;
+	}
+	public void setTaxAccount(String taxAccount) {
+		this.taxAccount = taxAccount;
+	}
 	public UploadFile getLicenseFile() {
 		return licenseFile;
 	}
@@ -124,7 +145,10 @@ public class FrontUserFormVo {
 		return "FrontUserFormVo [id=" + id + ", phone=" + phone + ", password=" + password + ", confirmPassword="
 				+ confirmPassword + ", name=" + name + ", email=" + email + ", companyName=" + companyName
 				+ ", contact=" + contact + ", contactPhone=" + contactPhone + ", license=" + license + ", idcard="
-				+ idcard + ", safety=" + safety + "]";
+				+ idcard + ", safety=" + safety + ", accountName=" + accountName + ", publicAccount=" + publicAccount
+				+ ", bank=" + bank + ", taxAccount=" + taxAccount + ", licenseFile=" + licenseFile + ", idcardFile="
+				+ idcardFile + ", safetyFile=" + safetyFile + "]";
 	}
+	
 	
 }

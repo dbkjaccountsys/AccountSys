@@ -94,6 +94,9 @@ public class FrontUserManageService {
 			dto.setContact(user.getStr("contact"));
 			dto.setContactPhone(user.getStr("contactphone"));
 			dto.setPublicAccount(user.getStr("publicaccount"));
+			dto.setAccountName(user.getStr("accountname"));
+			dto.setBank(user.getStr("bank"));
+			dto.setTaxAccount(user.getStr("taxaccount"));
 			
 			Integer ispass=user.getInt("ispass");
 			String status=null;
@@ -164,6 +167,9 @@ public class FrontUserManageService {
 		userInfo.setContact(vo.getContact());
 		userInfo.setContactphone(vo.getContactPhone());
 		userInfo.setPublicaccount(vo.getPublicAccount());
+		userInfo.setAccountname(vo.getAccountName());
+		userInfo.setBank(vo.getBank());
+		userInfo.setTaxaccount(vo.getTaxAccount());
 		userInfo.setCreateTime(date);
 		userInfo.setModifyTime(date);
 		
@@ -226,6 +232,9 @@ public class FrontUserManageService {
 			vo.setContact(user.getStr("contact"));
 			vo.setContactPhone(user.getStr("contactphone"));
 			vo.setPublicAccount(user.getStr("publicaccount"));
+			vo.setAccountName(user.getStr("accountname"));
+			vo.setBank(user.getStr("bank"));
+			vo.setTaxAccount(user.getStr("taxaccount"));
 		}
 		return vo;
 	}
@@ -262,6 +271,9 @@ public class FrontUserManageService {
 					userInfo.setContact(formVo.getContact());
 					userInfo.setContactphone(formVo.getContactPhone());
 					userInfo.setPublicaccount(formVo.getPublicAccount());
+					userInfo.setAccountname(formVo.getAccountName());
+					userInfo.setBank(formVo.getBank());
+					userInfo.setTaxaccount(formVo.getTaxAccount());
 					if(userInfo.getId()==null){
 						userInfo.setCreateTime(date);
 					}

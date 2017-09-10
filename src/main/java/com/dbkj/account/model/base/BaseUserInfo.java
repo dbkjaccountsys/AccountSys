@@ -153,4 +153,28 @@ public abstract class BaseUserInfo<M extends BaseUserInfo<M>> extends Model<M> i
 		return get("modify_time");
 	}
 
+	public void setAccountname(java.lang.String accountname) {
+		set("accountname", accountname);
+	}
+
+	public java.lang.String getAccountname() {
+		return getStr("accountname");
+	}
+
+	public void setBank(java.lang.String bank) {
+		set("bank", bank);
+	}
+
+	public java.lang.String getBank() {
+		return getStr("bank");
+	}
+
+	public void setTaxaccount(java.lang.String taxaccount) {
+		set("taxaccount", taxaccount);
+	}
+
+	public java.lang.String getTaxaccount() {
+		return getStr("taxaccount");
+	}
+
 }

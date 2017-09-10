@@ -113,4 +113,28 @@ public abstract class BaseUserInfoHistory<M extends BaseUserInfoHistory<M>> exte
 		return getStr("remark");
 	}
 
+	public void setAccountname(java.lang.String accountname) {
+		set("accountname", accountname);
+	}
+
+	public java.lang.String getAccountname() {
+		return getStr("accountname");
+	}
+
+	public void setBank(java.lang.String bank) {
+		set("bank", bank);
+	}
+
+	public java.lang.String getBank() {
+		return getStr("bank");
+	}
+
+	public void setTaxaccount(java.lang.String taxaccount) {
+		set("taxaccount", taxaccount);
+	}
+
+	public java.lang.String getTaxaccount() {
+		return getStr("taxaccount");
+	}
+
 }

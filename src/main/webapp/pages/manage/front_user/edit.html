@@ -99,6 +99,20 @@
                 				</div>
                 			</div>
                 			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">对公账号开户行 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.bank" value="${(f.bank)!}">
+                					<#if bankMsg??><em class="error help-block" style="color:#a94442;">${bankMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">对公账号户名 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.accountName" value="${(f.accountName)!}">
+                					<#if accountNameMsg??><em class="error help-block" style="color:#a94442;">${accountNameMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">对公账号 <i class="text-red">*</i>：</label>
                 				<div class="col-md-4 col-sm-4">
                 					<input type="text" class="form-control" name="f.publicAccount" value="${(f.publicAccount)!}">
@@ -106,21 +120,28 @@
                 				</div>
                 			</div>
                 			<div class="form-group">
-                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">营业执照 ：</label>
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">税号 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.taxAccount" value="${(f.taxAccount)!}">
+                					<#if taxAccountMsg??><em class="error help-block" style="color:#a94442;">${taxAccountMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">营业执照 <i class="text-red">*</i>：</label>
                 				<div class="col-md-4 col-sm-4">
                 					<input type="file" class="form-control" name="license">
                 					<#if licenseMsg??><em class="error help-block" style="color:#a94442;">${licenseMsg}</em></#if>
                 				</div>
                 			</div>
                 			<div class="form-group">
-                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">身份证 ：</label>
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">身份证 <i class="text-red">*</i>：</label>
                 				<div class="col-md-4 col-sm-4">
                 					<input type="file" class="form-control" name="idcard">
                 					<#if idcardMsg??><em class="error help-block" style="color:#a94442;">${idcardMsg}</em></#if>
                 				</div>
                 			</div>
                 			<div class="form-group">
-                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">安全责任书 ：</label>
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">安全责任书 <i class="text-red">*</i>：</label>
                 				<div class="col-md-4 col-sm-4">
                 					<input type="file" class="form-control" name="safety">
                 					<#if safetyMsg??><em class="error help-block" style="color:#a94442;">${safetyMsg}</em></#if>
@@ -212,6 +233,17 @@
 				"f.publicAccount":{
 					required:true
 				},
+				"f.accountName":{
+					required:true,
+					illegalChar:true
+				},
+				"f.bank":{
+					required:true,
+					illegalChar:true
+				},
+				"f.taxAccount":{
+					required:true
+				},
 				"license":{
 					required:true,
 					image:true,
@@ -253,6 +285,15 @@
 				},
 				"f.publicAccount":{
 					required:"请输入对公账号"
+				},
+				"f.accountName":{
+					required:"请输入对公账号户名"
+				},
+				"f.bank":{
+					required:"请输入对公账号开户行"
+				},
+				"f.taxAccount":{
+					required:"请输入税号"
 				},
 				"license":{
 					required:"请上传营业执照照片"

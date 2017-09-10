@@ -18,7 +18,10 @@ public class FrontUserDto implements Serializable{
 	private String companyName;
 	private String contact;
 	private String contactPhone;
+	private String accountName;
 	private String publicAccount;
+	private String bank;
+	private String taxAccount;
 	private String ispass;
 	private String opera;
 	public Long getId() {
@@ -94,12 +97,30 @@ public class FrontUserDto implements Serializable{
 	public void setOpera(String opera) {
 		this.opera = opera;
 	}
+	public String getAccountName() {
+		return accountName;
+	}
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+	public String getBank() {
+		return bank;
+	}
+	public void setBank(String bank) {
+		this.bank = bank;
+	}
+	public String getTaxAccount() {
+		return taxAccount;
+	}
+	public void setTaxAccount(String taxAccount) {
+		this.taxAccount = taxAccount;
+	}
 	@Override
 	public String toString() {
 		return "FrontUserDto [id=" + id + ", username=" + username + ", name=" + name + ", phone=" + phone + ", email="
 				+ email + ", charge=" + charge + ", companyName=" + companyName + ", contact=" + contact
-				+ ", contactPhone=" + contactPhone + ", publicAccount=" + publicAccount + ", ispass=" + ispass
-				+ ", opera=" + opera + "]";
+				+ ", contactPhone=" + contactPhone + ", accountName=" + accountName + ", publicAccount=" + publicAccount
+				+ ", bank=" + bank + ", taxAccount=" + taxAccount + ", ispass=" + ispass + ", opera=" + opera + "]";
 	}
 	
 	

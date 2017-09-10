@@ -73,4 +73,20 @@ public abstract class BaseUserInfoReset<M extends BaseUserInfoReset<M>> extends 
 		return getInt("status");
 	}
 
+	public void setEmailtime(java.util.Date emailtime) {
+		set("emailtime", emailtime);
+	}
+
+	public java.util.Date getEmailtime() {
+		return get("emailtime");
+	}
+
+	public void setPhonetime(java.util.Date phonetime) {
+		set("phonetime", phonetime);
+	}
+
+	public java.util.Date getPhonetime() {
+		return get("phonetime");
+	}
+
 }
