@@ -23,6 +23,18 @@
     	<sql id="getList">
     		select id,rolename,remark,available from admin_role where available=1
     	</sql>
+    	<sql id="getPage">
+    		select id,rolename,remark,available from admin_role where available=1 order by id desc limit ?,?
+    	</sql>
+    	<sql id="getCount">
+    		select count(1) from admin_role where available=1
+    	</sql>
+    	<sql id="isExistByRoleName">
+    		select count(1) from admin_role where available=1 and rolename=?
+    	</sql>
+    	<sql id="isExistByRoleNameAndId">
+    		select count(1) from admin_role where available=1 and rolename=? and id<![CDATA[<>]]>?
+    	</sql>
     </group>
     <group class="com.dbkj.account.model.User">
     	<sql id="isExistsPhone">
@@ -58,6 +70,17 @@
     		select t3.id,t3.auth_name,t3.icon,t1.action_url,t3.`order`,t3.parent_id from action t1 inner join admin_action t2 
     		on t1.id=t2.action_id right join admin_auth t3 on t2.auth_id=t3.id inner join admin_role_auth t4 on t3.id=t4.auth_id 
     		inner join admin_role t5 on t4.role_id=t5.id where t4.role_id=? and t3.menu=1 and t5.available=1
+    	</sql>
+    	<sql id="getList">
+    		SELECT id,auth_name,parent_id,menu,`order` FROM admin_auth
+    	</sql>
+    </group>
+    <group class="com.dbkj.account.model.AdminRoleAuth">
+    	<sql id="getRoleAuths">
+    		SELECT auth_id FROM admin_role_auth WHERE available=1 AND role_id=?
+    	</sql>
+    	<sql id="deleteByRoleId">
+    		DELETE FROM admin_role_auth WHERE role_id=?
     	</sql>
     </group>
     <group class="com.dbkj.account.model.UserAuth">

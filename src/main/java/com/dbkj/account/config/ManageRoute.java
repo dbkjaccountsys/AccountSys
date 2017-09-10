@@ -1,5 +1,6 @@
 package com.dbkj.account.config;
 
+import com.dbkj.account.controller.AdminRoleManageController;
 import com.dbkj.account.controller.BackUserManageController;
 import com.dbkj.account.controller.FavorableController;
 import com.dbkj.account.controller.ManageHomeController;
@@ -23,6 +24,7 @@ public class ManageRoute extends Routes{
 		add("/manage/favorable",FavorableController.class,"/favorable");
 		add("/manage/recharge",RechargeController.class,"/recharge");
 		add("/manage/backUser",BackUserManageController.class,"/back_user");
+		add("/manage/adminRole",AdminRoleManageController.class,"/admin_role");
 	}
 
 }

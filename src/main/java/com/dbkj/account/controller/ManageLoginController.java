@@ -2,6 +2,7 @@ package com.dbkj.account.controller;
 
 import com.dbkj.account.interceptor.AuthInterceptor;
 import com.dbkj.account.interceptor.LoginInterceptor;
+import com.dbkj.account.service.ManageHomeService;
 import com.dbkj.account.service.ManageLoginService;
 import com.dbkj.account.validator.LoginValidator;
 import com.dbkj.account.vo.LoginVo;
@@ -10,6 +11,8 @@ import com.jfinal.aop.Clear;
 import com.jfinal.core.ActionKey;
 import com.jfinal.core.Controller;
 import com.jfinal.ext.interceptor.POST;
+import com.jfinal.plugin.ehcache.CacheName;
+import com.jfinal.plugin.ehcache.EvictInterceptor;
 
 @Clear({LoginInterceptor.class,AuthInterceptor.class})
 public class ManageLoginController extends Controller{
@@ -44,6 +47,8 @@ public class ManageLoginController extends Controller{
 		}
 	}
 	
+	@CacheName(ManageHomeService.ADMIN_MENU_CACHE)
+	@Before({EvictInterceptor.class})
 	@ActionKey("/manage/logout")
 	public void logout(){
 		manageLoginService.logout(getSession());

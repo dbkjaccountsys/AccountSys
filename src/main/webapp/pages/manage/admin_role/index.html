@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>后台用户角色列表</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="${ctx!}/content/ui/global/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link href="${ctx!}/content/ui/global/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/skins/_all-skins.min.css">
+    <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
+
+    <link href="${ctx!}/content/plugins/jqgrid/jqgrid.css" rel="stylesheet" />
+    <style type="text/css">
+    	.input-group{
+    		width:200px;
+    	}
+    	.input-group .form-control{
+    		border-radius: 3px;
+    	}
+    	.input-group .btn{
+    		border-radius: 3px;
+    	}
+    	.gridPanel{
+    		margin-top: 20px;
+    	}
+    </style>
+    <!--全局通用框架样式 end-->
+</head>
+<body data-context="${ctx!}">
+	<section class="content-header">
+        <h1>
+                      后台用户列表
+        </h1>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i> 用户管理</li>
+            <li class="active">后台用户角色列表</li>
+        </ol>
+    </section>
+	<!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <hr style="margin-top:0;">
+                <div class="box-body">
+                	<div class="clearfix">
+                		<div class="pull-left">
+                			<@_has_admin_authority role_id=c_user.roleId action=ctx+"/manage/adminRole/add">
+                				<a class="btn btn-info" href="${ctx!}/manage/adminRole/add"><i class="fa fa-plus"></i> 添加</a>
+                			</@_has_admin_authority>
+                			
+                		</div>
+                		<div class="pull-right">
+                			<div class="input-group">
+                				<input type="text" class="form-control" id="desc" placeholder="用户名">
+                				<span class="input-group-btn">
+                					<button type="button" id="btn_search" class="btn btn-info btn-flat">
+                						<i class="fa fa-search"></i>
+                					</button>
+                				</span>
+                			</div>
+                		</div>
+                	</div>
+                    <div class="gridPanel">
+                        <table id="gridTable"></table>
+                        <div id="gridPager"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="${ctx!}/content/ui/global/jQuery/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+
+<script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+
+<script src="${ctx!}/content/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="${ctx!}/content/plugins/jqgrid/jqgrid.min.js"></script>
+<script src="${ctx!}/js/common.js"></script>
+<script src="${ctx!}/js/manage/admin_role.js"></script>
+<script>
+	$(function(){
+		ap.initTable("${hasOpera?string('yes', 'no')}");
+		
+		//搜索
+		$("#btn_search").click(function(){
+			var desc=$("#desc").val();
+			ap.search(desc);
+		});
+		
+		//编辑用户
+		$("#gridTable").on("click",".edit",function(){
+			ap.edit(this);
+		});
+	});
+</script>
+</body>
+</html>

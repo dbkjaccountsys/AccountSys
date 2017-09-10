@@ -27,7 +27,7 @@
         </h1>
         <ol class="breadcrumb">
             <li><i class="fa fa-home"></i> 用户管理</li>
-            <li><a href="${ctx!}/manage/frontUser">后台用户管理</a></li>
+            <li><a href="${ctx!}/manage/backUser">后台用户管理</a></li>
             <li class="active">修改后台用户</li>
         </ol>
     </section>
@@ -88,7 +88,7 @@
                 					<select class="form-control" name="b.roleId">
                 						<option disabled="disabled">--请选择--</option>
                 						<#list rlist as item>
-                							<option value="${item.id}" <#if (b.roleId)??&&b.roleId==item.id>selected="selected"</#if>>${item.remark}</option>
+                							<option value="${item.id}" <#if (b.roleId)??&&b.roleId==item.id>selected="selected"</#if>>${item.rolename}</option>
                 						</#list>
                 					</select>
                 					<#if roleIdMsg??><em class="error help-block" style="color:#a94442;">${roleIdMsg}</em></#if>
