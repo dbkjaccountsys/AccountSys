@@ -7,6 +7,7 @@ import com.dbkj.account.controller.ManageHomeController;
 import com.dbkj.account.controller.ManageLoginController;
 import com.dbkj.account.controller.RechargeController;
 import com.dbkj.account.controller.FrontUserManageController;
+import com.dbkj.account.controller.LogController;
 import com.dbkj.account.controller.UserReviewController;
 import com.dbkj.account.controller.VoiceReviewController;
 import com.jfinal.config.Routes;
@@ -25,6 +26,7 @@ public class ManageRoute extends Routes{
 		add("/manage/recharge",RechargeController.class,"/recharge");
 		add("/manage/backUser",BackUserManageController.class,"/back_user");
 		add("/manage/adminRole",AdminRoleManageController.class,"/admin_role");
+		add("/manage/log",LogController.class,"/log");
 	}
 
 }

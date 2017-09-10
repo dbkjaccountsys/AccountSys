@@ -5,7 +5,6 @@ import com.dbkj.account.interceptor.AuthInterceptor;
 import com.dbkj.account.interceptor.LoginInterceptor;
 import com.dbkj.account.service.ForgetPasswordService;
 import com.dbkj.account.validator.ForgetPasswordValidator;
-import com.dbkj.account.vo.ForgetPasswordVo;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;

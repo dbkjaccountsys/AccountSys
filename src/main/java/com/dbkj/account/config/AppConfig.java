@@ -22,6 +22,7 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.plugin.ehcache.EhCachePlugin;
+import com.jfinal.plugin.redis.RedisPlugin;
 import com.jfinal.render.ViewType;
 import com.jfinal.template.Engine;
 
@@ -69,6 +70,12 @@ public class AppConfig extends JFinalConfig{
 	    _MappingKit.mapping(activeRecordPlugin);
 	    
 		me.add(new EhCachePlugin());
+		
+		//配置Redis
+		RedisPlugin redis=new RedisPlugin("AccountSys",
+		                PropKit.get("redis.host","127.0.0.1"),
+		                PropKit.getInt("redis.port",6379));
+		me.add(redis);
 	}
 
 	@Override

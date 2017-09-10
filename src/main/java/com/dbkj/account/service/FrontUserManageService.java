@@ -29,7 +29,6 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
-import com.jfinal.plugin.activerecord.SqlPara;
 import com.jfinal.upload.UploadFile;
 
 public class FrontUserManageService {

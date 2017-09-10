@@ -7,7 +7,6 @@ import com.dbkj.account.dto.AdminRoleDto;
 import com.dbkj.account.dto.AuthNode;
 import com.dbkj.account.dto.Page;
 import com.dbkj.account.model.Admin;
-import com.dbkj.account.model.AdminRole;
 import com.dbkj.account.service.AdminRoleManageService;
 import com.dbkj.account.service.AuthorityService;
 import com.dbkj.account.validator.AdminRoleValidator;
@@ -15,8 +14,6 @@ import com.dbkj.account.vo.RoleFormVo;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.ext.interceptor.POST;
-import com.jfinal.plugin.ehcache.CacheInterceptor;
-import com.jfinal.plugin.ehcache.CacheName;
 
 public class AdminRoleManageController extends Controller{
 
