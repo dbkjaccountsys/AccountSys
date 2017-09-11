@@ -18,6 +18,9 @@
     	<sql id="getCount">
 			SELECT COUNT(1) FROM admin WHERE available=1
     	</sql>
+    	<sql id="getListByUsername">
+    		select id from admin where username like ?
+    	</sql>
     </group>
     <group class="com.dbkj.account.model.AdminRole">
     	<sql id="getList">
@@ -64,6 +67,9 @@
     		SELECT t1.id,t1.username,t1.name,t1.phone,t1.email,t1.charge,t2.companyname,t2.contact,t2.contactphone,t2.publicaccount,t2.accountname,t2.bank,t2.taxaccount FROM 
 			(SELECT id,username,`name`,phone,email,charge FROM `user` WHERE available=1 AND id=?) t1 LEFT JOIN user_info t2 ON t1.id=t2.userid
     	</sql>
+    	<sql id="getListByUsername">
+    		select id from user where username like ?
+    	</sql>
     </group>
     <group class="com.dbkj.account.model.AdminAuth">
     	<sql id="getRoleAuthByRoleId">
@@ -98,10 +104,22 @@
     	<sql id="getLoginFailTimes">
     		select count(1) as times from user_log where opera_type=? and time between ? and ? and opera_result=? limit 0,?
     	</sql>
+    	<sql id="getPage">
+    		SELECT t2.id,t2.usertype,t2.userid,t1.username,t2.time,t2.ip,t2.content,t4.desc,t2.opera_result,t2.opera_type,t2.exception_msg FROM admin t1
+			 INNER JOIN user_log t2 ON t1.id=t2.userid INNER JOIN 
+			  (SELECT id FROM user_log WHERE usertype=? AND opera_result=? ORDER BY `time` DESC LIMIT ?,?) t3 ON t2.id=t3.id
+			  INNER JOIN opera_type t4 ON t2.opera_type=t4.id
+    	</sql>
+    	<sql id="getCount">
+    		SELECT COUNT(1) FROM user_log WHERE usertype=? AND opera_result=?
+    	</sql>
     </group>
     <group class="com.dbkj.account.model.OperaType">
     	<sql id="getOperaList">
     		select t1.id,t3.action_url from opera_type t1 inner join opera_action t2 on t1.id=t2.opera_type inner join action t3 on t3.id=t2.action_id 
+    	</sql>
+    	<sql id="getAll">
+    		SELECT id,`desc` FROM opera_type
     	</sql>
     </group>
     <group class="com.dbkj.account.model.Action">

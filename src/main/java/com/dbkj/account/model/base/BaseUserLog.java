@@ -25,12 +25,12 @@ public abstract class BaseUserLog<M extends BaseUserLog<M>> extends Model<M> imp
 		return getInt("usertype");
 	}
 
-	public void setUserid(java.lang.Integer userid) {
+	public void setUserid(java.lang.Long userid) {
 		set("userid", userid);
 	}
 
-	public java.lang.Integer getUserid() {
-		return getInt("userid");
+	public java.lang.Long getUserid() {
+		return getLong("userid");
 	}
 
 	public void setTime(java.util.Date time) {

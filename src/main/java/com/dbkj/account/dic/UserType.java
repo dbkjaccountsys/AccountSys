@@ -24,5 +24,13 @@ public enum UserType {
 		this.desc = desc;
 	}
 	
+	public static UserType valueOf(int value){
+		for(UserType type:values()){
+			if(type.getValue()==value){
+				return type;
+			}
+		}
+		return null;
+	}
 	
 }

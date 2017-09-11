@@ -1,5 +1,10 @@
 package com.dbkj.account.model;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.sql.DataSource;
 
 import com.jfinal.kit.PathKit;
@@ -45,5 +50,25 @@ public class JFinalGenerator {
 		//gernerator.setRemovedTableNamePrefixes("t_");
 		// 生成
 		gernerator.generate();
+		
+//		DataSource dataSource=getDataSource();
+//		Connection connection = null;
+//		try {
+//			 connection = dataSource.getConnection();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		if(connection!=null){
+//			try {
+//				Statement statement = connection.createStatement();
+//				ResultSet resultSet = statement.executeQuery("show tables");
+//				while(resultSet.next()){
+//					String tableName = resultSet.getString("Tables_in_dbtec");
+//					System.out.println(tableName);
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 }
