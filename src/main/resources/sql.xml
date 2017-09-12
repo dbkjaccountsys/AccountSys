@@ -71,6 +71,18 @@
     		select id from user where username like ?
     	</sql>
     </group>
+    <group class="com.dbkj.account.model.UserRecharge">
+    	<sql id="getPage">
+    		SELECT t3.id,t3.userid,t1.username,t2.companyname,t3.time,t3.charge,t3.realcharge,t3.chargetype,t3.serialnum,t4.username AS chargeuser FROM `user` t1 
+			INNER JOIN user_info t2 ON t2.userid=t1.id
+			INNER JOIN user_recharge t3 ON t1.id=t3.userid INNER JOIN admin t4 ON t3.chargeuser=t4.id INNER JOIN (
+			 SELECT id FROM user_recharge ORDER BY `time` DESC LIMIT ?,?
+			) t5 ON t3.id=t5.id
+    	</sql>
+    	<sql id="getCount">
+    		select count(1) from user_recharge
+    	</sql>
+    </group>
     <group class="com.dbkj.account.model.AdminAuth">
     	<sql id="getRoleAuthByRoleId">
     		select t3.id,t3.auth_name,t3.icon,t1.action_url,t3.`order`,t3.parent_id from action t1 inner join admin_action t2 
@@ -156,6 +168,9 @@
     	</sql>
     	<sql id="findByUserId">
     		SELECT * FROM user_info WHERE userid=?
+    	</sql>
+    	<sql id="findByCompanyName">
+    		SELECT userid FROM user_info WHERE companyname LIKE ?
     	</sql>
     </group>
     <group class="com.dbkj.account.model.UserInfoHistory">

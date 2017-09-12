@@ -24,4 +24,12 @@ public enum ChargeType {
 		this.desc = desc;
 	}
 	
+	public static ChargeType valueOf(int value){
+		for(ChargeType type:values()){
+			if(value==type.value){
+				return type;
+			}
+		}
+		return null;
+	}
 }

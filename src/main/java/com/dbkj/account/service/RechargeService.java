@@ -2,6 +2,7 @@ package com.dbkj.account.service;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,12 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.dbkj.account.dic.ChargeType;
 import com.dbkj.account.dic.Constant;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dto.CompanyDto;
 import com.dbkj.account.dto.Page;
 import com.dbkj.account.dto.RechargeDto;
+import com.dbkj.account.dto.RechargeHistoryDto;
 import com.dbkj.account.model.Admin;
 import com.dbkj.account.model.User;
 import com.dbkj.account.model.UserInfo;
@@ -25,6 +28,7 @@ import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.ValidateUtil;
 import com.jfinal.i18n.I18n;
 import com.jfinal.i18n.Res;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 
@@ -185,6 +189,94 @@ public class RechargeService {
 				.append("实际到账："+ur.getRealcharge().doubleValue());
 		logService.addLog(request, content.toString(), result?OperaResult.SUCCESS:OperaResult.FAIL, null);
 		return result;
+	}
+	
+	public void getHistoryList(Page<RechargeHistoryDto> page,String startTime,String endTime,String companyName){
+		String sql=SqlUtil.getSql(UserRecharge.class, "getPage").toLowerCase();
+		String countSql=SqlUtil.getSql(UserRecharge.class, "getCount").toLowerCase();
+		
+		List<Object> params=new ArrayList<Object>(5);
+		StringBuilder where=new StringBuilder();
+		if(!StrKit.isBlank(startTime)&&!StrKit.isBlank(endTime)){
+			where.append(" where time between ? and ? ");
+			params.add(startTime+" 00:00");
+			params.add(endTime+" 23:59");
+		}else if(!StrKit.isBlank(startTime)&&StrKit.isBlank(endTime)){
+			where.append(" where time>=? ");
+			params.add(startTime+" 00:00");
+		}else if(StrKit.isBlank(startTime)&&!StrKit.isBlank(endTime)){
+			where.append(" where time<=? ");
+			params.add(endTime+" 23:59");
+		}
+		
+		if(!StrKit.isBlank(companyName)){
+			List<UserInfo> list = UserInfo.dao.find(SqlUtil.getSql(UserInfo.class, "findByCompanyName"),companyName+"%");
+			if(where.length()>0){
+				where.append(" and ");
+			}else{
+				where.append(" where ");
+			}
+			where.append(" userid in (");
+			if(list.size()>0){
+				for(int i=0,size=list.size();i<size;i++){
+					if(i<size-1){
+						where.append(list.get(i).getUserid()+",");
+					}else{
+						where.append(list.get(i).getUserid());
+					}
+				}
+			}else{
+				where.append("0");
+			}
+			where.append(") ");
+		}
+		
+		long count=Db.queryLong(countSql+where, params.toArray(new Object[params.size()]));
+		page.setRecords(count);
+		page.setTotalCount((int)Math.ceil(count/(double)page.getPageSize()));
+		
+		int limit = (page.getCurrentPage()-1)*page.getPageSize();
+		params.add(limit);
+		params.add(page.getPageSize());
+		
+		if(where.length()>0){
+			int index=sql.indexOf("order");
+			String str1=sql.substring(0, index);
+			String str2=sql.substring(index);
+			sql=str1+where.toString()+str2;
+		}
+		if(logger.isInfoEnabled()){
+			logger.info("分页SQL：{}，查询参数：{}",sql,JSON.toJSON(params));
+		}
+		
+		List<UserRecharge> list=UserRecharge.dao.find(sql,params.toArray(new Object[params.size()]));
+		List<RechargeHistoryDto> rows=new ArrayList<RechargeHistoryDto>(list.size());
+		for(UserRecharge recharge:list){
+			RechargeHistoryDto dto=convert2RechargeHistoryDto(recharge);
+			rows.add(dto);
+		}
+		page.setData(rows);
+	}
+	
+	private RechargeHistoryDto convert2RechargeHistoryDto(UserRecharge recharge){
+		RechargeHistoryDto dto=new RechargeHistoryDto();
+		if(recharge!=null){
+			dto.setId(recharge.getId());
+			dto.setUserId(recharge.getUserid());
+			dto.setUsername(recharge.getStr("username"));
+			dto.setCompanyName(recharge.getStr("companyname"));
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			dto.setTime(sdf.format(recharge.getTime()));
+			dto.setCharge(recharge.getCharge().doubleValue());
+			dto.setRealcharge(recharge.getRealcharge().doubleValue());
+			ChargeType chargeType=ChargeType.valueOf(recharge.getChargetype());
+			if(chargeType!=null){
+				dto.setChargeType(chargeType.getDesc());
+			}
+			dto.setSerialNum(recharge.getSerialnum());
+			dto.setChargeUser(recharge.getStr("chargeuser"));
+		}
+		return dto;
 	}
 	
 	public static void main(String[] args) {

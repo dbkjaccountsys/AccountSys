@@ -6,10 +6,12 @@ import com.dbkj.account.dic.Constant;
 import com.dbkj.account.dto.CompanyDto;
 import com.dbkj.account.dto.Page;
 import com.dbkj.account.dto.RechargeDto;
+import com.dbkj.account.dto.RechargeHistoryDto;
 import com.dbkj.account.model.Admin;
 import com.dbkj.account.service.AuthorityService;
 import com.dbkj.account.service.RechargeService;
 import com.jfinal.aop.Before;
+import com.jfinal.core.ActionKey;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.ehcache.CacheInterceptor;
 import com.jfinal.plugin.ehcache.CacheName;
@@ -70,5 +72,25 @@ public class RechargeController extends Controller{
 			rechargeService.charge(dto, getRequest());
 			redirect("/manage/recharge");
 		}
+	}
+	
+	public void history(){
+		render("history.html");
+	}
+	
+	@ActionKey("/manage/recharge/history/list")
+	public void historyList(){
+		Page<RechargeHistoryDto> page=new Page<RechargeHistoryDto>();
+		int pageNum=getParaToInt("page",1);
+		page.setCurrentPage(pageNum);
+		int rows=getParaToInt("rows",20);
+		page.setPageSize(rows);
+		
+		String startTime=getPara("startTime");
+		String endTime=getPara("endTime");
+		String companyName=getPara("companyName");
+		
+		rechargeService.getHistoryList(page, startTime, endTime, companyName);
+		renderJson(page);
 	}
 }
