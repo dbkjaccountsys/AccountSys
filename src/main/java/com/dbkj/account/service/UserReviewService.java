@@ -269,32 +269,7 @@ public class UserReviewService {
 					userMail.save();
 					userInfo.update();
 					String username=User.dao.findById(userInfo.getUserid()).getUsername();
-<<<<<<< HEAD
-					logService.addLog(request, "审核用户id为"+userInfo.getUserid()+"用户名为"+username+"的用户资料，审核结果为"+
-							(userInfo.getIspass()==ReviewStatus.PASS.getCode()?"通过审核":"驳回"),
-							OperaResult.SUCCESS, null);
-					return true;
-				}catch(Exception e){
-					if(logger.isErrorEnabled()){
-						logger.error(e.getMessage(),e);
-					}
-					return false;
-				}
-			}
-		});
-	}
-	
-	/**
-	 * 复制证件照片
-	 * @param path
-	 * @throws IOException 
-	 * @return 
-	 */
-	private String copyImage(String path,HttpServletRequest request) throws IOException{
-		String dirName="uploadimages";
-		//获取文件后缀即文件类型
-=======
-					logService.addLog(request, "审核用户id�?"+userInfo.getUserid()+"用户名为"+username+"的用户资料，审核结果�?"+
+					logService.addLog(request, "审核用户id为"+userInfo.getUserid()+"用户名为"+username+"的用户资料，审核结果�?"+
 							(userInfo.getIspass()==ReviewStatus.PASS.getCode()?"通过审核":"驳回"),
 							OperaResult.SUCCESS, null);
 					return true;
@@ -317,7 +292,6 @@ public class UserReviewService {
 	private String copyImage(String path,HttpServletRequest request) throws IOException{
 		String dirName="uploadimages";
 		//获取文件后缀即文件类�?
->>>>>>> branch 'master' of git@github.com:dbkjaccountsys/AccountSys.git
 		String extension=path.substring(path.lastIndexOf("."));
 		path=WebUtil.getRootPath(request)+File.separator+dirName+File.separator+path;
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyyMM");

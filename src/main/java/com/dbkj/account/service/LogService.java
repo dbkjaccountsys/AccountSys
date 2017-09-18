@@ -50,7 +50,7 @@ public class LogService {
 	 */
 	public void addLog(UserType userType,Long userId,String ip,String content,Integer operaTypeId,OperaResult operaResult,String exceptionMsg){
 		if(userType==null||userId==null||StrKit.isBlank(ip)||StrKit.isBlank(content)||operaTypeId==null||operaResult==null){
-			throw new IllegalArgumentException("添加的日志参数不能为�?");
+			throw new IllegalArgumentException("添加的日志参数不能为空");
 		}
 		UserLog userLog=new UserLog();
 		userLog.setUsertype(userType.getValue());
@@ -108,7 +108,7 @@ public class LogService {
 		String action=WebUtil.getAction(request);
 		Integer operaType=OperaTypeService.getOperaType(action);
 		if(operaResult==null){
-			throw new RuntimeException("找不到对应操作类�?");
+			throw new RuntimeException("找不到对应操作类型");
 		}
 		String ip=WebUtil.getIp(request);
 		addLog(userType,userId,ip,content,operaType,operaResult,exceptionMsg);

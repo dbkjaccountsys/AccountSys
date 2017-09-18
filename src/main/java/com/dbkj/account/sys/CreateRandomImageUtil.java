@@ -13,13 +13,17 @@ import javax.servlet.http.HttpSession;
 
 public class CreateRandomImageUtil {  
     
-    public static String validateCode = null;  
-    public static final String RANDOMCODEKEY = "sessionRandomCode";// 放到session中的key  
+    //public static String validateCode = null;  
+    public static final String RANDOMCODEKEY = "sessionRandomCodeCheck";// 放到session中的key
+    public static final String RANDOMCODEKEYPHONE = "sessionRandomCodePhoneCheck";// 放到session中的key
+    public static final String RANDOMCODEKEYEMAIL = "sessionRandomCodeEmailCheck";// 放到session中的key
+    public static final String RANDOMCODEKEYUSERADD = "sessionRandomCodeUserAdd";// 放到session中的key
+    public static final String RANDOMCODEKEYFORGET = "sessionRandomCodeForget";// 放到session中的key  
     private Random random = new Random();  
     private String randString = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";// 随机产生的字符串  
   
-    private int width = 95;// 图片宽  
-    private int height = 33;// 图片高  
+    private int width = 80;// 图片宽  
+    private int height = 37;// 图片高  
     private int lineSize = 40;// 干扰线数量  
     private int stringNum = 4;// 随机产生字符数量  
   
@@ -68,7 +72,7 @@ public class CreateRandomImageUtil {
         }  
         session.removeAttribute(RANDOMCODEKEY);  
         session.setAttribute(RANDOMCODEKEY, randomString);  
-        validateCode = randomString.toUpperCase();  
+        //validateCode = randomString.toUpperCase();  
         g.dispose();  
         try {  
             ImageIO.write(image, "JPEG", response.getOutputStream());// 将内存中的图片通过流动形式输出到客户端  
@@ -77,6 +81,126 @@ public class CreateRandomImageUtil {
         }  
     }  
   
+    public void getRandcodeUserAdd(HttpServletRequest request,  
+            HttpServletResponse response) {  
+        HttpSession session = request.getSession();  
+        // BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类  
+        BufferedImage image = new BufferedImage(width, height,  
+                BufferedImage.TYPE_INT_BGR);  
+        Graphics g = image.getGraphics();// 产生Image对象的Graphics对象,改对象可以在图像上进行各种绘制操作  
+        g.fillRect(0, 0, width, height);  
+        g.setFont(new Font("Times New Roman", Font.ROMAN_BASELINE, 18));  
+        g.setColor(getRandColor(110, 133));  
+        // 绘制干扰线  
+        for (int i = 0; i <= lineSize; i++) {  
+            drowLine(g);  
+        }  
+        // 绘制随机字符  
+        String randomString = "";  
+        for (int i = 1; i <= stringNum; i++) {  
+            randomString = drowString(g, randomString, i);  
+        }  
+        session.removeAttribute(RANDOMCODEKEYUSERADD);  
+        session.setAttribute(RANDOMCODEKEYUSERADD, randomString);  
+        //validateCode = randomString.toUpperCase();  
+        g.dispose();  
+        try {  
+            ImageIO.write(image, "JPEG", response.getOutputStream());// 将内存中的图片通过流动形式输出到客户端  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    
+    public void getRandcodePhone(HttpServletRequest request,  
+            HttpServletResponse response) {  
+        HttpSession session = request.getSession();  
+        // BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类  
+        BufferedImage image = new BufferedImage(width, height,  
+                BufferedImage.TYPE_INT_BGR);  
+        Graphics g = image.getGraphics();// 产生Image对象的Graphics对象,改对象可以在图像上进行各种绘制操作  
+        g.fillRect(0, 0, width, height);  
+        g.setFont(new Font("Times New Roman", Font.ROMAN_BASELINE, 18));  
+        g.setColor(getRandColor(110, 133));  
+        // 绘制干扰线  
+        for (int i = 0; i <= lineSize; i++) {  
+            drowLine(g);  
+        }  
+        // 绘制随机字符  
+        String randomString = "";  
+        for (int i = 1; i <= stringNum; i++) {  
+            randomString = drowString(g, randomString, i);  
+        }  
+        session.removeAttribute(RANDOMCODEKEYPHONE);  
+        session.setAttribute(RANDOMCODEKEYPHONE, randomString);  
+        //validateCode = randomString.toUpperCase();  
+        g.dispose();  
+        try {  
+            ImageIO.write(image, "JPEG", response.getOutputStream());// 将内存中的图片通过流动形式输出到客户端  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    
+    public void getRandcodeEmail(HttpServletRequest request,  
+            HttpServletResponse response) {  
+        HttpSession session = request.getSession();  
+        // BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类  
+        BufferedImage image = new BufferedImage(width, height,  
+                BufferedImage.TYPE_INT_BGR);  
+        Graphics g = image.getGraphics();// 产生Image对象的Graphics对象,改对象可以在图像上进行各种绘制操作  
+        g.fillRect(0, 0, width, height);  
+        g.setFont(new Font("Times New Roman", Font.ROMAN_BASELINE, 18));  
+        g.setColor(getRandColor(110, 133));  
+        // 绘制干扰线  
+        for (int i = 0; i <= lineSize; i++) {  
+            drowLine(g);  
+        }  
+        // 绘制随机字符  
+        String randomString = "";  
+        for (int i = 1; i <= stringNum; i++) {  
+            randomString = drowString(g, randomString, i);  
+        }  
+        session.removeAttribute(RANDOMCODEKEYEMAIL);  
+        session.setAttribute(RANDOMCODEKEYEMAIL, randomString);  
+        //validateCode = randomString.toUpperCase();  
+        g.dispose();  
+        try {  
+            ImageIO.write(image, "JPEG", response.getOutputStream());// 将内存中的图片通过流动形式输出到客户端  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    
+    public void getRandcodeForget(HttpServletRequest request,  
+            HttpServletResponse response) {  
+        HttpSession session = request.getSession();  
+        // BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类  
+        BufferedImage image = new BufferedImage(width, height,  
+                BufferedImage.TYPE_INT_BGR);  
+        Graphics g = image.getGraphics();// 产生Image对象的Graphics对象,改对象可以在图像上进行各种绘制操作  
+        g.fillRect(0, 0, width, height);  
+        g.setFont(new Font("Times New Roman", Font.ROMAN_BASELINE, 18));  
+        g.setColor(getRandColor(110, 133));  
+        // 绘制干扰线  
+        for (int i = 0; i <= lineSize; i++) {  
+            drowLine(g);  
+        }  
+        // 绘制随机字符  
+        String randomString = "";  
+        for (int i = 1; i <= stringNum; i++) {  
+            randomString = drowString(g, randomString, i);  
+        }  
+        session.removeAttribute(RANDOMCODEKEYFORGET);  
+        session.setAttribute(RANDOMCODEKEYFORGET, randomString);  
+        //validateCode = randomString.toUpperCase();  
+        g.dispose();  
+        try {  
+            ImageIO.write(image, "JPEG", response.getOutputStream());// 将内存中的图片通过流动形式输出到客户端  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+    }  
+    
     /* 
      * 绘制字符串 
      */  
