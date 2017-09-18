@@ -32,6 +32,11 @@ jQuery.validator.addMethod("isUserNameHas",function(value,element)
 			if(result=="no")
 			{
 			}
+			else if(result=="session")
+			{
+				ok = false;
+				top.location.href = "${ctx}/user/timeout";
+			}
 			//已存在
 			else
 			{
@@ -85,66 +90,178 @@ $().ready(function()
 	});
 });
 
+function change_email_click()
+{
+	parent.document.getElementById("div_mask").style.display = "";
+	parent.document.getElementById("div_email").style.display = "";
+}
+
+function change_phone_click()
+{
+	parent.document.getElementById("div_mask").style.display = "";
+	parent.document.getElementById("div_phone").style.display = "";
+}
+
+function init()
+{
+	var h1 = document.getElementById("table_body").offsetHeight;
+	if(h1<1000)
+	{
+		h1 = 1000;
+	}
+	parent.document.getElementById("rightframe").height = h1 + 100;
+	parent.document.getElementById("td_body").height = h1 - 300;
+}
+
 </script>
 <style type="text/css">
+
+.bg1 {background:url(${ctx}/pages/sys/images/ico_bg.png) 0 0 no-repeat;height:40px;background-position:0 -360px;}
 
 .error
 {
 	color:red;
-	font-size:16px;
+	font-size:14px;
 	padding-left:30px;
+	padding-top:2px;
 }
+
+.tr_background
+{
+	background-color:#F2F2F2;
+}
+
+.button_style
+{
+	background-color:#F7BA59;
+	color:#FFFFFF;
+	width:160px;
+	height:40px;
+	border-width:0px;
+}
+
+td
+{
+	font-size:14px;
+}
+
+.tsDiv {width:198px;position:absolute;z-index:3;top:0px;left:0px;display:none;}
+
+.tsDiv img{position:absolute;top:0px;left:2px;display:block;z-index:2000;}
+
+.tsnr {width:166px;padding:0 0 0 12px;position:relative;}
+
+.tsnr p{width:144px;padding:10px;border:solid 1px #f2e0bc;background:#fffed0;line-height:28px;font-size:12px;}
+
+.div_title {width:206px;padding:0 0 0 12px;position:relative;}
+
+.div_title p{width:184px;padding:10px;border:solid 1px #f2e0bc;background:#fffed0;line-height:28px;font-size:12px;}
 
 </style>
 </head>
-<body style="background-color:#FFFFFF;height:600px;">
+<body style="background-color:#FFFFFF;height:500px;" onload="init();">
 <form id="userForm" action="${ctx}/user/userProfileUpdate" method="post">
-  <table border="0" width="700" align="center">
+  <table border="0" width="1000" id="table_body">
     <tr>
-      <td width="140" height="40" align="right">手机号码</td>
-      <td width="30"></td>
-      <td>${phone}</td>
+      <td height="20"></td>
     </tr>
     <tr>
-      <td height="40" align="right">邮箱</td>
-      <td></td>
+      <td style="font-size:28px;">用户信息</td>
+    </tr>
+    <tr bgcolor="#E7E5E5">
+      <td width="1000" height="4"></td>
+    </tr>
+    <tr>
+      <td height="30"></td>
+    </tr>
+    <tr>
       <td>
-        ${email}
+        <div class="bg1" style="padding-top:6px;"><span style="margin-left:40px;font-size:20px;">基础信息</span></div>
       </td>
     </tr>
     <tr>
-      <td height="40" align="right">用户名</td>
-      <td></td>
-      <td>
-        <#if username=="">
-          <input type="text" class="col-xs-10 col-sm-5" name="username" id="username" style="width:270px;" placeholder="用户名设置后不能修改">
-        <#else>
-          ${username}
-          <input type="hidden" name="usernamehas" id="usernamehas" value="yes">
-        </#if>
-      </td>
+      <td height="20"></td>
     </tr>
-    <tr>
-      <td height="40" align="right">姓名</td>
-      <td></td>
+    <tr class="tr_background">
       <td>
-        <input type="text" class="col-xs-10 col-sm-5" name="name" id="name" value="${name}" style="width:270px;">
+        <div style="margin:20px;">
+          <table>
+            <tr>
+              <td width="120" height="50">手机号码</td>
+              <td width="30"></td>
+              <td>
+                <table>
+                  <tr>
+                    <td width="300">${phone}</td>
+                    <td><a href="javascript:void(0);" onclick="change_phone_click();">更换手机号</a></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td height="50">邮箱</td>
+              <td></td>
+              <td>
+                <table>
+                  <tr>
+                    <td width="300">${email}</td>
+                    <td><a href="javascript:void(0);" onclick="change_email_click();">更换邮箱</a></td>
+                    <td width="10"></td>
+                    <td style="position:relative;">
+                    <#if email!=emailreset && emailreset!="">
+                      <img src="${ctx}/pages/sys/images/ico_qes.png" id="id_img_email" onmouseover="document.getElementById('id_div_email').style.display='block';" onmouseout="document.getElementById('id_div_email').style.display='none';">
+                      <div id="id_div_email" style="position:absolute;left:20px;top:0px;display:none;">
+                        <img src="${ctx}/pages/sys/images/ico_jt.png" style="z-index:100;position:absolute;left:0px;top:0px;" />
+                        <div class="div_title" style="position:absolute;left:-2px;top:0px;z-index:40;">
+                          <p id="id_p_email">变更邮箱「${emailreset}」的过程中，只有新邮箱被重新认证才能启用，未验证之前请使用旧邮箱登录</p>
+                        </div>
+                      </div>
+                    <#else>
+                      <img src="${ctx}/pages/sys/images/ico_qes.png" id="id_img_email" style="display:none;" onmouseover="document.getElementById('id_div_email').style.display='block';" onmouseout="document.getElementById('id_div_email').style.display='none';">
+                      <div id="id_div_email" style="position:absolute;left:20px;top:0px;display:none;">
+                        <img src="${ctx}/pages/sys/images/ico_jt.png" style="z-index:100;position:absolute;left:0px;top:0px;" />
+                        <div class="div_title" style="position:absolute;left:-2px;top:0px;z-index:40;">
+                          <p id="id_p_email">变更邮箱「」的过程中，只有新邮箱被重新认证才能启用，未验证之前请使用旧邮箱登录</p>
+                        </div>
+                      </div>
+                    </#if>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td height="50">用户名</td>
+              <td></td>
+              <td>
+                <#if username=="">
+                  <input type="text" class="col-xs-10 col-sm-5" name="username" id="username" style="width:270px;" placeholder="用户名设置后不能修改">
+                <#else>
+                  ${username}
+                  <input type="hidden" name="usernamehas" id="usernamehas" value="yes">
+                </#if>
+              </td>
+            </tr>
+            <tr>
+              <td height="50">姓名</td>
+              <td></td>
+              <td>
+                <input type="text" class="col-xs-10 col-sm-5" name="name" id="name" value="${name}" style="width:270px;" placeholder="请输入姓名">
+              </td>
+            </tr>
+            <tr>
+              <td height="10" colspan="2"></td>
+            </tr>
+            <tr>
+              <td height="50"></td>
+              <td></td>
+              <td><button type="submit" class="button_style">确定</button></td>
+            </tr>
+          </table>
+        </div>
       </td>
     </tr>
   </table>
-  <div class="clearfix form-actions">
-    <table border="0" align="center" width="700">
-      <tr>
-        <td width="140"></td>
-        <td>
-          <button class="btn btn-info" type="submit">
-            <i class="icon-ok bigger-110"></i>
-        提交
-          </button>
-        </td>
-      </tr>
-    </table>
-  </div>
 </form>
 </body>
 </html>

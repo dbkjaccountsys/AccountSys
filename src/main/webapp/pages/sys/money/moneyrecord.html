@@ -1,0 +1,214 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script src="${ctx}/pages/sys/My97DatePicker/WdatePicker.js"></script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:16px;
+	padding-left:30px;
+}
+
+td
+{
+	font-size:14px;
+}
+
+</style>
+<script type="text/javascript">
+
+function init()
+{
+	var h1 = document.getElementById("table_body").offsetHeight;
+	if(h1<1000)
+	{
+		h1 = 1000;
+	}
+	parent.document.getElementById("rightframe").height = h1 + 100;
+	parent.document.getElementById("td_body").height = h1 - 300;
+}
+
+function checkform()
+{
+	var startdate = document.getElementById("startdate").value;
+	if(startdate=="")
+	{
+		alert("请选择开始时间");
+		return false;
+	}
+	var enddate = document.getElementById("enddate").value;
+	if(enddate=="")
+	{
+		alert("请选择结束时间");
+		return false;
+	}
+	if(!compareDate(startdate,enddate))
+	{
+		alert("开始时间不能大于结束时间");
+		return false;
+	}
+	return true;
+}
+
+function compareDate(d1,d2)
+{
+	var arrayD1 = d1.split("-");
+	var date1 = new Date(arrayD1[0],arrayD1[1],arrayD1[2]);
+	var arrayD2 = d2.split("-");
+	var date2 = new Date(arrayD2[0],arrayD2[1],arrayD2[2]);
+	if(date1>date2)
+	{
+		return false;
+	}
+	return true;
+} 
+
+function showpagefirst(url)
+{
+	var urlcode = encodeURI(url);
+	window.location.href=urlcode+"?curpage=1&startdate=${startdate}&enddate=${enddate}";
+}
+
+function showpagelast(url,totalpage)
+{
+	var urlcode = encodeURI(url);
+	window.location.href=urlcode+"?curpage="+totalpage+"&startdate=${startdate}&enddate=${enddate}";
+}
+
+function showpage(url,curpage)
+{
+	var urlcode = encodeURI(url);
+	window.location.href=urlcode+"?curpage="+curpage+"&startdate=${startdate}&enddate=${enddate}";
+}
+
+function enterpage(url,page)
+{
+	if(parseInt(page,10)==page)
+	{
+		if(event.keyCode==13)
+		{
+			if(page<=0 || page>${totalpage})
+			{
+				
+			}
+			else
+			{
+				var urlcode = encodeURI(url);
+				window.location.href=urlcode+"?curpage="+page+"&startdate=${startdate}&enddate=${enddate}";
+			}
+		}
+	}
+}
+
+</script>
+</head>
+<body style="background-color:#FFFFFF;">
+<table width="100%">
+  <tr>
+    <td height="20"></td>
+  </tr>
+  <tr>
+    <td style="font-size:28px;">充值记录</td>
+  </tr>
+  <tr bgcolor="#E7E5E5">
+    <td width="1000" height="4"></td>
+  </tr>
+  <tr>
+    <td height="20"></td>
+  </tr>
+</table>
+<form action="${ctx}/money/moneyRecordList" method="post" id="form1" name="form1" onsubmit="return checkform();">
+<table width="100%">
+  <tr bgcolor="#F4FAFD">
+    <td>
+      <div style="margin:30px 0px 30px 30px;">
+        <table>
+          <tr>
+            <td style="font-size:16px;">开始结束时间：</td>
+            <td width="50"></td>
+            <td>
+              <input type="text" id="startdate" name="startdate" value="${startdate}" onclick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'})" readonly="readonly"/>
+            </td>
+            <td width="10"></td>
+            <td>至</td>
+            <td width="10"></td>
+            <td>
+              <input type="text" id="enddate" name="enddate" value="${enddate}" onclick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'})" readonly="readonly"/>
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="查询" style="color:#FFFFFF;background-color:#FEA720;border-width:0px;width:140px;height:30px;font-size:18px;">
+            </td>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td height="30"></td>
+  </tr>
+</table>
+</form>
+<table width="100%" id="table_body">
+  <tr bgcolor="#EEEEEE">
+    <td width="20" height="70"></td>
+    <td style="font-size:16px;">订单号</td>
+    <td style="font-size:16px;">时间</td>
+    <td style="font-size:16px;">充值方式</td>
+    <td style="font-size:16px;">金额（元）</td>
+    <td style="font-size:16px;">状态</td>
+  </tr>
+  <#list list as v>
+  <tr>
+    <td height="40"></td>
+    <td>${v.serialnum}</td>
+    <td>${v.time}</td>
+    <td>${v.chargetypestr}</td>
+    <td>${v.realcharge}</td>
+    <td>${v.statusstr}</td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td height="1" colspan="6"></td>
+  </tr>
+  </#list>
+  <tr>
+    <td colspan="6" height="20"></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="right" style="font-size:16px;">
+       共&nbsp;${total}&nbsp;条数据&nbsp;
+  		每页&nbsp;${pagecount}&nbsp;条&nbsp;
+  		共&nbsp;${totalpage}&nbsp;页&nbsp;
+  		当前&nbsp;第&nbsp;${curpage}&nbsp;页&nbsp;
+  		<input type="text" name="enterpage" id="enterpage" style="width:50px;display:inline;" onkeyup="enterpage('${url}',this.value);">
+  		&nbsp;
+  		<#if (curpage==1 || total<=pagecount)>
+  		<#else>
+  		<a href="#" onclick="showpagefirst('${url}');">首页</a>&nbsp;
+  		<a href="#" onclick="showpage('${url}','${curpage-1}');">上一页</a>&nbsp;
+  		</#if>
+  		<#if (curpage!=totalpage && totalpage!=0)>
+  		<a href="#" onclick="showpage('${url}','${curpage+1}');">下一页</a>&nbsp;
+  		<a href="#" onclick="showpagelast('${url}','${totalpage}');">尾页</a>&nbsp;
+  		</#if>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
