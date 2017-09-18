@@ -17,12 +17,12 @@ public abstract class BaseUserInfo<M extends BaseUserInfo<M>> extends Model<M> i
 		return getLong("id");
 	}
 
-	public void setUserid(java.lang.Integer userid) {
+	public void setUserid(java.lang.Long userid) {
 		set("userid", userid);
 	}
 
-	public java.lang.Integer getUserid() {
-		return getInt("userid");
+	public java.lang.Long getUserid() {
+		return getLong("userid");
 	}
 
 	public void setCompanyname(java.lang.String companyname) {
@@ -81,12 +81,12 @@ public abstract class BaseUserInfo<M extends BaseUserInfo<M>> extends Model<M> i
 		return getStr("safety");
 	}
 
-	public void setIspass(java.lang.Boolean ispass) {
+	public void setIspass(java.lang.Integer ispass) {
 		set("ispass", ispass);
 	}
 
-	public java.lang.Boolean getIspass() {
-		return get("ispass");
+	public java.lang.Integer getIspass() {
+		return getInt("ispass");
 	}
 
 	public void setChecktime(java.util.Date checktime) {
@@ -97,12 +97,12 @@ public abstract class BaseUserInfo<M extends BaseUserInfo<M>> extends Model<M> i
 		return get("checktime");
 	}
 
-	public void setCheckuser(java.lang.Integer checkuser) {
+	public void setCheckuser(java.lang.Long checkuser) {
 		set("checkuser", checkuser);
 	}
 
-	public java.lang.Integer getCheckuser() {
-		return getInt("checkuser");
+	public java.lang.Long getCheckuser() {
+		return getLong("checkuser");
 	}
 
 	public void setRemark(java.lang.String remark) {
@@ -151,6 +151,30 @@ public abstract class BaseUserInfo<M extends BaseUserInfo<M>> extends Model<M> i
 
 	public java.util.Date getModifyTime() {
 		return get("modify_time");
+	}
+
+	public void setAccountname(java.lang.String accountname) {
+		set("accountname", accountname);
+	}
+
+	public java.lang.String getAccountname() {
+		return getStr("accountname");
+	}
+
+	public void setBank(java.lang.String bank) {
+		set("bank", bank);
+	}
+
+	public java.lang.String getBank() {
+		return getStr("bank");
+	}
+
+	public void setTaxaccount(java.lang.String taxaccount) {
+		set("taxaccount", taxaccount);
+	}
+
+	public java.lang.String getTaxaccount() {
+		return getStr("taxaccount");
 	}
 
 }

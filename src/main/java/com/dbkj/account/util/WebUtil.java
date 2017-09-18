@@ -14,7 +14,7 @@ public class WebUtil {
 	public static String getIp(HttpServletRequest request){
 		String ip=request.getHeader("X-Forwarded-For");
 		if(!StrKit.isBlank(ip)&&!"unKnown".equalsIgnoreCase(ip)){
-			//多次反向代理后会出现多个IP，第一个IP才是真实的IP
+			//多次反向代理后会出现多个IP，第�?个IP才是真实的IP
 			int index=ip.indexOf(",");
 			if(index!=-1){
 				return ip.substring(0, index);
@@ -54,5 +54,14 @@ public class WebUtil {
 			}
 		}
 		return requestURI;
+	}
+	
+	/**
+	 * 获取项目根路径的绝对路径
+	 * @param request
+	 * @return
+	 */
+	public static String getRootPath(HttpServletRequest request){
+		return request.getSession().getServletContext().getRealPath("/");
 	}
 }

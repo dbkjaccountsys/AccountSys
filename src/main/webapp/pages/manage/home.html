@@ -104,7 +104,7 @@
                         <li class="user-body">
                             <div class="row">
                                 <div class="col-xs-4 text-center">
-                                    <a href="#">个人信息</a>
+                                    <a href="javascript:;" id="personalInfo">个人信息</a>
                                 </div>
                                 <div class="col-xs-4 text-center">
                                     <!-- <a href="#">设置</a> -->
@@ -596,6 +596,10 @@ immediately after the control sidebar -->
         App.fixIframeCotent();
         
         hp.loadMenu();
+        
+        $("#personalInfo").click(function(){
+        	addTabs({id:1,title:"个人信息",close:true,url:"manage/personal/info"});
+        });
     });
 </script>
 </body>

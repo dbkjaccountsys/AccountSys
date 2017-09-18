@@ -6,10 +6,11 @@ var urp={
 		$("#gridTable").jqGrid({
             datatype: "json",
             url: common.getContext()+"/manage/userReview/list",
-//            height: $.fn.getGridHeight(),
+//            height: $(window).height()-$("#gridTable").offset().top,
             autowidth: true,
             colModel: [
                 { label: "id", name: "id", index: "id", hidden: true },
+                { label: "userId", name: "userId", index: "userId", hidden: true },
                 { label: "账号", name: "username", index: "username",align:"left" },
                 { label: "公司名称", name: "companyname", index: "companyname", align: "left" },
                 { label: "联系人", name: "contact", index: "contact", align: "left" },
@@ -36,6 +37,11 @@ var urp={
                 records: "records"
             }
         });
+		setTimeout(function(){
+			var height=$(window).height()-$("#gridTable").offset().top-55;
+			console.log(height);
+			 $("#gridTable").setGridHeight(height);
+		},100);
 	},
 	//查询
 	search:function(){
@@ -53,5 +59,16 @@ var urp={
 	review:function(dom){
 		var id=$(dom).closest("tr").find("td:eq(1)").text();
 		location.href=common.getContext()+"/manage/userReview/userinfo/"+id;
+	},
+	//获取审核历史记录
+	getHistory:function(dom){
+		var id=$(dom).closest("tr").find("td:eq(2)").text();
+		$.fn.modalOpen({
+			title: '历史记录',
+            width: "1000px",
+            height: "500px",
+            url: common.getContext()+"/manage/userReview/history/"+id,
+            btn: null,
+		});
 	}
 }

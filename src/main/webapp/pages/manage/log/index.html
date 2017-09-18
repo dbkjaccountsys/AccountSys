@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>操作日志查询</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="${ctx!}/content/ui/global/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link href="${ctx!}/content/ui/global/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/skins/_all-skins.min.css">
+    <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
+    <!-- Select2 -->
+  	<link rel="stylesheet" href="../content/plugins/select2/select2.min.css">
+  	<link href="${ctx!}/content/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="${ctx!}/content/plugins/jqgrid/jqgrid.css" rel="stylesheet" />
+    <style type="text/css">
+    	#search_panel .select2-container--default .select2-selection--single .select2-selection__arrow b{
+    		margin-top: 0px;
+    	}
+    	#search_panel .select2-container--default .select2-selection--single{
+    		height:34px;
+    	}
+    	.gridPanel{
+    		margin-top: 20px;
+    	}
+    	
+    	form#search_panel>div.form-group{
+    		margin-bottom:10px;
+    	}
+    
+    </style>
+    <!--全局通用框架样式 end-->
+</head>
+<body data-context="${ctx!}">
+	<section class="content-header">
+        <h1>
+           	 日志查询
+        </h1>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i> 系统管理</li>
+            <li class="active">日志查询</li>
+        </ol>
+    </section>
+	<!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <hr style="margin-top:0;">
+                <div class="box-body">
+                	<form class="form-inline" id="search_panel">
+                		<div class="form-group">
+                            <label>选择月份：</label>
+                            <select class="form-control select2" id="month">
+                                <#list months as item>
+                                	<option value="${item}">${item}</option>
+                                </#list>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                			<label >开始日期：</label>
+		                	<div class="input-group date" id="from_datetime">
+		                		<input type="text" size="16" readonly="readonly" class="form-control"/>
+		                		<span class="input-group-btn">
+		                			<button class="btn default date-reset" type="button">
+		                                  <i class="fa fa-times"></i>
+		                            </button>
+		                            <button class="btn default date-set" type="button">
+		                                  <i class="fa fa-calendar"></i>
+		                            </button>
+		                		</span>
+		                	</div>
+                		</div>
+                		<div class="form-group">
+                			<label >结束日期：</label>
+		                	<div class="input-group date" id="to_datetime">
+		                		<input type="text" size="16" readonly="readonly" class="form-control"/>
+		                		<span class="input-group-btn">
+		                			<button class="btn default date-reset" type="button">
+		                                 <i class="fa fa-times"></i>
+		                            </button>
+		                            <button class="btn default date-set" type="button">
+		                                 <i class="fa fa-calendar"></i>
+		                            </button>
+		                		</span>
+		                	</div>
+                		</div>
+                		<div class="form-group">
+                            <label>用户类型：</label>
+                            <select class="form-control select2" id="userType">
+                                <#list userTypes as item>
+                                	<option value="${item.value}">${item.desc}</option>
+                                </#list>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>操作类型：</label>
+                            <select class="form-control select2" id="operaType">
+                                <#list operaTypes as item>
+                                	<option value="${item.id}">${item.desc}</option>
+                                </#list>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>操作结果：</label>
+                            <select class="form-control select2" id="operaResult">
+                                <#list operaResults as item>
+                                	<option value="${item.value}">${item.desc}</option>
+                                </#list>
+                            </select>
+                        </div>
+                         <div class="form-group">
+                            <label>操作用户：</label>
+                            <input type="text" class="form-control" id="usename">
+                        </div>
+                        <div class="form-group">
+                        	<button type="button" id="btn_search" class="btn btn-default">搜索</button>
+                        </div>
+                	</form>
+                    <div class="gridPanel">
+                        <table id="gridTable"></table>
+                        <div id="gridPager"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="${ctx!}/content/ui/global/jQuery/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+
+<script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+
+<script src="${ctx!}/content/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="${ctx!}/content/plugins/jqgrid/jqgrid.min.js"></script>
+<!-- Select2 -->
+<script src="../content/plugins/select2/select2.full.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="${ctx!}/js/common.js"></script>
+<script src="${ctx!}/js/manage/log.js"></script>
+<script>
+	$(function(){
+		//Initialize Select2 Elements
+	    $(".select2").select2();
+		var startDate=lp.getStartDate($("#month").val());
+		var endDate=lp.getEndDate($("#month").val());
+	    $("#from_datetime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            //minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd HH:ii", //选择日期后，文本框显示的日期格式
+            startDate:startDate,
+            endDate:endDate,
+            pickerPosition: ("bottom-left")
+        });
+		$("#to_datetime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            //minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd HH:ii", //选择日期后，文本框显示的日期格式
+            startDate:startDate,
+            endDate:endDate,
+            pickerPosition: ("bottom-left")
+        });
+		$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+		
+		lp.initTable();
+		
+		$("#month").change(function(){
+			var month=$(this).val();
+			var startDate=lp.getStartDate(month);
+			var endDate=lp.getEndDate(month);
+			$("#from_datetime").datetimepicker("setStartDate",startDate);
+			$("#from_datetime").datetimepicker("setEndDate",endDate);
+			$("#to_datetime").datetimepicker("setStartDate",startDate);
+			$("#to_datetime").datetimepicker("setEndDate",endDate);
+		});
+		
+		//搜索
+		$("#btn_search").click(function(){
+			var username=$("#username").val();
+			var month=$("month").val();
+			var fromDate=$("#from_datetime>input[type=text]").val();
+			var toDate=$("#to_datetime>input[type=text]").val();
+			var userType=$("#userType").val();
+			var operaResult=$("#operaResult").val();
+			var operaType=$("#operaType").val();
+			var queryJson={
+					month:month,
+					userType:userType,
+					operaResult:operaResult,
+					username:username,
+					startTime:fromDate,
+					endTime:toDate,
+					operaType:operaType
+			};
+			lp.search(queryJson);
+		}); 
+	});
+	
+	
+</script>
+</body>
+</html>

@@ -49,12 +49,12 @@ public abstract class BaseFavorable<M extends BaseFavorable<M>> extends Model<M>
 		return getInt("status");
 	}
 
-	public void setRate(java.lang.Float rate) {
+	public void setRate(java.math.BigDecimal rate) {
 		set("rate", rate);
 	}
 
-	public java.lang.Float getRate() {
-		return getFloat("rate");
+	public java.math.BigDecimal getRate() {
+		return get("rate");
 	}
 
 	public void setMincharge(java.math.BigDecimal mincharge) {

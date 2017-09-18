@@ -17,12 +17,12 @@ public abstract class BaseUserInfoHistory<M extends BaseUserInfoHistory<M>> exte
 		return getLong("id");
 	}
 
-	public void setUserid(java.lang.Integer userid) {
+	public void setUserid(java.lang.Long userid) {
 		set("userid", userid);
 	}
 
-	public java.lang.Integer getUserid() {
-		return getInt("userid");
+	public java.lang.Long getUserid() {
+		return getLong("userid");
 	}
 
 	public void setCompanyname(java.lang.String companyname) {
@@ -97,12 +97,12 @@ public abstract class BaseUserInfoHistory<M extends BaseUserInfoHistory<M>> exte
 		return get("checktime");
 	}
 
-	public void setCheckuser(java.lang.Integer checkuser) {
+	public void setCheckuser(java.lang.Long checkuser) {
 		set("checkuser", checkuser);
 	}
 
-	public java.lang.Integer getCheckuser() {
-		return getInt("checkuser");
+	public java.lang.Long getCheckuser() {
+		return getLong("checkuser");
 	}
 
 	public void setRemark(java.lang.String remark) {
@@ -111,6 +111,30 @@ public abstract class BaseUserInfoHistory<M extends BaseUserInfoHistory<M>> exte
 
 	public java.lang.String getRemark() {
 		return getStr("remark");
+	}
+
+	public void setAccountname(java.lang.String accountname) {
+		set("accountname", accountname);
+	}
+
+	public java.lang.String getAccountname() {
+		return getStr("accountname");
+	}
+
+	public void setBank(java.lang.String bank) {
+		set("bank", bank);
+	}
+
+	public java.lang.String getBank() {
+		return getStr("bank");
+	}
+
+	public void setTaxaccount(java.lang.String taxaccount) {
+		set("taxaccount", taxaccount);
+	}
+
+	public java.lang.String getTaxaccount() {
+		return getStr("taxaccount");
 	}
 
 }

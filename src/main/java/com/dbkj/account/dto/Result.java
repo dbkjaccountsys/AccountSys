@@ -6,6 +6,10 @@ public class Result<T> {
 		super();
 	}
 	
+	public Result(boolean success){
+		this.success=success;
+	}
+	
 	public Result(boolean success, String reason) {
 		super();
 		this.success = success;

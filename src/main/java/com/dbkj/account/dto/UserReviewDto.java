@@ -1,10 +1,9 @@
 package com.dbkj.account.dto;
 
-import java.util.Date;
-
 public class UserReviewDto {
 
 	private Long id;
+	private Long userId;
 	private String username;
 	private String companyname;
 	private String contact;
@@ -13,15 +12,22 @@ public class UserReviewDto {
 	private String licence;
 	private String idcard;
 	private String safety;
-	private boolean isPass;
-	private Date checktime;
+	private String ispass;
+	private String checktime;
 	private String checkuser;
 	private String remark;
 	private String appId;
 	private String appSecret;
 	private String createTime;
 	private String modifyTime;
+	private String reason;
 	private String opera;
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 	public String getOpera() {
 		return opera;
 	}
@@ -82,16 +88,22 @@ public class UserReviewDto {
 	public void setSafety(String safety) {
 		this.safety = safety;
 	}
-	public boolean isPass() {
-		return isPass;
+	public String getIspass() {
+		return ispass;
 	}
-	public void setPass(boolean isPass) {
-		this.isPass = isPass;
+	public void setIspass(String ispass) {
+		this.ispass = ispass;
 	}
-	public Date getChecktime() {
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+	public String getChecktime() {
 		return checktime;
 	}
-	public void setChecktime(Date checktime) {
+	public void setChecktime(String checktime) {
 		this.checktime = checktime;
 	}
 	public String getCheckuser() {

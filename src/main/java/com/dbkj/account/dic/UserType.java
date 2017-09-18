@@ -1,8 +1,8 @@
 package com.dbkj.account.dic;
 
 public enum UserType {
-	USER(0,"普通用户"),
-	ADMIN(1,"管理员");
+	USER(0,"普�?�用�?"),
+	ADMIN(1,"管理�?");
 	
 	
 	private UserType(int value, String desc) {
@@ -24,5 +24,13 @@ public enum UserType {
 		this.desc = desc;
 	}
 	
+	public static UserType valueOf(int value){
+		for(UserType type:values()){
+			if(type.getValue()==value){
+				return type;
+			}
+		}
+		return null;
+	}
 	
 }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>语音审核</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="${ctx!}/content/ui/global/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link href="${ctx!}/content/ui/global/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/skins/_all-skins.min.css">
+    <!-- iCheck for checkboxes and radio inputs -->
+  	<link rel="stylesheet" href="${ctx!}/content/plugins/iCheck/all.css">
+    <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
+
+    <style type="text/css">
+    	.form-group>div{
+    		padding-top: 7px;
+    	}
+    </style>
+    <!--全局通用框架样式 end-->
+</head>
+<body data-context="${ctx!}">
+	<section class="content-header">
+        <h1>
+                      客户审核列表
+        </h1>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i> 审核管理</li>
+            <li><a href="${ctx!}/manage/voiceReview">语音审核列表</a></li>
+            <li class="active">语音审核</li>
+        </ol>
+    </section>
+	<!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <hr style="margin-top:0;">
+                <div class="box-body">
+                	<form class="form-horizontal" method="post" action="${ctx!}/manage/voiceReview/review" id="reviewForm">
+                		<div class="box-body">
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">账号：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="hidden" name="v.id" value="${v.id}"/>
+                					${v.username}
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">语音名称：</label>
+                				<div class="col-md-4 col-sm-4">
+                					${v.voiceName}
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">语音内容：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<p>${v.content}</p>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">语音：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<audio src="${ctx!}/uploadvoices/${v.filePath}" preload controls>
+										您的浏览器不支持 audio 标签。
+									</audio>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">是否通过：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<label><input type="radio" class="minimal" name="v.status" value="1" <#if (!v.status??)||(v.status=="1")>checked="checked"</#if> />&nbsp;&nbsp;通过</label>
+                					&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" class="minimal" name="v.status" <#if (v.status??)&&(v.status=="2")>checked="checked"</#if> value="2"/>&nbsp;&nbsp;驳回</label>
+                				</div>
+                			</div>
+                			<div class="form-group" id="turnDown" style="display: none;">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">驳回原因：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<textarea class="form-control" name="v.reason" rows="5" placeholder="驳回原因">${(v.reason)!}</textarea>
+                					<#if errorMsg??>
+			                        	<em id="errorMsg" class="error help-block" style="color:#a94442;">${errorMsg}</em>
+			                        </#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+	                        	<div class="col-sm-offset-4 col-md-offset-4 col-sm-4 col-md-4">
+	                        		<button class="btn btn-primary" type="submit">提交</button>&nbsp;&nbsp;&nbsp;&nbsp;
+	                        		<a class="btn btn-default" href="${ctx!}/manage/voiceReview">返回</a>
+	                        	</div>
+	                        </div>
+                		</div>
+                	</form>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="${ctx!}/content/ui/global/jQuery/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+
+<script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+<!-- iCheck 1.0.1 -->
+<script src="${ctx!}/content/plugins/iCheck/icheck.min.js"></script>
+<script src="${ctx!}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx!}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script src="${ctx!}/js/common.js"></script>
+<script>
+	$(function(){
+		//iCheck for checkbox and radio inputs
+	    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+	      checkboxClass: 'icheckbox_minimal-blue',
+	      radioClass: 'iradio_minimal-blue'
+	    });
+		
+		var validateOptions={
+				debug:false,
+				rules:{
+					"v.status":"required",
+					"v.reason":{
+						"required":true,
+						"maxlength":70
+					}
+				},
+				messages:{
+					"v.reason":{
+						"required":"请填写驳回原因"
+					}
+				}
+		}
+		
+		$("#reviewForm").validate(validateOptions);
+		
+		$("input[type='radio']").on("ifChecked",function(){
+			var ispass=$("input[name='v.status']:checked").val();
+			console.log("status:"+ispass);
+			if(ispass=="1"){
+				$("#turnDown").hide();
+				//删除验证规则
+				delete validateOptions.rules["v.reason"];
+			}else{
+				$("#turnDown").show();
+				validateOptions.rules["v.reason"]="required";
+			}
+		});
+		
+	});
+</script>
+</body>
+</html>

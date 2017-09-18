@@ -2,7 +2,7 @@ package com.dbkj.account.dic;
 
 /**
  * 公用常量
- * @author 钦春榜
+ * @author 钦春�?
  *
  */
 public interface Constant {
@@ -18,4 +18,8 @@ public interface Constant {
 	
 	String SUCCESS="3000";
 	String FAIL="3001";
+	/**
+	 * 通用cache key
+	 */
+	String COMMON_CACHE_KEY="otherCache";
 }

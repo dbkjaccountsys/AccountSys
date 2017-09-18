@@ -125,6 +125,10 @@
 		$("#gridTable").on("click",".review",function(){
 			urp.review(this);
 		});
+		//查看历史记录
+		$("#gridTable").on("click",".history",function(){
+			urp.getHistory(this);
+		});
 	});
 </script>
 </body>

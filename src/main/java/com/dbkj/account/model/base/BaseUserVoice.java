@@ -17,12 +17,12 @@ public abstract class BaseUserVoice<M extends BaseUserVoice<M>> extends Model<M>
 		return getLong("id");
 	}
 
-	public void setUserid(java.lang.Integer userid) {
+	public void setUserid(java.lang.Long userid) {
 		set("userid", userid);
 	}
 
-	public java.lang.Integer getUserid() {
-		return getInt("userid");
+	public java.lang.Long getUserid() {
+		return getLong("userid");
 	}
 
 	public void setUploadtime(java.util.Date uploadtime) {
@@ -79,6 +79,14 @@ public abstract class BaseUserVoice<M extends BaseUserVoice<M>> extends Model<M>
 
 	public java.lang.Integer getStatus() {
 		return getInt("status");
+	}
+
+	public void setReason(java.lang.String reason) {
+		set("reason", reason);
+	}
+
+	public java.lang.String getReason() {
+		return getStr("reason");
 	}
 
 }

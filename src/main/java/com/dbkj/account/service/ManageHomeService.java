@@ -21,10 +21,10 @@ public class ManageHomeService {
 	 * @return
 	 */
 	public List<MenuNode> getAdminMenuList(final Long roleId){
-		List<MenuNode> menuList=new ArrayList<>();
+		List<MenuNode> menuList=new ArrayList<MenuNode>();
 		MenuNode mn=new MenuNode();
 		mn.setId("0");
-		mn.setText("我的工作台");
+		mn.setText("我的工作�?");
 		mn.setIsHeader(true);
 		menuList.add(mn);
 		
@@ -47,14 +47,41 @@ public class ManageHomeService {
 				menuList.add(node);
 			}
 		}
-		//按照order的大小排序
+		//按照order的大小排�?
 		Collections.sort(menuList, new MenuComparator());
+		menuList.add(getDefaultNode());
 		return menuList;
+	}
+	
+	private MenuNode getDefaultNode(){
+		MenuNode node=new MenuNode();
+		node.setText("个人设置");
+		node.setIcon("fa fa-cog");
+		
+		List<MenuNode> children=new ArrayList<MenuNode>(2);
+		node.setChildren(children);
+		
+		MenuNode child1=new MenuNode();
+		child1.setId("0");
+		child1.setText("修改密码");
+		child1.setIcon("fa fa-lock");
+		child1.setTargetType("iframe-tab");
+		child1.setUrl("/manage/personal/editPassword");
+		children.add(child1);
+		
+		MenuNode child2=new MenuNode();
+		child2.setId("1");
+		child2.setText("个人信息");
+		child2.setIcon("fa fa-user");
+		child2.setTargetType("iframe-tab");
+		child2.setUrl("/manage/personal/info");
+		children.add(child2);
+		return node;
 	}
 	
 	private void getChildren(Record r,MenuNode menu,List<Record> list){
 		Long id=r.getLong("id");
-		List<MenuNode> children=new ArrayList<>();
+		List<MenuNode> children=new ArrayList<MenuNode>();
 		for(Record record:list){
 			Long parentId=record.getLong("parent_id");
 			if(parentId!=null&&parentId.longValue()==id.longValue()){
@@ -72,7 +99,7 @@ public class ManageHomeService {
 			}
 		}
 		if(children.size()>0){
-			//按照order的大小排序
+			//按照order的大小排�?
 			Collections.sort(children, new MenuComparator());
 			menu.setChildren(children);
 		}
@@ -81,7 +108,6 @@ public class ManageHomeService {
 	
 	private class MenuComparator implements Comparator<MenuNode>{
 
-		@Override
 		public int compare(MenuNode o1, MenuNode o2) {
 			return o1.getOrder()-o2.getOrder();
 		}

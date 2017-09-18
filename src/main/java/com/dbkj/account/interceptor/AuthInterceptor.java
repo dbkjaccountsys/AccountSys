@@ -19,7 +19,7 @@ public class AuthInterceptor implements Interceptor{
 		Controller controller=inv.getController();
 		String action=inv.getActionKey();
 		Object obj=controller.getSessionAttr(Constant.CURRENT_USER);
-		//判断是否有当前操作权限
+		//判断是否有当前操作权�?
 		boolean result=false;
 		if(obj instanceof Admin){
 			Admin admin=(Admin)obj;
@@ -37,7 +37,7 @@ public class AuthInterceptor implements Interceptor{
 				response.setStatus(403);
 				controller.renderNull();
 			}else{
-				controller.renderError(403, "/pages/other/403.html");
+				controller.renderError(401, "/pages/other/401.html");
 			}
 		}
 		

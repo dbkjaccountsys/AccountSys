@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>客户审核列表</title>
+	<title>审核</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta content="" name="description" />
@@ -42,62 +42,65 @@
             <div class="col-md-12">
                 <hr style="margin-top:0;">
                 <div class="box-body">
-                	<form class="form-horizontal" method="post" id="reviewForm">
+                	<form class="form-horizontal" method="post" action="${ctx!}/manage/userReview/review" id="reviewForm">
                 		<div class="box-body">
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">账号：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<input type="hidden" name="u.id" value="1"/>
-                					xxxxxxx
+                					<input type="hidden" name="u.id" value="${u.id}"/>
+                					${u.username}
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">公司名称：</label>
                 				<div class="col-md-4 col-sm-4">
-                					xxxxxxx
+                					${u.companyname}
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">联系人：</label>
                 				<div class="col-md-4 col-sm-4">
-                					xxxxxxx
+                					${u.contact}
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">联系人号码：</label>
                 				<div class="col-md-4 col-sm-4">
-                					xxxxxxx
+                					${u.contactphone}
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">营业执照：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/admin.png"/>
+                					<img src="${ctx!}/user/showImage?filepath=${u.licence}" style="max-height: 250px;"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">身份证：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/admin.png"/>
+                					<img src="${ctx!}/user/showImage?filepath=${u.idcard}" style="max-height: 250px;"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">安全责任书：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<img src="${ctx!}/images/admin.png"/>
+                					<img src="${ctx!}/user/showImage?filepath=${u.safety}" style="max-height: 250px;"/>
                 				</div>
                 			</div>
                 			<div class="form-group">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">是否通过：</label>
                 				<div class="col-md-4 col-sm-4">
                 					<label><input type="radio" class="minimal" name="u.ispass" value="1" checked="checked"/>&nbsp;&nbsp;通过</label>
-                					&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" class="minimal" name="u.ispass" value="0"/>&nbsp;&nbsp;驳回</label>
+                					&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" class="minimal" name="u.ispass" value="2"/>&nbsp;&nbsp;驳回</label>
                 				</div>
                 			</div>
                 			<div class="form-group" id="turnDown" style="display: none;">
                 				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">驳回原因：</label>
                 				<div class="col-md-4 col-sm-4">
-                					<textarea class="form-control" name="u.reason" rows="5" placeholder="驳回原因"></textarea>
+                					<textarea class="form-control" name="u.remark" rows="5" placeholder="驳回原因">${(u.remark)!}</textarea>
+                					<#if errorMsg??>
+			                        	<em id="errorMsg" class="error help-block" style="color:#a94442;">${errorMsg}</em>
+			                        </#if>
                 				</div>
                 			</div>
                 			<div class="form-group">
@@ -117,6 +120,7 @@
 
 <script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
 <script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+<script src="${ctx!}/content/supermgr/Base/js/common.js"></script>
 <!-- iCheck 1.0.1 -->
 <script src="${ctx!}/content/plugins/iCheck/icheck.min.js"></script>
 <script src="${ctx!}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
@@ -131,13 +135,18 @@
 	    });
 		
 		var validateOptions={
-				debug:true,
+				debug:false,
 				rules:{
 					"u.ispass":"required",
-					"u.reason":"required"
+					"u.remark":{
+						"required":true,
+						"maxlength":70
+					}
 				},
 				messages:{
-					"u.reason":"请填写驳回原因"
+					"u.remark":{
+						"required":"请填写驳回原因"
+					}
 				}
 		}
 		
@@ -149,10 +158,10 @@
 			if(ispass=="1"){
 				$("#turnDown").hide();
 				//删除验证规则
-				delete validateOptions.rules["u.reason"];
+				delete validateOptions.rules["u.remark"];
 			}else{
 				$("#turnDown").show();
-				validateOptions.rules["u.reason"]="required";
+				validateOptions.rules["u.remark"]="required";
 			}
 		});
 	});

@@ -24,5 +24,12 @@ public enum OperaResult {
 		this.desc = desc;
 	}
 	
-	
+	public static OperaResult valueOf(int value){
+		for(OperaResult result:values()){
+			if(result.getValue()==value){
+				return result;
+			}
+		}
+		return null;
+	}
 }

@@ -18,7 +18,7 @@ public class ForgetPasswordService {
 
 	
 	public Result<?> getCode(String mobile,String code,Controller controller){
-		Result<?> result=new Result<>();
+		Result<?> result=new Result<Object>();
 		if(StrKit.isBlank(mobile)||!ValidateUtil.validateMobilePhone(mobile)){
 			result.setSuccess(false);
 			result.setReason("请输入正确的手机号码");
@@ -26,7 +26,7 @@ public class ForgetPasswordService {
 		}
 		if(StrKit.isBlank(code)||!code.equals(controller.getSessionAttr(VertifyCodeService.VERTIFY_CODE).toString())){
 			result.setSuccess(false);
-			result.setReason("验证码错误");
+			result.setReason("验证码错�?");
 			return result;
 		}
 		//设置session有效期为5分钟

@@ -35,6 +35,6 @@ public class LoginValidator extends Validator{
 	protected void handleError(Controller c) {
 		c.keepBean(LoginVo.class, "user");
 		c.render("/pages/manage/login.html");
-	}
+	}	
 
 }

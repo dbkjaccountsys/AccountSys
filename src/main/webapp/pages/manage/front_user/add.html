@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增前台用户</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="${ctx!}/content/ui/global/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link href="${ctx!}/content/ui/global/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/skins/_all-skins.min.css">
+    <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
+    <style type="text/css">
+    	
+    </style>
+    <!--全局通用框架样式 end-->
+</head>
+<body data-context="${ctx!}">
+	<section class="content-header">
+        <h1>
+                      新增前台用户
+        </h1>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i> 用户管理</li>
+            <li><a href="${ctx!}/manage/frontUser">前台用户管理</a></li>
+            <li class="active">新增前台用户</li>
+        </ol>
+    </section>
+	<!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <hr style="margin-top:0;">
+                <div class="box-body">
+                	<form class="form-horizontal" method="post" action="${ctx!}/manage/frontUser/save" enctype="multipart/form-data" id="newUserForm">
+                		<div class="box-body">
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">手机号码 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.phone" value="${(f.phone)!}">
+                					<#if phoneMsg??><em class="error help-block" style="color:#a94442;">${phoneMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">密码 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="password" class="form-control" id="password" name="f.password" value="${(f.password)!}">
+			                		<#if passwordMsg??><em class="error help-block" style="color:#a94442;">${passwordMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">确认密码 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="password" class="form-control" name="f.confirmPassword" value="${(f.confirmPassword)!}">
+			                		<#if confirmPassword??><em class="error help-block" style="color:#a94442;">${confirmPassword}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">姓名：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.name" value="${(f.name)!}">
+                					<#if nameMsg??><em class="error help-block" style="color:#a94442;">${nameMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">邮箱：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="email" class="form-control" name="f.email" value="${(f.email)!}">
+                					<#if emailMsg??><em class="error help-block" style="color:#a94442;">${emailMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">公司 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" id="companyName" name="f.companyName" value="${(f.companyName)!}">
+                					<#if companyNameMsg??><em class="error help-block" style="color:#a94442;">${companyNameMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">公司联系人 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.contact" value="${(f.contact)!}">
+                					<#if contactMsg??><em class="error help-block" style="color:#a94442;">${contactMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">联系人电话 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.contactPhone" value="${(f.contactPhone)!}">
+                					<#if contactPhoneMsg??><em class="error help-block" style="color:#a94442;">${contactPhoneMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">对公账号开户行 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.bank" value="${(f.bank)!}">
+                					<#if bankMsg??><em class="error help-block" style="color:#a94442;">${bankMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">对公账号户名 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.accountName" value="${(f.accountName)!}">
+                					<#if accountNameMsg??><em class="error help-block" style="color:#a94442;">${accountNameMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">对公账号 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.publicAccount" value="${(f.publicAccount)!}">
+                					<#if publicAccountMsg??><em class="error help-block" style="color:#a94442;">${publicAccountMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">税号 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.taxAccount" value="${(f.taxAccount)!}">
+                					<#if taxAccountMsg??><em class="error help-block" style="color:#a94442;">${taxAccountMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">营业执照 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="file" class="form-control" name="license">
+                					<#if licenseMsg??><em class="error help-block" style="color:#a94442;">${licenseMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">身份证 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="file" class="form-control" name="idcard">
+                					<#if idcardMsg??><em class="error help-block" style="color:#a94442;">${idcardMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">安全责任书 <i class="text-red">*</i>：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="file" class="form-control" name="safety">
+                					<#if safetyMsg??><em class="error help-block" style="color:#a94442;">${safetyMsg}</em></#if>
+                					<#if errorMsg??><em class="error help-block" style="color:#a94442;">${errorMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+	                        	<div class="col-sm-offset-4 col-md-offset-4 col-sm-4 col-md-4">
+	                        		<button class="btn btn-primary" type="submit">提交</button>&nbsp;&nbsp;&nbsp;&nbsp;
+	                        		<a class="btn btn-default" href="${ctx!}/manage/frontUser">返回</a>
+	                        	</div>
+	                        </div>
+                		</div>
+                	</form>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="${ctx!}/content/ui/global/jQuery/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+
+<script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+<script src="${ctx!}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx!}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script src="${ctx!}/js/common.js"></script>
+<script>
+	$(function(){
+		//验证图片格式
+		$.validator.addMethod("image",function(value,element,param){
+			var pos=value.lastIndexOf(".")+1;
+			var lastname=value.substring(pos).toLowerCase();
+			var flag=false;
+			for(var i=0;i<common.imageFormats.length;i++){
+				if(common.imageFormats[i]==lastname){
+					flag=true;
+					break;
+				}
+			}
+			return this.optional(element)||flag;
+		},"请上传正确格式的图片");
+		
+		//验证图片格式
+		$.validator.addMethod("imageSize",function(value,element,param){
+			var flag=true;
+			if(element.files){
+				var fileSize=element.files[0].size;
+				console.log("fileSize:"+fileSize/1024);
+				flag=fileSize/1024*1024>3;
+			}
+			return this.optional(element)||flag;
+		},"图片大小不能超过{0}M");
+		
+		$("input[type=file]").change(function(){
+			$.fn.preview(this);
+		});
+		
+		$("#newUserForm").validate({
+			debug:false,
+			rules:{
+				"f.phone":{
+					required:true,
+					mobilePhone:true,
+					remote:{
+						url:"${ctx!}/manage/frontUser/existsPhone",
+						type:"post",
+						dataType:"json"
+					}
+				},
+				"f.password":{
+					required:true,
+					password:true
+				},
+				"f.confirmPassword":{
+					required:true,
+					equalTo:"#password"
+				},
+				"f.name":{
+					illegalChar:true
+				},
+				"f.email":{
+					email:true
+				},
+				"f.companyName":{
+					required:true,
+					illegalChar:true
+				},
+				"f.contact":{
+					required:true,
+					illegalChar:true
+				},
+				"f.contactPhone":{
+					required:true,
+					phone:true
+				},
+				"f.publicAccount":{
+					required:true
+				},
+				"f.accountName":{
+					required:true,
+					illegalChar:true
+				},
+				"f.bank":{
+					required:true,
+					illegalChar:true
+				},
+				"f.taxAccount":{
+					required:true
+				},
+				"license":{
+					required:true,
+					image:true,
+					imageSize:3
+				},
+				"idcard":{
+					required:true,
+					image:true,
+					imageSize:3
+				},
+				"safety":{
+					required:true,
+					image:true,
+					imageSize:3
+				}
+			},
+			messages:{
+				"f.phone":{
+					required:"请输入手机号码",
+					mobilePhone:"手机号码格式不正确",
+					remote:"手机号码已被注册"
+				},
+				"f.password":{
+					required:"请输入密码"
+				},
+				"f.confirmPassword":{
+					required:"请输入确认密码",
+					equalTo:"两次密码输入不一致"
+				},
+				"f.companyName":{
+					required:"请输入公司名称"
+				},
+				"f.contact":{
+					required:"请输入联系人"
+				},
+				"f.contactPhone":{
+					required:"请输入联系人电话",
+					phone:"电话号码格式不正确"
+				},
+				"f.publicAccount":{
+					required:"请输入对公账号"
+				},
+				"f.accountName":{
+					required:"请输入对公账号户名"
+				},
+				"f.bank":{
+					required:"请输入对公账号开户行"
+				},
+				"f.taxAccount":{
+					required:"请输入税号"
+				},
+				"license":{
+					required:"请上传营业执照照片"
+				},
+				"idcard":{
+					required:"请上传身份证照片"
+				},
+				"safety":{
+					required:"请上传安全责任书照片"
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>

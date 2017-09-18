@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增优惠活动</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="${ctx!}/content/ui/global/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link href="${ctx!}/content/ui/global/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="${ctx!}/content/adminlte/dist/css/skins/_all-skins.min.css">
+    <link href="${ctx!}/content/min/css/supershopui.common.min.css" rel="stylesheet"/>
+	 <link href="${ctx!}/content/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+    	.form-group>div{
+    		padding-top: 7px;
+    	}
+    	#desc{
+    		padding: 15px 20px;
+		    line-height: 25px;
+		    margin-bottom: 20px;
+    	}
+    	#desc ul ul{
+    		margin-left: 1em;
+    	}
+    </style>
+    <!--全局通用框架样式 end-->
+</head>
+<body data-context="${ctx!}">
+	<section class="content-header">
+        <h1>
+                      新增优惠活动
+        </h1>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i> 资费管理</li>
+            <li><a href="${ctx!}/manage/favorable">优惠活动</a></li>
+            <li class="active">新增优惠活动</li>
+        </ol>
+    </section>
+	<!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <hr style="margin-top:0;">
+                <div class="box-body">
+                	<div class="col-md-offset-2 col-sm-offset-2 bg-info col-md-8 col-sm-8" id="desc">
+                		<ul class="list-unstyled">
+                			<li>
+                				<b>说明</b>：
+                				<ul class="list-unstyled text-muted">
+                					<li><b>赠费比：</b>当前活动充值赠费的比例，比如：赠费比为1.5，充值100元，实际到账为100*1.5=150元</li>
+                					<li><b>最大充值金额：</b>超过该金额，不参与当前优惠活动。</li>
+                					<li><b>最小充值金额：</b>少于该金额，不参与当前优惠活动。</li>
+                				</ul>
+                			</li>
+                		</ul>
+                	</div>
+                	<form class="form-horizontal" method="post" action="${ctx!}/manage/favorable/save" id="newFavorableForm">
+                		<div class="box-body">
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">活动名称：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="text" class="form-control" name="f.name" value="${(f.name)!}">
+                					<#if nameMsg??><em class="error help-block" style="color:#a94442;">${nameMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">开始时间：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<div class="input-group date" id="beginTime">
+		                				<input type="text" size="16" name="f.beginTime" id="t_begintime" value="${(f.beginTime)!}" readonly="readonly" class="form-control"/>
+			                			<span class="input-group-btn">
+			                				<button class="btn default date-reset" type="button">
+			                                    <i class="fa fa-times"></i>
+			                                </button>
+			                                <button class="btn default date-set" type="button">
+			                                    <i class="fa fa-calendar"></i>
+			                                </button>
+			                			</span>
+			                		</div>
+			                		<#if begintime??><em class="error help-block" style="color:#a94442;">${begintime}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">结束时间：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<div class="input-group date" id="endTime">
+		                				<input type="text" size="16" name="f.endTime" id="t_endtime" value="${(f.endTime)!}" readonly="readonly" class="form-control"/>
+			                			<span class="input-group-btn">
+			                				<button class="btn default date-reset" type="button">
+			                                    <i class="fa fa-times"></i>
+			                                </button>
+			                                <button class="btn default date-set" type="button">
+			                                    <i class="fa fa-calendar"></i>
+			                                </button>
+			                			</span>
+			                		</div>
+			                		<#if endtimeMsg??><em class="error help-block" style="color:#a94442;">${endtimeMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">赠费比：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="number" class="form-control" name="f.rate" value="${(f.rate)!}">
+                					<#if rateMsg??><em class="error help-block" style="color:#a94442;">${rateMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">最小充值金额：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="number" class="form-control" id="minCharge" name="f.mincharge" value="${(f.mincharge)!}">
+                					<#if minchargeMsg??><em class="error help-block" style="color:#a94442;">${minchargeMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+                				<label class="col-md-2 col-sm-2 col-md-offset-2 col-sm-offset-2 control-label">最大充值金额：</label>
+                				<div class="col-md-4 col-sm-4">
+                					<input type="number" class="form-control" id="maxCharge" name="f.maxcharge" value="${(f.maxcharge)!}">
+                					<#if maxchargeMsg??><em class="error help-block" style="color:#a94442;">${maxchargeMsg}</em></#if>
+                				</div>
+                			</div>
+                			<div class="form-group">
+	                        	<div class="col-sm-offset-4 col-md-offset-4 col-sm-4 col-md-4">
+	                        		<button class="btn btn-primary" type="submit">提交</button>&nbsp;&nbsp;&nbsp;&nbsp;
+	                        		<a class="btn btn-default" href="${ctx!}/manage/favorable">返回</a>
+	                        	</div>
+	                        </div>
+                		</div>
+                	</form>
+                </div>
+            </div>
+        </div>
+    </section>
+<script src="${ctx!}/content/ui/global/jQuery/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+
+<script src="${ctx!}/content/ui/global/bootstrap/js/bootstrap.min.js"></script>
+<script src="${ctx!}/content/min/js/supershopui.common.js"></script>
+<script src="${ctx!}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx!}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${ctx!}/content/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="${ctx!}/js/common.js"></script>
+<script>
+	$(function(){
+		$("#beginTime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            //minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd hh:ii:ss", //选择日期后，文本框显示的日期格式,
+            pickerPosition: ("bottom-left")
+        });
+		$("#endTime").datetimepicker({
+            language: 'zh-CN',
+            autoclose: true,
+            //minView: "month", //选择日期后，不会再跳转去选择时分秒
+            format: "yyyy-mm-dd hh:ii:ss", //选择日期后，文本框显示的日期格式
+            pickerPosition: ("bottom-left")
+        });
+		$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+		
+		//添加自定义验证
+		$.validator.addMethod("morethan",function(value,element,param){
+			var flag=true;
+			var p1=$(param).val();
+			if(!isNaN(p1)&&!isNaN(value)){
+				p1=parseFloat(p1);
+				value=parseFloat(value);
+				flag=value>p1;
+			}
+			return this.optional(element) || flag;
+		},"");
+		
+		$.validator.addMethod("lessthan",function(value,element,param){
+			var flag=true;
+			var p1=$(param).val();
+			if(!isNaN(p1)&&!isNaN(value)){
+				p1=parseFloat(p1);
+				value=parseFloat(value);
+				flag=value<p1;
+			}
+			return this.optional(element) || flag;
+		},"");
+		
+		$.validator.addMethod("beforeDate",function(value,element,param){
+			var flag=true;
+			var p1=$(param).val();
+			if(p1&&value){
+				try{
+					p1=Date.parse(new Date(p1));
+					value=Date.parse(new Date(value));
+					flag=value<p1;
+				}catch(e){
+					console.log(e);
+				}
+			}
+			return this.optional(element) || flag;
+		},"");
+		
+		$.validator.addMethod("afterDate",function(value,element,param){
+			var flag=true;
+			var p1=$(param).val();
+			if(p1&&value){
+				try{
+					p1=Date.parse(new Date(p1));
+					value=Date.parse(new Date(value));
+					flag=value>p1;
+				}catch(e){
+					console.log(e);
+				}
+			}
+			return this.optional(element) || flag;
+		},"");
+		
+		$("#newFavorableForm").validate({
+			debug:false,
+			rules:{
+				"f.name":{
+					required:true,
+					maxlength:15
+				},
+				"f.beginTime":{
+					required:true,
+					//beforeDate:"#t_endtime"
+				},
+				"f.endTime":{
+					required:true,
+					afterDate:"#t_begintime"
+				},
+				"f.rate":{
+					required:true,
+					number:true,
+					min:1,
+					max:999.99
+				},
+				"f.mincharge":{
+					required:true,
+					number:true,
+					min:0,
+					//lessthan:"#maxCharge"
+				},
+				"f.maxcharge":{
+					required:true,
+					number:true,
+					min:0,
+					morethan:"#minCharge"
+				}
+			},
+			messages:{
+				"f.name":{
+					required:"请输入活动名称",
+					maxlength:"活动名称长度不能超过15个字符"
+				},
+				"f.beginTime":{
+					required:"请选择活动开始时间",
+					beforeDate:"活动开始时间必须在结束时间之前"
+				},
+				"f.endTime":{
+					required:"请选择活动结束时间",
+					afterDate:"活动结束时间必须在开始时间之后"
+				},
+				"f.rate":{
+					required:"请输入赠费比",
+					number:"赠费比必须为有效数字",
+					min:"赠费比不能小于1",
+					max:"赠费比不能大于999.99"
+				},
+				"f.mincharge":{
+					required:"请输入最小充值金额",
+					number:"充值金额必须为有效数字",
+					min:"最小充值金额不能小于0",
+					lessthan:"最小充值金额必须小于最大充值金额"
+				},
+				"f.maxcharge":{
+					required:"请输入最大充值金额",
+					number:"充值金额必须为有效数字",
+					min:"最大充值金额不能小于0",
+					morethan:"最大充值金额必须大于最小充值金额"
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>
