@@ -191,13 +191,15 @@
 			var toDate=$("#to_datetime>input[type=text]").val();
 			var userType=$("#userType").val();
 			var operaResult=$("#operaResult").val();
+			var operaType=$("#operaType").val();
 			var queryJson={
 					month:month,
 					userType:userType,
 					operaResult:operaResult,
 					username:username,
 					startTime:fromDate,
-					endTime:toDate
+					endTime:toDate,
+					operaType:operaType
 			};
 			lp.search(queryJson);
 		}); 

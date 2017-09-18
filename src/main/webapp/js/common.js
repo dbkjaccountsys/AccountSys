@@ -101,7 +101,7 @@ if($.fn&&undefined!==layer){
         var options = $.extend(defaults, options);
         var _width = top.$(window).width() > parseInt(options.width.replace('px', '')) ? options.width : top.$(window).width() + 'px';
         var _height = top.$(window).height() > parseInt(options.height.replace('px', '')) ? options.height : top.$(window).height() + 'px';
-        layer.open({
+        top.layer.open({
             id: options.id,
             type: 2,
             shade: options.shade,

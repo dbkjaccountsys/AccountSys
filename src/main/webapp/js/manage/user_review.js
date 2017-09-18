@@ -63,6 +63,12 @@ var urp={
 	//获取审核历史记录
 	getHistory:function(dom){
 		var id=$(dom).closest("tr").find("td:eq(2)").text();
-		location.href=common.getContext()+"/manage/userReview/history/"+id;
+		$.fn.modalOpen({
+			title: '历史记录',
+            width: "1000px",
+            height: "500px",
+            url: common.getContext()+"/manage/userReview/history/"+id,
+            btn: null,
+		});
 	}
 }
