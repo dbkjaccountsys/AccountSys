@@ -218,8 +218,6 @@ public class UserReviewService {
 			userInfo.setAppSecret(RandomUtil.GetRandomString(32));
 			
 			history.setIspass(ReviewStatus.PASS.getCode());
-			
-<<<<<<< HEAD
 			userMail.setContent("您的资料已经审核通过。");
 		}else if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(userReviewDto.getIspass())){
 			//审核不通过
@@ -230,18 +228,6 @@ public class UserReviewService {
 			history.setRemark(userReviewDto.getRemark());
 			
 			userMail.setContent("您的资料审核未通过，未通过原因请查看申请记录。");
-=======
-			userMail.setContent("您的资料已经审核通过�?");
-		}else if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(userReviewDto.getIspass())){
-			//审核不�?�过
-			userInfo.setIspass(ReviewStatus.REJECT.getCode());
-			userInfo.setRemark(userReviewDto.getRemark());
-			
-			history.setIspass(ReviewStatus.REJECT.getCode());
-			history.setRemark(userReviewDto.getRemark());
-			
-			userMail.setContent("您的资料审核未�?�过，未通过原因请查看申请记录�??");
->>>>>>> branch 'master' of git@github.com:dbkjaccountsys/AccountSys.git
 		}else{
 			//未知操作
 			if(logger.isErrorEnabled()){
