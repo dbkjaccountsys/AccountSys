@@ -2,7 +2,7 @@ package com.dbkj.account.dic;
 
 /**
  * 公用常量
- * @author 钦春榜
+ * @author 钦春�?
  *
  */
 public interface Constant {

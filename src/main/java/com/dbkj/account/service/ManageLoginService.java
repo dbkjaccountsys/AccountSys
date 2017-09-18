@@ -61,14 +61,14 @@ public class ManageLoginService {
 	}
 	
 	/** 
-	 * 重置sessionid，原session中的数据自动转存到新session中 
+	 * 重置sessionid，原session中的数据自动转存到新session�? 
 	 * @param request 
 	 */  
 	public HttpSession reGenerateSessionId(HttpServletRequest request){  
 	      
 	    HttpSession session = request.getSession();  
 	      
-	    //首先将原session中的数据转移至一临时map中  
+	    //首先将原session中的数据转移至一临时map�?  
 	    Map<String,Object> tempMap = new HashMap<String,Object>();  
 	    Enumeration<String> sessionNames = session.getAttributeNames();  
 	    while(sessionNames.hasMoreElements()){  
@@ -94,7 +94,7 @@ public class ManageLoginService {
 	 * @return
 	 */
 	public boolean isLoginTooManyTimes(String username,HttpServletRequest request){
-		UserLog.dao.createTable();//先创建表，防止查询错误
+		UserLog.dao.createTable();//先创建表，防止查询错�?
 		String sql=SqlUtil.getSql(UserLog.class, "getLoginFailTimes")
 				.replace(Constant.BASE_LOG_TABLE, Constant.BASE_LOG_TABLE+"_"+DateUtil.getDateStr("yyyyMM"));
 		//登陆错误监测时间

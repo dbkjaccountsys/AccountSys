@@ -68,12 +68,12 @@ public class ValidateUtil {
     }
     
     /**
-     * 验证是否包含特殊字符串
+     * 验证是否包含特殊字符�?
      * @param value
      * @return
      */
     public static boolean validateSpecialString(String value){
-        String regex="[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
+        String regex="[`~!@#\\$%\\^\\&\\*\\(\\)_\\+<>\\?:\"\\{\\},\\.\\\\/;'\\[\\]]";
         Pattern pattern=Pattern.compile(regex);
         Matcher matcher=pattern.matcher(value);
         return matcher.find();
@@ -110,8 +110,9 @@ public class ValidateUtil {
     	return matcher.matches();
     }
     
+    
     /**
-     * 验证是否是有效数字格式，包括正负数、小数
+     * 验证是否是有效数字格式，包括正负数和小数
      * @param str
      * @return
      */
@@ -136,6 +137,6 @@ public class ValidateUtil {
     
     
     public static void main(String[] args) {
-		System.out.println(isDigital("60.00"));
+		System.out.println(validateSpecialString("$57*"));
 	}
 }

@@ -72,6 +72,8 @@ public class VoiceReviewController extends Controller{
 		render("review.html");
 	}
 	
+	
+	
 	public void history(){//用户资料审核历史
 		long vid=getParaToLong();
 		setAttr("vid", vid);

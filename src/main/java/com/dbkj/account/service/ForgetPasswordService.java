@@ -26,7 +26,7 @@ public class ForgetPasswordService {
 		}
 		if(StrKit.isBlank(code)||!code.equals(controller.getSessionAttr(VertifyCodeService.VERTIFY_CODE).toString())){
 			result.setSuccess(false);
-			result.setReason("验证码错误");
+			result.setReason("验证码错�?");
 			return result;
 		}
 		//设置session有效期为5分钟

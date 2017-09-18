@@ -24,7 +24,7 @@ public class ManageHomeService {
 		List<MenuNode> menuList=new ArrayList<MenuNode>();
 		MenuNode mn=new MenuNode();
 		mn.setId("0");
-		mn.setText("我的工作台");
+		mn.setText("我的工作�?");
 		mn.setIsHeader(true);
 		menuList.add(mn);
 		
@@ -47,7 +47,7 @@ public class ManageHomeService {
 				menuList.add(node);
 			}
 		}
-		//按照order的大小排序
+		//按照order的大小排�?
 		Collections.sort(menuList, new MenuComparator());
 		menuList.add(getDefaultNode());
 		return menuList;
@@ -99,7 +99,7 @@ public class ManageHomeService {
 			}
 		}
 		if(children.size()>0){
-			//按照order的大小排序
+			//按照order的大小排�?
 			Collections.sort(children, new MenuComparator());
 			menu.setChildren(children);
 		}

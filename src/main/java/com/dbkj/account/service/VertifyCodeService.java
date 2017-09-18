@@ -23,7 +23,7 @@ private static final Logger logger=LoggerFactory.getLogger(ManageLoginService.cl
 	public static final String VERTIFY_CODE="vertify_code";
 	
 	/**
-	 * 生成验证码
+	 * 生成验证�?
 	 * @param controller
 	 * @return
 	 */
@@ -49,7 +49,7 @@ private static final Logger logger=LoggerFactory.getLogger(ManageLoginService.cl
 		if(!dir.exists()){
 			dir.mkdirs();
 		}
-		//生成验证码和验证码图片
+		//生成验证码和验证码图�?
 		File file=new File(dir,UUID.randomUUID().toString()+".jpg");
 		RandomResult result=VerificationCodeTool.randomString();
 		//设置session的过期时间为5分钟

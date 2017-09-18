@@ -8,7 +8,7 @@ public class Page<T> {
 		this.currentPage=1;
 		this.pageSize=20;
 	}
-
+	
 	private int currentPage;//当前页
 	private int pageSize;//每页显示的数据行数
 	private int totalCount;//总页数

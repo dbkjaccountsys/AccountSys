@@ -40,7 +40,7 @@ public class UserReviewService {
 	private AuthorityService authorityService;
 
 	/**
-	 * 用户审核的数据分页
+	 * 用户审核的数据分�?
 	 * @param page 
 	 * @param fromDate 
 	 * @param toDate
@@ -76,7 +76,7 @@ public class UserReviewService {
 		String whereStr=where.toString();
 		Object[] paramsArray=params.toArray(new Object[params.size()]);
 		
-		//获取总数据条数
+		//获取总数据条�?
 		String countSql=SqlUtil.getSql(UserInfo.class, "getCount");
 		if(!StrKit.isBlank(whereStr)){
 			countSql+=" and"+whereStr.substring(0,whereStr.length()-4);
@@ -88,7 +88,7 @@ public class UserReviewService {
 		page.setTotalCount(new Double(Math.ceil(d)).intValue());
 		
 		int limit=(page.getCurrentPage()-1)*page.getPageSize();
-//		//当limit等于0时，去掉子查询中desc，改为升序排序
+//    	//当limit等于0时，去掉子查询中desc，改为升序排序
 //		if(limit==0){
 //			int n=str2.indexOf("desc");
 //			String s1=str2.substring(0, n);
@@ -143,6 +143,7 @@ public class UserReviewService {
 		if(authorityService.isPermissionOfAdmin(roleId, "/manage/userReview/userinfo")){
 			jsFunction.append("content+=\"&nbsp;&nbsp;<a class=\\\"review\\\" href=\\\"javascript:;\\\" title=\\\"审核\\\"><i class=\\\"fa fa-edit fa-2\\\"></i></a>&nbsp;&nbsp;\";");
 		}
+
 		//判断用户是否查看审核历史的权限
 		if(authorityService.isPermissionOfAdmin(roleId, "/manage/userReview/history")){
 			jsFunction.append("content+=\"&nbsp;&nbsp;<a class=\\\"history\\\" href=\\\"javascript:;\\\" title=\\\"审核历史\\\"><i class=\\\"fa fa-history fa-2\\\"></i></a>&nbsp;&nbsp;\";");
@@ -218,6 +219,7 @@ public class UserReviewService {
 			
 			history.setIspass(ReviewStatus.PASS.getCode());
 			
+<<<<<<< HEAD
 			userMail.setContent("您的资料已经审核通过。");
 		}else if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(userReviewDto.getIspass())){
 			//审核不通过
@@ -228,6 +230,18 @@ public class UserReviewService {
 			history.setRemark(userReviewDto.getRemark());
 			
 			userMail.setContent("您的资料审核未通过，未通过原因请查看申请记录。");
+=======
+			userMail.setContent("您的资料已经审核通过�?");
+		}else if(String.valueOf(ReviewStatus.REJECT.getCode()).equals(userReviewDto.getIspass())){
+			//审核不�?�过
+			userInfo.setIspass(ReviewStatus.REJECT.getCode());
+			userInfo.setRemark(userReviewDto.getRemark());
+			
+			history.setIspass(ReviewStatus.REJECT.getCode());
+			history.setRemark(userReviewDto.getRemark());
+			
+			userMail.setContent("您的资料审核未�?�过，未通过原因请查看申请记录�??");
+>>>>>>> branch 'master' of git@github.com:dbkjaccountsys/AccountSys.git
 		}else{
 			//未知操作
 			if(logger.isErrorEnabled()){
@@ -269,6 +283,7 @@ public class UserReviewService {
 					userMail.save();
 					userInfo.update();
 					String username=User.dao.findById(userInfo.getUserid()).getUsername();
+<<<<<<< HEAD
 					logService.addLog(request, "审核用户id为"+userInfo.getUserid()+"用户名为"+username+"的用户资料，审核结果为"+
 							(userInfo.getIspass()==ReviewStatus.PASS.getCode()?"通过审核":"驳回"),
 							OperaResult.SUCCESS, null);
@@ -292,6 +307,31 @@ public class UserReviewService {
 	private String copyImage(String path,HttpServletRequest request) throws IOException{
 		String dirName="uploadimages";
 		//获取文件后缀即文件类型
+=======
+					logService.addLog(request, "审核用户id�?"+userInfo.getUserid()+"用户名为"+username+"的用户资料，审核结果�?"+
+							(userInfo.getIspass()==ReviewStatus.PASS.getCode()?"通过审核":"驳回"),
+							OperaResult.SUCCESS, null);
+					return true;
+				}catch(Exception e){
+					if(logger.isErrorEnabled()){
+						logger.error(e.getMessage(),e);
+					}
+					return false;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 复制证件照片
+	 * @param path
+	 * @throws IOException 
+	 * @return 
+	 */
+	private String copyImage(String path,HttpServletRequest request) throws IOException{
+		String dirName="uploadimages";
+		//获取文件后缀即文件类�?
+>>>>>>> branch 'master' of git@github.com:dbkjaccountsys/AccountSys.git
 		String extension=path.substring(path.lastIndexOf("."));
 		path=WebUtil.getRootPath(request)+File.separator+dirName+File.separator+path;
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyyMM");

@@ -6,7 +6,7 @@ import java.util.UUID;
 public class RandomUtil {
 
 	/**
-     * 获取一个随机的32位字符串
+     * 获取�?个随机的32位字符串
      * @return
      */
     public static String getSeqId() {
@@ -14,7 +14,7 @@ public class RandomUtil {
     }
 
     /**
-     * 获取一个指定长度的随机码
+     * 获取�?个指定长度的随机�?
      * @param len
      * @return
      */
