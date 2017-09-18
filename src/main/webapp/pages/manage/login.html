@@ -72,7 +72,10 @@
             debug:false,
             rules:{
                 "user.username":"required",
-                "user.password":"required",
+                "user.password":{
+                	required:true,
+                	password:false
+                },
                 "user.vertifyCode":{
                 	required:true,
                 	remote:{
