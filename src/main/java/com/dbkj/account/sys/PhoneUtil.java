@@ -6,7 +6,9 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Random;
+
 import com.google.gson.JsonObject;
+
 
 public class PhoneUtil
 {
@@ -33,9 +35,8 @@ public class PhoneUtil
 						}
 						else if(type==1)
 						{
-							json.addProperty("smsContent","你的密码："+code);
+							json.addProperty("smsContent","你的密码�?"+code);
 						}
-						//json.put("longSms","2001");
 						System.out.println(json.toString());
 						URL url = new URL(Config.smsUrl);
 						URLConnection connection = url.openConnection();
@@ -58,7 +59,7 @@ public class PhoneUtil
 						br.close();
 						String result = sb.toString();
 						System.out.println(result);
-						System.out.println("reqid："+reqid);
+						System.out.println("reqid�?"+reqid);
 					}
 					catch(Exception e)
 					{

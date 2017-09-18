@@ -18,10 +18,14 @@ import com.dbkj.account.interceptor.AuthInterceptor;
 import com.dbkj.account.interceptor.LoginInterceptor;
 import com.dbkj.account.interceptor.ResetPasswordInterceptor;
 import com.dbkj.account.interceptor.UserAuthorityTemplateDirectiveInterceptor;
+import com.dbkj.account.sys.form.UserAddTimeOutForm;
 import com.dbkj.account.sys.form.UserEmailForm;
+import com.dbkj.account.sys.form.UserForgetPasswordForm;
 import com.dbkj.account.sys.form.UserLoginForm;
 import com.dbkj.account.sys.form.UserPhoneForm;
 import com.dbkj.account.sys.form.VoiceForm;
+import com.dbkj.account.sys.inter.LoginInter;
+import com.dbkj.account.sys.util.Md5Util;
 import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -31,28 +35,44 @@ import com.jfinal.upload.UploadFile;
 @Clear({LoginInterceptor.class,AuthInterceptor.class,AdminAuthorityTemplateDirectiveInterceptor.class,UserAuthorityTemplateDirectiveInterceptor.class,ResetPasswordInterceptor.class})
 public class UserController extends Controller
 {
-	//是否发送短信，测试用
-	public boolean sendsms = false;
-	
 	public void index()
 	{
 		render("user/userlogin.html");
 	}
 	
+	public void timeout()
+	{
+		render("user/userlogintimeout.html");
+	}
+	
 	public void useradd()
 	{
+		setAttr("count",Config.userAddSendPhoneCount);
+		setAttr("time",Config.userAddSendPhoneTime);
 		render("user/useradd.html");
 	}
 	
 	public void userloginOk()
 	{
 		String phone = getPara("phone");
-		getSession().setAttribute("phone",phone);
-		String sql = "select id from user where phone='"+phone+"'";
+		String type = getPara("type");
+		String sql = "";
+		if(type.equals("phone"))
+		{
+			sql = "select id,phone from user where phone='"+phone+"'";
+		}
+		else if(type.equals("email"))
+		{
+			sql = "select id,phone from user where email='"+phone+"'";
+		}
 		Record record = Db.findFirst(sql);
 		String userid = record.getStr("id");
-		getSession().setAttribute("userid",userid);
-		render("user/userindex.html");
+		String _phone = record.getStr("phone");
+		getSession().setAttribute(Config.sessionPhone,_phone);
+		getSession().setAttribute(Config.sessionUserid,userid);
+		//render("user/userindex.html");
+		setAttr("count",Config.modifyEmailPhoneCount);
+		render("new/index.html");
 	}
 	
 	//测试下载文件
@@ -63,10 +83,99 @@ public class UserController extends Controller
 
 	public void findpassword()
 	{
+		setAttr("count",Config.forgetPasswordCount);
+		setAttr("time",Config.forgetPasswordTime);
 		render("user/findpassword.html");
 	}
 	
-	public void randomImage()
+	public void forgetPassword()
+	{
+		String phone = getPara("phone");
+		String code = getPara("code");
+		String type = getPara("type");
+		if(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYFORGET)==null)
+		{
+			renderText("imagetime");
+			return;
+		}
+		if(!code.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYFORGET).toString().toUpperCase()))
+		{
+			renderText("image");
+			return;
+		}
+		
+		if(type.equals("phone"))
+		{
+			String sql = "select id from user where phone='"+phone+"'";
+			Record record = Db.findFirst(sql);
+			if(record==null)
+			{
+				renderText("no");
+				return;
+			}
+		}
+		else if(type.equals("email"))
+		{
+			String sql = "select id from user where email='"+phone+"'";
+			Record record = Db.findFirst(sql);
+			if(record==null)
+			{
+				renderText("no");
+				return;
+			}
+		}
+		
+		String ip = getRequest().getRemoteAddr();
+		System.out.println("ip:"+ip);
+		if(MapValue.map_user_forget.get(ip)!=null)
+		{
+			UserForgetPasswordForm f = MapValue.map_user_forget.get(ip);
+			int trycount = f.getTrycount();
+			if(trycount>=Integer.parseInt(Config.forgetPasswordCount))
+			{
+				renderText("more");
+				return;
+			}
+			else
+			{
+				trycount++;
+				f.setTrycount(trycount);
+				MapValue.map_user_forget.put(ip,f);
+			}
+		}
+		else
+		{
+			UserForgetPasswordForm f = new UserForgetPasswordForm();
+			f.setDate(new Date());
+			f.setTrycount(1);
+			MapValue.map_user_forget.put(ip,f);
+		}
+		
+		if(type.equals("phone"))
+		{
+			String randomcode = getRanPassword(4);
+			PhoneUtil.sendSms(randomcode,phone,1);
+			System.out.println("手机密码："+randomcode);
+			String sql = "update user set password='"+Md5Util.getMd5Encode(randomcode)+"' where phone='"+phone+"'";
+			Db.update(sql);
+			MapValue.map_login.remove(phone);
+		}
+		else if(type.equals("email"))
+		{
+			String randomcode = getRanPassword(6);
+			EmailUtil.sendEmailPassword(randomcode,phone);
+			System.out.println("邮箱密码："+randomcode);
+			String sql = "update user set password='"+Md5Util.getMd5Encode(randomcode)+"' where email='"+phone+"'";
+			Db.update(sql);
+			sql = "select phone from user where email='"+phone+"'";
+			Record record = Db.findFirst(sql);
+			String ph = record.getStr("phone");
+			MapValue.map_login.remove(ph);
+		}
+		renderText("ok");
+	}
+	
+	public void randomImageEmail()
 	{
 		try
 		{
@@ -77,7 +186,7 @@ public class UserController extends Controller
 			response.setHeader("Cache-Control","no-cache");
 			response.setDateHeader("Expire",0);
 			CreateRandomImageUtil random = new CreateRandomImageUtil();
-			random.getRandcode(request,response);
+			random.getRandcodeEmail(request,response);
 		}
 		catch(Exception e)
 		{
@@ -86,32 +195,80 @@ public class UserController extends Controller
 		renderNull();
 	}
 	
-	public void checkRandomCode()
+	public void randomImageForget()
 	{
-		String vertifyCode = getPara("vertifyCode");
-		//System.out.println("========="+vertifyCode+"==========");
-		if(vertifyCode.toUpperCase().equals(getRequest().getSession().getAttribute("sessionRandomCode").toString().toUpperCase()))
+		try
 		{
-			renderText("true");
+			HttpServletRequest request = getRequest();
+			HttpServletResponse response = getResponse();
+			response.setContentType("image/jpeg");
+			response.setHeader("Pragma","No-cache");
+			response.setHeader("Cache-Control","no-cache");
+			response.setDateHeader("Expire",0);
+			CreateRandomImageUtil random = new CreateRandomImageUtil();
+			random.getRandcodeForget(request,response);
 		}
-		else
+		catch(Exception e)
 		{
-			renderText("false");
+			e.printStackTrace();
 		}
+		renderNull();
 	}
 	
+	public void randomImageUserAdd()
+	{
+		try
+		{
+			HttpServletRequest request = getRequest();
+			HttpServletResponse response = getResponse();
+			response.setContentType("image/jpeg");
+			response.setHeader("Pragma","No-cache");
+			response.setHeader("Cache-Control","no-cache");
+			response.setDateHeader("Expire",0);
+			CreateRandomImageUtil random = new CreateRandomImageUtil();
+			random.getRandcodeUserAdd(request,response);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		renderNull();
+	}
+	
+	public void randomImagePhone()
+	{
+		try
+		{
+			HttpServletRequest request = getRequest();
+			HttpServletResponse response = getResponse();
+			response.setContentType("image/jpeg");
+			response.setHeader("Pragma","No-cache");
+			response.setHeader("Cache-Control","no-cache");
+			response.setDateHeader("Expire",0);
+			CreateRandomImageUtil random = new CreateRandomImageUtil();
+			random.getRandcodePhone(request,response);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		renderNull();
+	}
+	
+	/*
 	public void userEmailUpdate()
 	{
 		String email = getPara("email");
-		String userid = getSession().getAttribute("userid").toString();
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
 		String sql = "update user set email='"+email+"' where id="+userid;
 		Db.update(sql);
 		render("user/useremailupdateok.html");
 	}
+	*/
 	
 	public void userProfileUpdate()
 	{
-		String userid = getSession().getAttribute("userid").toString();
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
 		String username = getPara("username");
 		String usernamehas = getPara("usernamehas");
 		String name = getPara("name");
@@ -128,8 +285,8 @@ public class UserController extends Controller
 	
 	public void editprofile()
 	{
-		String userid = getSession().getAttribute("userid").toString();
-		String phone = getSession().getAttribute("phone").toString();
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
+		String phone = getSession().getAttribute(Config.sessionPhone).toString();
 		String sql = "select username,name,email from user where id="+userid;
 		Record record = Db.findFirst(sql);
 		setAttr("username",record.getStr("username")==null?"":record.getStr("username"));
@@ -141,16 +298,18 @@ public class UserController extends Controller
 		}
 		setAttr("email",email);
 		setAttr("phone",phone);
+		sql = "select email from user_info_reset where userid="+userid;
+		record = Db.findFirst(sql);
+		if(record!=null)
+		{
+			String e = record.getStr("email")==null?"":record.getStr("email");
+			setAttr("emailreset",e);
+		}
+		else
+		{
+			setAttr("emailreset","");
+		}
 		render("user/usereditprofile.html");
-	}
-	
-	public void editemail()
-	{
-		String userid = getSession().getAttribute("userid").toString();
-		String sql = "select email from user where id="+userid;
-		Record record = Db.findFirst(sql);
-		setAttr("email",record.getStr("email")==null?"":record.getStr("email"));
-		render("user/usereditemail.html");
 	}
 	
 	public void voiceadd()
@@ -166,105 +325,12 @@ public class UserController extends Controller
 		redirect(getRequest().getContextPath()+"/user/listVoice");
 	}
 	
-	public void checkEmailCode()
-	{
-		try
-		{
-			String phone = getSession().getAttribute("phone").toString();
-			String code = getPara("code");
-			UserEmailForm f = MapValue.map_email.get(phone);
-			if(f==null)
-			{
-				renderText("no");
-			}
-			else
-			{
-				String c = f.getCode();
-				if(code.equals(c))
-				{
-					renderText("ok");
-				}
-				else
-				{
-					renderText("no");
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void checkEmailCodeForget()
-	{
-		try
-		{
-			String code = getPara("code");
-			String email = getPara("email");
-			String sql = "select phone from user where email='"+email+"'";
-			Record record = Db.findFirst(sql);
-			String phone = record.getStr("phone");
-			UserEmailForm f = MapValue.map_email.get(phone);
-			if(f==null)
-			{
-				renderText("no");
-			}
-			else
-			{
-				String c = f.getCode();
-				if(code.equals(c))
-				{
-					renderText("ok");
-				}
-				else
-				{
-					renderText("no");
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void checkSmsCodeForget()
-	{
-		try
-		{
-			String code = getPara("code");
-			String phone = getPara("phone");
-			UserPhoneForm f = MapValue.map_phone.get(phone);
-			if(f==null)
-			{
-				renderText("no");
-			}
-			else
-			{
-				String c = f.getCode();
-				if(code.equals(c))
-				{
-					renderText("ok");
-				}
-				else
-				{
-					renderText("no");
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	public void userEmailFindPassword()
 	{
 		String email = getPara("email");
 		String password = getRanPassword(6);
 		System.out.println("密码："+password);
-		String sql = "update user set password='"+password+"' where email='"+email+"'";
+		String sql = "update user set password='"+Md5Util.getMd5Encode(password)+"' where email='"+email+"'";
 		Db.update(sql);
 		EmailUtil.sendEmail(password,email);
 		render("user/userpasswordemail.html");
@@ -275,7 +341,7 @@ public class UserController extends Controller
 		String phone = getPara("phone");
 		String password = getRanPassword(6);
 		System.out.println("密码："+password);
-		String sql = "update user set password='"+password+"' where phone='"+phone+"'";
+		String sql = "update user set password='"+Md5Util.getMd5Encode(password)+"' where phone='"+phone+"'";
 		Db.update(sql);
 		PhoneUtil.sendSms(password,phone,1);
 		MapValue.map_login.remove(phone);
@@ -284,7 +350,7 @@ public class UserController extends Controller
 	
 	public void checkEmail()
 	{
-		String userid = getSession().getAttribute("userid").toString();
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
 		String email = getPara("email");
 		String sql = "select id from user where id="+userid + " and email='"+email+"'";
 		Record record = Db.findFirst(sql);
@@ -298,14 +364,6 @@ public class UserController extends Controller
 			record = Db.findFirst(sql);
 			if(record==null)
 			{
-				String code = getRanCodeEmail(6);
-				System.out.println("emailcode:"+code);
-				EmailUtil.sendEmail(code,email);
-				String phone = getSession().getAttribute("phone").toString();
-				UserEmailForm f = new UserEmailForm();
-				f.setCode(code);
-				f.setDate(new Date());
-				MapValue.map_email.put(phone,f);
 				renderText("no");
 			}
 			else
@@ -315,50 +373,241 @@ public class UserController extends Controller
 		}
 	}
 	
-	public void checkEmailForget()
+	public void testSendResetEmail()
 	{
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
+		String vertifyCode = getPara("vertifyCode");
+		if(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYEMAIL)==null)
+		{
+			renderText("imagetime");
+			return;
+		}
+		if(!vertifyCode.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYEMAIL).toString().toUpperCase()))
+		{
+			renderText("no");
+			return;
+		}
 		String email = getPara("email");
-		String sql = "select phone from user where email='"+email+"'";
+		String random = getRanCodeEmailReset(6);
+		Date date = new Date();
+		SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		SimpleDateFormat sf_date = new SimpleDateFormat("yyyy-MM-dd");
+		String time = sf.format(date);
+		String date_time = sf_date.format(date);
+		String urlstring = userid + email + random + time;
+		urlstring = Md5Util.getMd5Encode(urlstring);
+		urlstring += Md5Util.getMd5Encode(urlstring);
+		
+		String sql = "select id,date_format(time,'%Y-%m-%d') as date,trycount from user_info_reset where userid="+userid;
 		Record record = Db.findFirst(sql);
 		if(record!=null)
 		{
-			String phone = record.getStr("phone");
-			String code = getRanCodeEmail(6);
-			System.out.println("emailcode:"+code);
-			EmailUtil.sendEmail(code,email);
-			UserEmailForm f = new UserEmailForm();
-			f.setCode(code);
-			f.setDate(new Date());
-			MapValue.map_email.put(phone,f);
-			renderText("yes");
+			int id = record.getInt("id");
+			String _date = record.getStr("date");
+			int trycount = record.getInt("trycount");
+			if(date_time.compareTo(_date)<=0)
+			{
+				if(trycount>=Integer.parseInt(Config.modifyEmailPhoneCount))
+				{
+					renderText("more");
+				}
+				else
+				{
+					trycount++;
+					sql = "update user_info_reset set urlstring='"+urlstring+"',time=now(),email='"+email+"',trycount="+trycount+",status=0,emailtime=now() where id="+id;
+					Db.update(sql);
+					renderText("ok");
+				}
+			}
+			else
+			{
+				sql = "update user_info_reset set urlstring='"+urlstring+"',time=now(),email='"+email+"',trycount=1,status=0,emailtime=now() where id="+id;
+				Db.update(sql);
+				renderText("ok");
+			}
 		}
 		else
 		{
-			renderText("no");
+			sql = "insert into user_info_reset (urlstring,userid,time,email,trycount,status,emailtime) values ('"+urlstring+"',"+userid+",now(),'"+email+"',1,0,now())";
+			Db.update(sql);
+			renderText("ok");
 		}
 	}
 	
-	public void checkSmsForget()
+	public void SendResetPhoneOk()
 	{
+		try
+		{
+			String code = getPara("code");
+			String userid = getSession().getAttribute(Config.sessionUserid).toString();
+			if(getRequest().getSession().getAttribute(Config.sessionPhoneResetCode)==null)
+			{
+				renderText("codetime");
+				return;	
+			}
+			if(!code.equals(getRequest().getSession().getAttribute(Config.sessionPhoneResetCode).toString()))
+			{
+				renderText("no");
+				return;
+			}
+			Date date = new Date();
+			SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sql = "select date_format(phonetime,'%Y-%m-%d %H:%i:%s') as time from user_info_reset where userid="+userid;
+			Record record = Db.findFirst(sql);
+			String time = record.getStr("time");
+			Date date_phone = sf.parse(time);
+			if((date.getTime()-date_phone.getTime())>1000*60*Integer.parseInt(Config.modifyPhoneTime))
+			{
+				renderText("timeout");
+				return;
+			}
+			String phone = getPara("phone");
+			sql = "update user set phone='"+phone+"' where id="+userid;
+			Db.update(sql);
+			sql = "update user_info_reset set status=1 where userid="+userid;
+			Db.update(sql);
+			renderText("ok");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			renderText("error");
+		}
+	}
+	 
+	public void testSendResetPhone()
+	{
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
+		String vertifyCode = getPara("vertifyCode");
+		if(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYPHONE)==null)
+		{
+			renderText("timeout");
+			return;
+		}
+		if(!vertifyCode.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYPHONE).toString().toUpperCase()))
+		{
+			renderText("no");
+			return;
+		}
 		String phone = getPara("phone");
-		String sql = "select id from user where phone='"+phone+"'";
+		String random = getRanCodePhone(4);
+		Date date = new Date();
+		SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		SimpleDateFormat sf_date = new SimpleDateFormat("yyyy-MM-dd");
+		String time = sf.format(date);
+		String date_time = sf_date.format(date);
+		String urlstring = userid + phone + random + time;
+		urlstring = Md5Util.getMd5Encode(urlstring);
+		urlstring += Md5Util.getMd5Encode(urlstring);
+		
+		String sql = "select id,date_format(time,'%Y-%m-%d') as date,trycount from user_info_reset where userid="+userid;
 		Record record = Db.findFirst(sql);
 		if(record!=null)
 		{
-			String code = getRanCodePhone(4);
-			PhoneUtil.sendSms(code,phone,0);
-			System.out.println("短信验证码："+code);
-			
-			UserPhoneForm f = new UserPhoneForm();
-			f.setCode(code);
-			f.setDate(new Date());
-			MapValue.map_phone.put(phone,f);
-			
-			renderText("yes");
+			int id = record.getInt("id");
+			String _date = record.getStr("date");
+			int trycount = record.getInt("trycount");
+			if(date_time.compareTo(_date)<=0)
+			{
+				if(trycount>=Integer.parseInt(Config.modifyEmailPhoneCount))
+				{
+					renderText("more");
+				}
+				else
+				{
+					trycount++;
+					sql = "update user_info_reset set urlstring='"+urlstring+"',time=now(),phone='"+phone+"',trycount="+trycount+",status=0,phonetime=now() where id="+id;
+					Db.update(sql);
+					renderText("ok");
+				}
+			}
+			else
+			{
+				sql = "update user_info_reset set urlstring='"+urlstring+"',time=now(),phone='"+phone+"',trycount=1,status=0,phonetime=now() where id="+id;
+				Db.update(sql);
+				renderText("ok");
+			}
 		}
 		else
 		{
+			sql = "insert into user_info_reset (urlstring,userid,time,phone,trycount,status,phonetime) values ('"+urlstring+"',"+userid+",now(),'"+phone+"',1,0,now())";
+			Db.update(sql);
+			renderText("ok");
+		}
+	}
+	
+	public void SendResetEmail()
+	{
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
+		String vertifyCode = getPara("vertifyCode");
+		if(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYEMAIL)==null)
+		{
+			renderText("timeout");
+			return;
+		}
+		if(!vertifyCode.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYEMAIL).toString().toUpperCase()))
+		{
 			renderText("no");
+			return;
+		}
+		String sql = "select urlstring,email from user_info_reset where userid="+userid;
+		Record record = Db.findFirst(sql);
+		String urlstring = record.getStr("urlstring");
+		String email = record.getStr("email");
+		urlstring = Config.emailChangeUrl + "?id="+urlstring;
+		System.out.println("urlstring:"+urlstring);
+		EmailUtil.sendEmailHtml(urlstring,email);
+		renderText("ok");
+	}
+	
+	public void SendResetPhone()
+	{
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
+		String vertifyCode = getPara("vertifyCode");
+		if(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYPHONE)==null)
+		{
+			renderText("timeout");
+			return;
+		}
+		if(!vertifyCode.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYPHONE).toString().toUpperCase()))
+		{
+			renderText("no");
+			return;
+		}
+		String sql = "select phone from user_info_reset where userid="+userid;
+		Record record = Db.findFirst(sql);
+		String phone = record.getStr("phone");
+		String code = getRanCodePhone(4);
+		System.out.println("phone:"+phone);
+		System.out.println("code:"+code);
+		getSession().setAttribute(Config.sessionPhoneResetCode,code);
+		PhoneUtil.sendSms(code,phone,0);
+		renderText("ok");
+	}
+	
+	public void changeEmailLink()
+	{
+		//String userid = getRequest().getSession().getAttribute(Config.sessionUserid).toString();
+		String id = getPara("id");
+		String sql = "select email,userid from user_info_reset where urlstring='"+id+"'";
+		Record record = Db.findFirst(sql);
+		if(record==null)
+		{
+			setAttr("result","no");
+			render("user/useremailresetok.html");
+		}
+		else
+		{
+			String userid = record.getStr("userid");
+			String email = record.getStr("email");
+			System.out.println("email:"+email);
+			sql = "update user set email='"+email+"' where id="+userid;
+			Db.update(sql);
+			//sql = "delete from user_info_reset where userid="+userid;
+			sql = "update user_info_reset set status=1 where userid="+userid;
+			Db.update(sql);
+			setAttr("result","ok");
+			render("user/useremailresetok.html");
 		}
 	}
 	
@@ -449,10 +698,53 @@ public class UserController extends Controller
 		render("user/voiceview.html");
 	}
 	
+	public void userAddCheckUserName()
+	{
+		String username = getPara("username");
+		String sql = "select id from user where username='"+username+"'";
+		Record record = Db.findFirst(sql);
+		if(record!=null)
+		{
+			renderText("has");
+		}
+		else
+		{
+			renderText("no");
+		}
+	}
+	
+	public void userAddCheckPhone()
+	{
+		String phone = getPara("phone");
+		String sql = "select id from user where phone='"+phone+"'";
+		Record record = Db.findFirst(sql);
+		if(record!=null)
+		{
+			renderText("has");
+		}
+		else
+		{
+			renderText("no");
+		}
+	}
+
+	public void userAddCheckCode()
+	{
+		String code = getPara("code");
+		if(!code.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYUSERADD).toString().toUpperCase()))
+		{
+			renderText("no");
+		}
+		else
+		{
+			renderText("ok");
+		}
+	}
+	
 	public void listVoice()
 	{
 		List<VoiceForm> listVoice = new ArrayList<VoiceForm>();
-		String userid = getSession().getAttribute("userid").toString();
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
 		String sql = "select id,userid,date_format(uploadtime,'%Y-%m-%d %H:%i:%s') as uploadtime,filename,voicename,status from user_voice where userid="+userid+" order by status,uploadtime desc";
 		List<Record> list = Db.find(sql);
 		for(int i=0;i<list.size();i++)
@@ -492,11 +784,14 @@ public class UserController extends Controller
 	
 	public void userInfoEnter()
 	{
-		String userid = getSession().getAttribute("userid").toString();
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
 		String companyname = getPara("companyname");
 		String contact = getPara("contact");
 		String contactphone = getPara("contactphone");
+		String accountname = getPara("accountname");
 		String publicaccount = getPara("publicaccount");
+		String bank = getPara("bank");
+		String taxaccount = getPara("taxaccount");
 		String licence = getPara("licence");
 		String idcard = getPara("idcard");
 		String safety = getPara("safety");
@@ -504,12 +799,12 @@ public class UserController extends Controller
 		Record record = Db.findFirst(test);
 		if(record==null)
 		{
-			String sql = "insert into user_info (userid,companyname,contact,contactphone,publicaccount,licence,idcard,safety,ispass,create_time,modify_time) values ("+userid+",'"+companyname+"','"+contact+"','"+contactphone+"','"+publicaccount+"','"+licence+"','"+idcard+"','"+safety+"',0,now(),now())";
+			String sql = "insert into user_info (userid,companyname,contact,contactphone,publicaccount,licence,idcard,safety,ispass,create_time,modify_time,accountname,bank,taxaccount) values ("+userid+",'"+companyname+"','"+contact+"','"+contactphone+"','"+publicaccount+"','"+licence+"','"+idcard+"','"+safety+"',0,now(),now(),'"+accountname+"','"+bank+"','"+taxaccount+"')";
 			Db.update(sql);
 		}
 		else
 		{
-			String sql = "update user_info set companyname='"+companyname+"',contact='"+contact+"',contactphone='"+contactphone+"',publicaccount='"+publicaccount+"',licence='"+licence+"',idcard='"+idcard+"',safety='"+safety+"',ispass=0,modify_time=now()";
+			String sql = "update user_info set companyname='"+companyname+"',contact='"+contact+"',contactphone='"+contactphone+"',publicaccount='"+publicaccount+"',licence='"+licence+"',idcard='"+idcard+"',safety='"+safety+"',ispass=0,modify_time=now(),accountname='"+accountname+"',bank='"+bank+"',taxaccount='"+taxaccount+"' where userid="+userid;
 			Db.update(sql);
 		}
 		render("user/userinfoupdateok.html");
@@ -517,7 +812,7 @@ public class UserController extends Controller
 	
 	public void voiceInfoEnter()
 	{
-		String userid = getSession().getAttribute("userid").toString();
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
 		String filename = getPara("filename");
 		String filepath = getPara("voice");
 		String voicename = getPara("voicename");
@@ -556,7 +851,7 @@ public class UserController extends Controller
 	{
 		UploadFile uploadFile = getFile();
 		File filesrc = uploadFile.getFile();
-		String phone = getSession().getAttribute("phone").toString();
+		String phone = getSession().getAttribute(Config.sessionPhone).toString();
 		String path = getSession().getServletContext().getRealPath("/uploadvoices/"+phone);
 		File folder = new File(path);
 		if(!folder.exists())
@@ -597,7 +892,7 @@ public class UserController extends Controller
 		String ext = name.substring(pos+1);
 		File filesrc = uploadFile.getFile();
 		String type = getPara("type");
-		String phone = getSession().getAttribute("phone").toString();
+		String phone = getSession().getAttribute(Config.sessionPhone).toString();
 		String path = getSession().getServletContext().getRealPath("/uploadimages/"+phone);
 		File folder = new File(path);
 		if(!folder.exists())
@@ -658,27 +953,36 @@ public class UserController extends Controller
 		String companyname = "";
 		String contact = "";
 		String contactphone = "";
+		String accountname = "";
 		String publicaccount = "";
+		String bank = "";
+		String taxaccount = "";
 		String licence = "";
 		String idcard = "";
 		String safety = "";
 		String ispass = "";
 		String ispass_text = "";
+		String remark = "";
 		
-		String userid = getSession().getAttribute("userid").toString();
-		String phone = getSession().getAttribute("phone").toString();
-		String sql = "select companyname,contact,contactphone,publicaccount,licence,idcard,safety,ispass from user_info where userid="+userid;
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
+		String phone = getSession().getAttribute(Config.sessionPhone).toString();
+		String sql = "select companyname,contact,contactphone,publicaccount,licence,idcard,safety,ispass,accountname,bank,taxaccount,remark from user_info where userid="+userid;
 		Record record = Db.findFirst(sql);
 		if(record!=null)
 		{
 			companyname = record.getStr("companyname");
 			contact = record.getStr("contact");
 			contactphone = record.getStr("contactphone");
+			accountname = record.getStr("accountname");
 			publicaccount = record.getStr("publicaccount");
+			bank = record.getStr("bank");
+			taxaccount = record.getStr("taxaccount");
 			licence = record.getStr("licence");
 			idcard = record.getStr("idcard");
 			safety = record.getStr("safety");
 			ispass = record.getStr("ispass");
+			remark = record.getStr("remark")==null?"":record.getStr("remark");
+			remark = remark.replace("\n","<br>");
 		}
 
 		if(ispass.equals("0"))
@@ -697,12 +1001,16 @@ public class UserController extends Controller
 		setAttr("companyname",companyname);
 		setAttr("contact",contact);
 		setAttr("contactphone",contactphone);
+		setAttr("accountname",accountname);
 		setAttr("publicaccount",publicaccount);
+		setAttr("bank",bank);
+		setAttr("taxaccount",taxaccount);
 		setAttr("licence",licence);
 		setAttr("idcard",idcard);
 		setAttr("safety",safety);
 		setAttr("ispass",ispass);
 		setAttr("ispass_text",ispass_text);
+		setAttr("remark",remark);
 		
 		setAttr("phone",phone);
 		
@@ -711,18 +1019,18 @@ public class UserController extends Controller
 	
 	public void userEditPassword()
 	{
-		String phone = getSession().getAttribute("phone").toString();
+		String phone = getSession().getAttribute(Config.sessionPhone).toString();
 		String password = getPara("new_password");
-		String sql = "update user set password='"+password+"' where phone='"+phone+"'";
+		String sql = "update user set password='"+Md5Util.getMd5Encode(password)+"' where phone='"+phone+"'";
 		Db.update(sql);
 		renderNull();
 	}
 	
 	public void checkSrcPassword()
 	{
-		String phone = getSession().getAttribute("phone").toString();
+		String phone = getSession().getAttribute(Config.sessionPhone).toString();
 		String src_password = getPara("src_password");
-		String sql = "select id from user where phone='"+phone+"' and password='"+src_password+"'";
+		String sql = "select id from user where phone='"+phone+"' and password='"+Md5Util.getMd5Encode(src_password)+"'";
 		Record record = Db.findFirst(sql);
 		if(record==null)
 		{
@@ -736,29 +1044,9 @@ public class UserController extends Controller
 	
 	public void editpassword()
 	{
-		String phone = getSession().getAttribute("phone").toString();
+		String phone = getSession().getAttribute(Config.sessionPhone).toString();
 		setAttr("phone",phone);
 		render("user/usereditpassword.html");
-	}
-	
-	//登录出错次数过多，发送重置密码短信
-	public void smsLogin()
-	{
-		String phone = getPara("loginphone");
-		System.out.println("smsLoginPhone:"+phone);
-		setAttr("phone",phone);
-		
-		String code = getRanCodePhone(4);
-		PhoneUtil.sendSms(code,phone,0);
-		
-		System.out.println("短信验证码："+code);
-		
-		UserPhoneForm f = new UserPhoneForm();
-		f.setCode(code);
-		f.setDate(new Date());
-		MapValue.map_phone.put(phone,f);
-		
-		render("user/usersmsauth.html");
 	}
 	
 	public void checkLogin()
@@ -767,44 +1055,105 @@ public class UserController extends Controller
 		{
 			String phone = getPara("phone");
 			String password = getPara("password");
-			UserLoginForm login = MapValue.map_login.get(phone);
+			String type = getPara("type");
+			String email = "";
+			if(type.equals("email"))
+			{
+				String sql = "select phone from user where email='"+phone+"'";
+				Record record = Db.findFirst(sql);
+				email = record.getStr("phone");
+			}
+			UserLoginForm login = null;
+			if(type.equals("phone"))
+			{
+				login = MapValue.map_login.get(phone);
+			}
+			else if(type.equals("email"))
+			{
+				login = MapValue.map_login.get(email);
+			}
 			if(login!=null)
 			{
 				int count = login.getCount();
-				if(count>3)
+				if(count>Integer.parseInt(Config.loginErrorCount))
 				{
 					renderText("more");
 					return;
 				}
 			}
-			String sql = "select id from user where phone='"+phone+"' and password='"+password+"'";
+			
+			String sql = "";
+			if(type.equals("phone"))
+			{
+				sql = "select id from user where phone='"+phone+"' and password='"+Md5Util.getMd5Encode(password)+"'";
+			}
+			else if(type.equals("email"))
+			{
+				sql = "select id from user where email='"+phone+"' and password='"+Md5Util.getMd5Encode(password)+"'";
+			}
 			Record record = Db.findFirst(sql);
 			if(record==null)
 			{
-				String s = "select id from user where phone='"+phone+"'";
+				String s = "";
+				if(type.equals("phone"))
+				{
+					s = "select id from user where phone='"+phone+"'";
+				}
+				else if(type.equals("email"))
+				{
+					s = "select id from user where email='"+phone+"'";
+				}
 				Record r = Db.findFirst(s);
 				if(r!=null)
 				{
-					if(MapValue.map_login.get(phone)==null)
+					if(type.equals("phone"))
 					{
-						UserLoginForm u = new UserLoginForm();
-						u.setCount(1);
-						u.setDate(new Date());
-						MapValue.map_login.put(phone,u);
-						renderText("nocount:3");
-					}
-					else
-					{
-						int count = MapValue.map_login.get(phone).getCount();
-						count++;
-						MapValue.map_login.get(phone).setCount(count);
-						if(count>3)
+						if(MapValue.map_login.get(phone)==null)
 						{
-							renderText("more");
+							UserLoginForm u = new UserLoginForm();
+							u.setCount(1);
+							u.setDate(new Date());
+							MapValue.map_login.put(phone,u);
+							renderText("nocount:"+Config.loginErrorCount);
 						}
 						else
 						{
-							renderText("nocount:"+(4-count));
+							int count = MapValue.map_login.get(phone).getCount();
+							count++;
+							MapValue.map_login.get(phone).setCount(count);
+							if(count>3)
+							{
+								renderText("more");
+							}
+							else
+							{
+								renderText("nocount:"+(Integer.parseInt(Config.loginErrorCount)+1-count));
+							}
+						}
+					}
+					else if(type.equals("email"))
+					{
+						if(MapValue.map_login.get(email)==null)
+						{
+							UserLoginForm u = new UserLoginForm();
+							u.setCount(1);
+							u.setDate(new Date());
+							MapValue.map_login.put(email,u);
+							renderText("nocount:"+Config.loginErrorCount);
+						}
+						else
+						{
+							int count = MapValue.map_login.get(email).getCount();
+							count++;
+							MapValue.map_login.get(email).setCount(count);
+							if(count>3)
+							{
+								renderText("more");
+							}
+							else
+							{
+								renderText("nocount:"+(Integer.parseInt(Config.loginErrorCount)+1-count));
+							}
 						}
 					}
 				}
@@ -815,8 +1164,16 @@ public class UserController extends Controller
 			}
 			else
 			{
-				MapValue.map_login.remove(phone);
-				renderText("ok");
+				if(type.equals("phone"))
+				{
+					MapValue.map_login.remove(phone);
+					renderText("ok");
+				}
+				else if(type.equals("email"))
+				{
+					MapValue.map_login.remove(email);
+					renderText("ok");
+				}
 			}
 		}
 		catch(Exception e)
@@ -824,96 +1181,108 @@ public class UserController extends Controller
 			e.printStackTrace();
 		}
 	}
-	
-	/*
-	public void checkLogin()
-	{
-		try
-		{
-			String phone = getPara("phone");
-			String password = getPara("password");
-			String sql = "select trycount from user where phone='"+phone+"'";
-			Record record = Db.findFirst(sql);
-			if(record!=null)
-			{
-				int count = record.getInt("trycount");
-				if(count>3)
-				{
-					renderText("more");
-					return;
-				}
-			}
-			sql = "select id from user where phone='"+phone+"' and password='"+password+"'";
-			record = Db.findFirst(sql);
-			if(record==null)
-			{
-				String s = "select trycount from user where phone='"+phone+"'";
-				Record r = Db.findFirst(s);
-				if(r!=null)
-				{
-					int count = r.getInt("trycount");
-					count++;
-					String s2 = "update user set trycount="+count+" where phone='"+phone+"'";
-					Db.update(s2);
-					if(count>3)
-					{
-						renderText("more");
-						return;
-					}
-				}
-				renderText("no");
-			}
-			else
-			{
-				String s = "update user set trycount=0 where phone='"+phone+"'";
-				Db.update(s);
-				renderText("ok");
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	*/
 	
 	public void useraddok()
 	{
 		try
 		{
-			String phone = getPara("h_phone");
+			String code = getPara("code");
+			String phone = getPara("phone");
+			String username = getPara("username");
+			String vcode = getPara("vcode");
+			String sql = "select id from user where phone='"+phone+"'";
+			Record record = Db.findFirst(sql);
+			if(record!=null)
+			{
+				renderText("phone");
+				return;
+			}
+			sql = "select id from user where username='"+username+"'";
+			record = Db.findFirst(sql);
+			if(record!=null)
+			{
+				renderText("username");
+				return;
+			}
+			if(MapValue.map_phone.get(phone)==null)
+			{
+				renderText("timeout");
+				return;
+			}
+			String _code = MapValue.map_phone.get(phone).getCode();
+			if(!code.equals(_code))
+			{
+				renderText("code");
+				return;
+			}
+			if(!vcode.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYUSERADD).toString().toUpperCase()))
+			{
+				renderText("image");
+				return;
+			}
 			String password = getPara("password");
-			//String sql = "insert into user (phone,password,trycount) values ('"+phone+"','"+password+"',0)";
-			String sql = "insert into user (phone,password,create_time) values ('"+phone+"','"+password+"',now())";
+			sql = "insert into user (phone,username,password,create_time) values ('"+phone+"','"+username+"','"+Md5Util.getMd5Encode(password)+"',now())";
 			Db.update(sql);
-			getSession().setAttribute("phone",phone);
+			getSession().setAttribute(Config.sessionPhone,phone);
 			
 			sql = "select id from user where phone='"+phone+"'";
-			Record record = Db.findFirst(sql);
+			record = Db.findFirst(sql);
 			String userid = record.getStr("id");
-			getSession().setAttribute("userid",userid);
+			getSession().setAttribute(Config.sessionUserid,userid);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
+			renderText("error");
 		}
-		render("user/userindex.html");
+		renderText("ok");
 	}
 	
 	//用户注册短信验证
 	public void sendsms()
 	{
+		String code = getPara("code");
+		if(!code.toUpperCase().equals(getRequest().getSession().getAttribute(CreateRandomImageUtil.RANDOMCODEKEYUSERADD).toString().toUpperCase()))
+		{
+			renderText("image");
+			return;
+		}
+		String ip = getRequest().getRemoteAddr();
+		System.out.println("ip:"+ip);
+		if(MapValue.map_user_add.get(ip)!=null)
+		{
+			UserAddTimeOutForm f = MapValue.map_user_add.get(ip);
+			int trycount = f.getTrycount();
+			if(trycount>=Integer.parseInt(Config.userAddSendPhoneCount))
+			{
+				renderText("more");
+				return;
+			}
+			else
+			{
+				trycount++;
+				f.setTrycount(trycount);
+				MapValue.map_user_add.put(ip,f);
+			}
+		}
+		else
+		{
+			UserAddTimeOutForm f = new UserAddTimeOutForm();
+			f.setDate(new Date());
+			f.setTrycount(1);
+			MapValue.map_user_add.put(ip,f);
+		}
 		String phone = getPara("phone");
 		System.out.println("发送短信的手机号："+phone);
 		try
 		{
-			String code = getRanCodePhone(4);
-			PhoneUtil.sendSms(code,phone,0);
+			String randomcode = getRanCodePhone(4);
+			PhoneUtil.sendSms(randomcode,phone,0);
 			
-			System.out.println("短信验证码："+code);
+			System.out.println("短信验证码："+randomcode);
 			
 			UserPhoneForm f = new UserPhoneForm();
-			f.setCode(code);
+			f.setCode(randomcode);
 			f.setDate(new Date());
 			MapValue.map_phone.put(phone,f);
 		}
@@ -921,37 +1290,7 @@ public class UserController extends Controller
 		{
 			e.printStackTrace();
 		}
-		renderNull();
-	}
-	
-	public void checkCode()
-	{
-		try
-		{
-			String phone = getPara("phone");
-			String code = getPara("code");
-			UserPhoneForm f = MapValue.map_phone.get(phone);
-			if(f==null)
-			{
-				renderText("no");
-			}
-			else
-			{
-				String c = f.getCode();
-				if(code.equals(c))
-				{
-					renderText("ok");
-				}
-				else
-				{
-					renderText("no");
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
+		renderText("ok");
 	}
 	
 	//发送重置密码
@@ -966,7 +1305,7 @@ public class UserController extends Controller
 
 			System.out.println("重置密码："+password);
 			//String sql = "update user set password='"+password+"',trycount=0 where phone='"+phone+"'";
-			String sql = "update user set password='"+password+"' where phone='"+phone+"'";
+			String sql = "update user set password='"+Md5Util.getMd5Encode(password)+"' where phone='"+phone+"'";
 			Db.update(sql);
 			MapValue.map_login.remove(phone);
 		}
@@ -979,21 +1318,55 @@ public class UserController extends Controller
 	
 	public void checkPhone()
 	{
+//		String phone = getPara("phone");
+//		System.out.println("检测的手机号："+phone);
+//		String sql = "select id from user where phone='"+phone+"'";
+//		Record record = Db.findFirst(sql);
+//		if(record==null)
+//		{
+//			renderText("ok");
+//		}
+//		else
+//		{
+//			renderText("no");
+//		}
+		String userid = getSession().getAttribute(Config.sessionUserid).toString();
 		String phone = getPara("phone");
 		System.out.println("检测的手机号："+phone);
-		String sql = "select id from user where phone='"+phone+"'";
+		String sql = "select id from user where id="+userid + " and phone='"+phone+"'";
 		Record record = Db.findFirst(sql);
-		if(record==null)
+		if(record!=null)
 		{
-			renderText("ok");
+			renderText("self");
 		}
 		else
 		{
-			renderText("no");
+			sql = "select id from user where phone='"+phone+"'";
+			record = Db.findFirst(sql);
+			if(record==null)
+			{
+				renderText("no");
+			}
+			else
+			{
+				renderText("yes");
+			}
 		}
 	}
 	
 	public String getRanCodeId(int len)
+	{
+		Random randGen = new Random();
+		char[] numbersAndLetters = ("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").toCharArray();
+		char[] randBuffer = new char[len];
+		for(int i=0;i<randBuffer.length;i++)
+		{
+			randBuffer[i] = numbersAndLetters[randGen.nextInt(numbersAndLetters.length)];
+		}
+		return new String(randBuffer);
+	}
+	
+	public String getRanCodeEmailReset(int len)
 	{
 		Random randGen = new Random();
 		char[] numbersAndLetters = ("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").toCharArray();
