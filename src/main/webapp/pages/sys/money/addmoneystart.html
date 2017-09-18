@@ -1,0 +1,327 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+function init()
+{
+	var h1 = document.getElementById("table_body").offsetHeight;
+	if(h1<1000)
+	{
+		h1 = 1000;
+	}
+	parent.document.getElementById("rightframe").height = h1 + 100;
+	parent.document.getElementById("td_body").height = h1 - 300;
+}
+
+function pay()
+{
+	parent.document.getElementById("div_mask_pay").style.display = "";
+	parent.document.getElementById("div_pay").style.display = "";
+	form1.submit();
+}
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:14px;
+	padding-left:30px;
+	padding-top:2px;
+}
+
+.tr_background
+{
+	background-color:#F2F2F2;
+}
+
+.button_style
+{
+	background-color:#F7BA59;
+	color:#FFFFFF;
+	width:160px;
+	height:40px;
+	border-width:0px;
+}
+
+td
+{
+	font-size:14px;
+}
+
+.jd
+{
+	font-size:18px;
+}
+
+.jdbig
+{
+	font-size:24px;
+}
+
+.jd1{width:22px;height:22px;float:left;margin:13px 0 12 12px;background:url(${ctx}/pages/sys/images/step_s_def.png) 0 0 no-repeat;line-height:22px;text-align:center;font-size:14px;font-weight:bold;color:#58cb8e;}
+
+.jd2{width:22px;height:22px;float:left;margin:13px 0 12 12px;background:url(${ctx}/pages/sys/images/step_s_sel.png) 0 0 no-repeat;line-height:22px;text-align:center;font-size:14px;font-weight:bold;color:#FFFFFF;}
+
+.jdbig1{width:68px;height:68px;background:url(${ctx}/pages/sys/images/step_bg.png) 0 0 no-repeat;line-height:68px;text-align:center;display:block;float:left;margin:0 12px 0 0;color:#54db93;}
+
+.jdbig2{width:68px;height:68px;background:url(${ctx}/pages/sys/images/step_bg1.png) 0 0 no-repeat;line-height:68px;text-align:center;color:#f2ae43;font-size:30px;display:block;float:right;}
+
+.radio1{background:url(${ctx}/pages/sys/images/green.png) -168px 0 no-repeat;}
+
+.radio-off{background:url(${ctx}/pages/sys/images/green.png) -120px 0 no-repeat;}
+.radio-off-hover{background:url(${ctx}/pages/sys/images/green.png) -144px 0 no-repeat;}
+.radio-off-on{background:url(${ctx}/pages/sys/images/green.png) -168px 0 no-repeat;}
+
+.img_border
+{
+	border:1px solid #D2D1D1;
+}
+
+</style>
+</head>
+<body style="background-color:#FFFFFF;" onload="init();">
+<form action="${ctx}/money/pay" method="post" id="form1" style="display:none;" target="_blank">
+  <input type="hidden" name="amount" id="amount" value="${money}">
+  <input type="hidden" name="tradeno" id="tradeno" value="${orderno}">
+  <input type="hidden" name="favorable_amount" id="favorable_amount" value="${favorable_money}">
+  <input type="hidden" name="userid" id="userid" value="${userid}">
+</form>
+<table border="0" width="1000" id="table_body">
+  <tr>
+    <td height="20"></td>
+  </tr>
+  <tr>
+    <td style="font-size:28px;">充值</td>
+  </tr>
+  <tr bgcolor="#E7E5E5">
+    <td width="1000" height="4"></td>
+  </tr>
+  <tr>
+    <td height="16"></td>
+  </tr>
+  <tr>
+    <td>
+      <table cellspacing="0" cellpadding="0" style="border:1px solid #54DB93" width="100%">
+        <tr>
+          <td id="td1" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">1</span></td>
+                <td width="5"></td>
+                <td class="jd">输入金额</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td2" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">2</span></td>
+                <td width="5"></td>
+                <td class="jd">选择充值方式</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td3" width="20%" height="50" bgcolor="#54DB93">
+            <table>
+              <tr>
+                <td><span class="jd2">3</span></td>
+                <td width="5"></td>
+                <td class="jd" style="color:#FFFFFF;">确认订单</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td4" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">4</span></td>
+                <td width="5"></td>
+                <td class="jd">进行付款</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td5" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">5</span></td>
+                <td width="5"></td>
+                <td class="jd">完成</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td height="40"></td>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td><span class="jdbig1" style="font-size:24px;">3</span></td>
+                <td width="5"></td>
+                <td class="jdbig">确认订单</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td width="1000" height="1"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td>
+      <table>
+        <tr>
+          <td width="100"></td>
+          <td width="100" align="right" style="font-weight:bold;">订单号：</td>
+          <td width="30"></td>
+          <td width="50">${orderno}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td width="1000" height="1"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td>
+      <table>
+        <tr>
+          <td width="100"></td>
+          <td width="100" align="right" style="font-weight:bold;">付款金额：</td>
+          <td width="30"></td>
+          <td style="color:#F7BA59">${money}</td>
+          <td width="10"></td>
+          <td>元</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td width="1000" height="1"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td>
+      <table>
+        <tr>
+          <td width="100"></td>
+          <td width="100" align="right" style="font-weight:bold;">优惠金额：</td>
+          <td width="30"></td>
+          <td style="color:#F7BA59">${favorable_money}</td>
+          <td width="10"></td>
+          <td>元</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td width="1000" height="1"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td>
+      <table>
+        <tr>
+          <td width="100"></td>
+          <td width="100" align="right" style="font-weight:bold;">付款方式：</td>
+          <td width="30"></td>
+          <td style="color:#F7BA59">支付宝</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td width="1000" height="1"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td>
+      <table>
+        <tr>
+          <td width="100"></td>
+          <td width="100" align="right" style="font-weight:bold;">订单状态：</td>
+          <td width="30"></td>
+          <td style="color:#02B9EF">未完成支付</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr bgcolor="#EEEEEE">
+    <td width="1000" height="1"></td>
+  </tr>
+  <tr bgcolor="#F9F9F9">
+    <td height="10"></td>
+  </tr>
+  <tr>
+    <td height="30"></td>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr>
+          <td width="100"></td>
+          <td>
+            <input type="button" value="付款" onclick="pay();" style="width:150px;height:50px;color:#FFFFFF;font-size:26px;background-color:#F2AE43;border-width:0px;">
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

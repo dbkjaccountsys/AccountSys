@@ -1,0 +1,325 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link href="${ctx}/pages/sys/css/bootstrap.min.css" rel="stylesheet" />
+<script src="${ctx}/pages/sys/js/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/pages/sys/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+jQuery.validator.addMethod("isMobile",function(value,element)
+{
+	var length = value.length;
+	var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
+	var ok = this.optional(element) || (length == 11 && mobile.test(value));
+    return ok;
+},"请正确填写您的手机号码");
+
+function check()
+{
+	return $("#userInfoForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element.parent());
+		},
+		rules:
+		{
+			companyname:
+			{
+				required:true
+			},
+			contact:
+			{
+				required:true
+			},
+			contactphone:
+			{
+				required:true,
+				isMobile:true
+			},
+			publicaccount:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			companyname:
+			{
+				required:"请输入公司名称"
+			},
+			contact:
+			{
+				required:"请输入联系人"
+			},
+			contactphone:
+			{
+				required:"请输入联系人手机",
+				isMobile:"请输入正确格式的手机号码"
+			},
+			publicaccount:
+			{
+				required:"请输入企业对公账号"
+			}
+		},
+		submitHandler:function(form)
+		{
+		}
+	});
+}
+
+function showimage(type)
+{
+	if(type=="licence")
+	{
+		document.getElementById("img1").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_licence").value+"&t="+Math.random();
+	}
+	else if(type=="idcard")
+	{
+		document.getElementById("img1").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_idcard").value+"&t="+Math.random();
+	}
+	else if(type=="safety")
+	{
+		document.getElementById("img1").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_safety").value+"&t="+Math.random();
+	}
+	document.getElementById("div1").style.display = "";
+}
+
+function hideimage()
+{
+	document.getElementById("div1").style.display = "none";
+}
+
+function checkform()
+{
+	check().form();
+}
+
+function submituserinfo()
+{
+	var ok = true;
+	if(document.getElementById("h_licence").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_licence").style.display = "";
+	}
+	if(document.getElementById("h_idcard").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_idcard").style.display = "";
+	}
+	if(document.getElementById("h_safety").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_safety").style.display = "";
+	}
+	if(check().form() && ok)
+	{
+		document.getElementById("licence").value = document.getElementById("h_licence").value;
+		document.getElementById("idcard").value = document.getElementById("h_idcard").value;
+		document.getElementById("safety").value = document.getElementById("h_safety").value;
+		document.getElementById("userInfoForm").submit();
+	}
+}
+
+function testupload(id)
+{
+	var dom = document.getElementById(id);
+	var name = dom.value;
+	var pos = name.lastIndexOf(".");
+	if(pos==-1)
+	{
+		alert("请上传正确格式的图片文件，文件类型为：jpg,png,gif");
+		return false;
+	}
+	else
+	{
+		var ext = name.substring(pos+1);
+		if(ext=="jpg" || ext=="png" || ext=="gif")
+		{
+		}
+		else
+		{
+			alert("请上传正确格式的图片文件，文件类型为：jpg,png,gif");
+			return false;
+		}
+	}
+	var fileSize = dom.files[0].size/(1024*1024);
+	if(fileSize>5)
+	{
+		alert("上传文件大小不能大于5M");
+		return false;
+	}
+}
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	margin-top:8px;
+}
+
+</style>
+</head>
+<body>
+<form id="userInfoForm" action="${ctx}/user/userInfoEnter" method="post">
+  <input type="hidden" id="licence" name="licence" value="${licence}">
+  <input type="hidden" id="idcard" name="idcard" value="${idcard}">
+  <input type="hidden" id="safety" name="safety" value="${safety}">
+  <table border="0" width="640" align="center">
+    <tr>
+      <td height="40" align="center" colspan="2">用户信息审核</td>
+    </tr>
+    <tr>
+      <td width="140" height="40">手机号码：</td>
+      <td>${phone}</td>
+    </tr>
+    <tr>
+      <td width="140" height="40">公司名称：</td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="form-control" name="companyname" id="companyname" value="${companyname}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td width="140" height="40">联系人：</td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="form-control" name="contact" id="contact" value="${contact}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td width="140" height="40">联系人手机号码：</td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="form-control" name="contactphone" id="contactphone" value="${contactphone}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td width="140" height="40">企业对公账号：</td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="form-control" name="publicaccount" id="publicaccount" value="${publicaccount}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+  </table>
+</form>
+<table border="0" width="640" align="center">
+  <tr>
+    <td width="140" height="40">营业执照：</td>
+    <td>
+      <form id="licenceForm" name="licenceForm" onsubmit="return testupload('f_licence');" action="${ctx}/user/uploadFile?type=licence" enctype="multipart/form-data" method="post" target="frame_upload">
+        <input type="hidden" id="h_licence" name="h_licence" value="${licence}">
+        <table border="0">
+          <tr>
+            <#if ispass=="" || ispass=="2">
+            <td>
+              <input type="file" name="f_licence" id="f_licence" style="width:170px;" onchange="testupload('f_licence');">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="上传">
+            </td>
+            <td width="10"></td>
+            </#if>
+            <td>
+              <#if licence!="">
+                <img src="${ctx}/user/showImage?filepath=${licence}" id="id_img_licence" width="30" height="30" onclick="showimage('licence');">
+              <#else>
+                <img src="" style="display:none;" id="id_img_licence" width="30" height="30" onclick="showimage('licence');">
+              </#if>
+            </td>
+            <td width="10"></td>
+            <td id="id_td_licence" style="color:red;display:none;font-weight:bold;">请上传公司营业执照</td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" height="40">身份证：</td>
+    <td>
+      <form id="idcardForm" name="idcardForm" onsubmit="return testupload('f_idcard');" action="${ctx}/user/uploadFile?type=idcard" enctype="multipart/form-data" method="post" target="frame_upload">
+        <input type="hidden" id="h_idcard" name="h_idcard" value="${idcard}">
+        <table border="0">
+          <tr>
+            <#if ispass=="" || ispass=="2">
+            <td>
+              <input type="file" name="f_idcard" id="f_idcard" style="width:170px;" onchange="testupload('f_idcard');">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="上传">
+            </td>
+            <td width="10"></td>
+            </#if>
+            <td>
+              <#if idcard!="">
+                <img src="${ctx}/user/showImage?filepath=${idcard}" id="id_img_idcard" width="30" height="30" onclick="showimage('idcard');">
+              <#else>
+                <img src="" style="display:none;" id="id_img_idcard" width="30" height="30" onclick="showimage('idcard');">
+              </#if>
+            </td>
+            <td width="10"></td>
+            <td id="id_td_idcard" style="color:red;display:none;font-weight:bold;">请上传身份证</td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" height="40">安全责任书：</td>
+    <td>
+      <form id="safetyForm" name="safetyForm" onsubmit="return testupload('f_safety');" action="${ctx}/user/uploadFile?type=safety" enctype="multipart/form-data" method="post" target="frame_upload">
+        <input type="hidden" id="h_safety" name="h_safety" value="${safety}">
+        <table border="0">
+          <tr>
+            <#if ispass=="" || ispass=="2">
+            <td>
+              <input type="file" name="f_safety" id="f_safety" style="width:170px;" onchange="testupload('f_safety');">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="上传">
+            </td>
+            <td width="10"></td>
+            </#if>
+            <td>
+              <#if safety!="">
+                <img src="${ctx}/user/showImage?filepath=${safety}" id="id_img_safety" width="30" height="30" onclick="showimage('safety');">
+              <#else>
+                <img src="" style="display:none;" id="id_img_safety" width="30" height="30" onclick="showimage('safety');">
+              </#if>
+            </td>
+            <td width="10"></td>
+            <td id="id_td_safety" style="color:red;display:none;font-weight:bold;">请上传安全责任书</td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <#if ispass!="">
+  <tr>
+    <td width="140" height="40">审核状态：</td>
+    <td style="font-weight:bold;">${ispass_text}</td>
+  </tr>
+  </#if>
+</table>
+<#if ispass=="" || ispass=="2"> 
+  <table border="0" align="center" width="640">
+    <tr>
+      <td align="center">
+        <input type="button" value="提交" style="margin-right:20px;" onclick="submituserinfo();">
+      </td>
+    </tr>
+  </table>
+</#if>
+<div id="div1" style="display:none;position:absolute;left:100px;top:100px;">
+  <img id="img1" width="300" height="300" onclick="hideimage();">
+</div>
+<iframe id="frame_upload" name="frame_upload" style="display:none;"></iframe>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link href="${ctx}/pages/sys/css/bootstrap.min.css" rel="stylesheet" />
+<script src="${ctx}/pages/sys/js/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/pages/sys/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	margin-top:8px;
+}
+
+</style>
+</head>
+<body>
+<table border="0" width="1000" align="center">
+  <tr>
+    <td colspan="6" height="40" align="left">
+      <a href="${ctx}/user/voiceadd" style="color:blue;text-decoration:none;font-weight:bold;">上传语音</a>
+    </td>
+  </tr>
+  <tr style="font-weight:bold;">
+    <td height="40">编号</td>
+    <td>文件名</td>
+    <td>语音名</td>
+    <td>上传时间</td>
+    <td>审核状态</td>
+    <td>操作</td>
+  </tr>
+  <#list listVoice as v>
+  <tr>
+    <td height="40">${v.no}</td>
+    <td>${v.filename}</td>
+    <td>${v.voicename}</td>
+    <td>${v.uploadtime}</td>
+    <td>${v.status_text}</td>
+    <td>
+      <a href="${ctx}/user/viewVoice?id=${v.id}" style="color:#000000;text-decoration:none;">查看</a>&nbsp;&nbsp;
+      <#if v.status=="-1" || v.status=="2">
+        <a href="${ctx}/user/editVoice?id=${v.id}" style="color:#000000;text-decoration:none;">编辑</a>&nbsp;&nbsp;
+      </#if>
+      <#if v.status=="-1" || v.status=="1" || v.status=="2">
+        <a href="${ctx}/user/deleteVoice?id=${v.id}" style="color:#000000;text-decoration:none;" onclick="return confirm('确定要删除该语音文件吗？');">删除</a>
+      </#if>
+    </td>
+  </tr>
+  </#list>
+</table>
+</body>
+</html>

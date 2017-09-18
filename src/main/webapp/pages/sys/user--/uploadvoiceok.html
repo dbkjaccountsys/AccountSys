@@ -1,0 +1,36 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link href="${ctx}/pages/sys/css/bootstrap.min.css" rel="stylesheet" />
+<script src="${ctx}/pages/sys/js/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/pages/sys/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+function init()
+{
+	parent.document.getElementById("h_voice").value = "${filepath}";
+	//parent.document.getElementById("id_td_voice").style.display = "none";
+	parent.document.getElementById("id_td_voice").style.display = "";
+	parent.document.getElementById("id_td_voice").style.color = "blue";
+	parent.document.getElementById("id_td_voice").innerHTML = "语音文件已上传";
+}
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	margin-top:8px;
+}
+
+</style>
+</head>
+<body onload="init();">
+</body>
+</html>

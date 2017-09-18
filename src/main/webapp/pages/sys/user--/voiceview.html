@@ -1,0 +1,87 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:16px;
+	padding-left:30px;
+}
+
+</style>
+</head>
+<body style="background-color:#FFFFFF;height:500px;">
+<table border="0" width="700" align="center">
+  <tr>
+    <td height="50" align="center" colspan="3">语音信息查看</td>
+  </tr>
+  <tr>
+    <td width="140" height="50" align="right">文件名</td>
+    <td width="30"></td>
+    <td>
+      <input type="text" class="col-xs-10 col-sm-5" name="filename" id="filename" value="${filename}" readonly style="width:280px;">
+    </td>
+  </tr>
+  <tr>
+    <td height="50" align="right">语音名称</td>
+    <td></td>
+    <td>
+      <input type="text" class="col-xs-10 col-sm-5" name="voicename" id="voicename" value="${voicename}" readonly style="width:280px;">
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" height="6"></td>
+  </tr>
+  <tr>
+    <td align="right">语音内容</td>
+    <td>
+    <td>
+      <textarea rows="10" cols="36" name="content" id="content" readonly>${content}</textarea>
+    </td>
+  </tr>
+  <tr>
+    <td height="50" align="right">审核状态</td>
+    <td></td>
+    <td style="font-weight:bold;">${status_text}</td>
+  </tr>
+  <tr>
+    <td height="50" align="right">播放语音文件</td>
+    <td></td>
+    <td>
+      <audio controls>
+        <source src="${ctx}/uploadvoices/${filepath}">
+      </audio>
+    </td>
+  </tr>
+</table>
+<div class="clearfix form-actions">
+    <table border="0" align="center">
+      <tr>
+        <td>
+          <button class="btn" type="button" onclick="javascript:history.back();">
+            <i class="icon-undo bigger-110"></i>
+        返回
+          </button>
+        </td>
+      </tr>
+    </table>
+</div>
+</body>
+</html>

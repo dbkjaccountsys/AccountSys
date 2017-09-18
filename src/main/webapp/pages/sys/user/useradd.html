@@ -18,167 +18,9 @@
 <script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
 <script type="text/javascript">
 
-jQuery.validator.addMethod("isMobile",function(value,element)
+function getRandomImageUserAdd(im)
 {
-	var length = value.length;
-	var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
-	var ok = true;
-	if(length==0)
-	{
-		ok = false;
-		document.getElementById("id_send_sms").style.color = "#AAAAAA";
-		document.getElementById("id_send_sms").disabled = true;
-		return ok;
-	}
-	ok = this.optional(element) || (length == 11 && mobile.test(value));
-	if(!ok)
-	{
-		document.getElementById("id_send_sms").style.color = "#AAAAAA";
-		document.getElementById("id_send_sms").disabled = true;
-		return ok;
-	}
-    return ok;
-},"请正确填写您的手机号码");
-
-
-jQuery.validator.addMethod("isMobileHas",function(value,element)
-{
-	var ok = true;
-	$.ajax
-	({
-		url:"${ctx}/user/checkPhone?phone="+$("#phone").val(),
-		type:"post",
-		async:false,
-		success:function(result)
-		{
-			if(result=="no")
-			{
-				document.getElementById("id_send_sms").style.color = "#AAAAAA";
-				document.getElementById("id_send_sms").disabled = true;
-				ok = false;
-			}
-			else
-			{
-				document.getElementById("id_send_sms").style.color = "#000000";
-				document.getElementById("id_send_sms").disabled = false;
-				ok = true;
-			}
-		},
-		fail:function(err,status)
-		{
-			alert(err);
-		}
-	});
-	return ok;
-},"手机号存在");
-
-function checkRandomCode()
-{
-	var ok = false;
-	
-	$.ajax
-	({
-		url:"${ctx}/user/checkRandomCode?vertifyCode="+$("#vertifyCode").val(),
-		type:"post",
-		async:false,
-		success:function(result)
-		{
-			if(result=="false")
-			{
-				document.getElementById("id_td_code").style.color = "red";
-				document.getElementById("id_td_code").innerHTML = "图片验证码不正确";
-			}
-			else
-			{
-				document.getElementById("id_td_code").style.color = "blue";
-				document.getElementById("id_td_code").innerHTML = "图片验证码正确";
-				ok = true;
-			}
-		},
-		fail:function(err,status)
-		{
-			alert(err);
-		}
-	});
-	
-	//console.log($("#vertifyCode").val());
-	
-	return ok;
-}
-
-$().ready(function()
-{
-	$("#registerForm").validate
-	({
-		errorPlacement:function(error,element)
-		{
-			error.insertAfter(element);
-		},
-		rules:
-		{
-			phone:
-			{
-				isMobile:true,
-				isMobileHas:true
-			},
-			password:
-			{
-				required:true
-			}
-		},
-		messages:
-		{
-			phone:
-			{
-				isMobile:"请输入正确格式的手机号",
-				isMobileHas:"手机号已存在"
-			},
-			password:
-			{
-				required:"请输入密码"
-			}
-		},
-		submitHandler:function(form)
-		{
-			var ok1 = true;
-			$.ajax
-			({
-				url:"${ctx}/user/checkCode?phone="+$("#phone").val()+"&code="+$("#code").val(),
-				type:"post",
-				async:false,
-				success:function(result)
-				{
-					if(result=="no")
-					{
-						document.getElementById("td_phone_send").style.color = "red";
-						document.getElementById("td_phone_send").innerHTML = "短信验证码不正确";
-						ok1 = false;
-					}
-					else
-					{
-						document.getElementById("td_phone_send").style.color = "blue";
-						document.getElementById("td_phone_send").innerHTML = "短信验证码正确";
-						document.getElementById("h_phone").value = document.getElementById("phone").value;
-					}
-				},
-				fail:function(err,status)
-				{
-					alert(err);
-				}
-			});
-			
-			var ok2 = checkRandomCode();
-			if(ok1 && ok2)
-			{
-				form.submit();
-			}
-		}
-	});
-});
-
-function getRandomImage(im)
-{
-	im.src = "${ctx}/user/randomImage?"+Math.random();
+	im.src = "${ctx}/user/randomImageUserAdd?"+Math.random();
 }
 
 var sendtime = 60;
@@ -187,35 +29,385 @@ var intervalsms = null;
 
 function resendsms()
 {
-	//console.log(sendtime);
 	sendtime -= 1;
-	document.getElementById("id_send_sms").value = sendtime+"秒后点击重新发送";
+	document.getElementById("id_send_sms").value = sendtime+"秒后重发";
 	if(sendtime==0)
 	{
 		clearInterval(intervalsms);
-		document.getElementById("id_send_sms").value = "免费获取短信验证码";
+		document.getElementById("id_send_sms").value = "获取验证码";
 		document.getElementById("id_send_sms").disabled = false;
 		document.getElementById("id_send_sms").style.color = "#000000";
-		document.getElementById("phone").disabled = false;
+		document.getElementById("phone").readOnly = false;
+		document.getElementById("vertifyCode").readOnly = false;
+		document.getElementById("td_phone_send").innerHTML = "";
 	}
 }
 
 function sendsms()
 {
+	/*
+	var phone = document.getElementById("phone").value;
+	if(phone=="")
+	{
+		document.getElementById('id_td_phone_check').innerHTML="请输入手机号";
+		return;
+	}
+	var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+	if(!myreg.test(phone))
+	{
+		document.getElementById('id_td_phone_check').innerHTML="请输入正确格式的手机号";
+		return;
+	}
+	
+	var code = document.getElementById("vertifyCode").value;
+	if(code=="")
+	{
+		document.getElementById("id_td_code").innerHTML = "请输入图形验证码";
+		return;
+	}
+	
+	var ok = false;
+	
 	$.ajax
 	({
-		url:"${ctx}/user/sendsms?phone="+$("#phone").val(),
+		url:"${ctx}/user/checkPhoneUserAdd?phone="+$("#phone").val()+"&code="+code,
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="no")
+			{
+				document.getElementById("id_td_phone_check").innerHTML = "";
+				document.getElementById("id_td_code").innerHTML = "";
+				ok = true;
+			}
+			else if(result=="image")
+			{
+				document.getElementById("id_td_phone_check").innerHTML = "";
+				document.getElementById("id_td_code").innerHTML = "图形验证码不正确";
+			}
+			else
+			{
+				document.getElementById("id_td_phone_check").innerHTML = "手机已存在";
+				document.getElementById("id_td_code").innerHTML = "";
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	
+	if(!ok)
+	{
+		return;
+	}
+	*/
+	
+	if(!document.getElementById("id_checkbox").checked)
+	{
+		//alert("您必须接受大坝科技用户协议");
+		//return;
+	}
+	
+	var ok = true;
+	
+	if(document.getElementById("phone").value=="")
+	{
+		document.getElementById("id_td_phone_check").innerHTML = "请输入手机号";
+		ok = false;
+	}
+	else
+	{
+		var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+		if(!myreg.test(document.getElementById("phone").value))
+		{
+			document.getElementById('id_td_phone_check').innerHTML="请输入正确格式的手机号";
+			ok = false;
+		}
+		else
+		{
+			$.ajax
+			({
+				url:"${ctx}/user/userAddCheckPhone?phone="+$("#phone").val(),
+				type:"post",
+				async:false,
+				success:function(result)
+				{
+					if(result=="has")
+					{
+						document.getElementById("id_td_phone_check").innerHTML = "手机号已存在";
+						ok = false;
+					}
+				},
+				fail:function(err,status)
+				{
+					ok = false;
+					alert(err);
+				}
+			});
+		}
+	}
+	if(document.getElementById("username").value=="")
+	{
+		document.getElementById("id_td_username_check").innerHTML = "请输入用户名";
+		ok = false;
+	}
+	else
+	{
+		$.ajax
+		({
+			url:"${ctx}/user/userAddCheckUserName?username="+$("#username").val(),
+			type:"post",
+			async:false,
+			success:function(result)
+			{
+				if(result=="has")
+				{
+					document.getElementById("id_td_username_check").innerHTML = "用户名已存在";
+					ok = false;
+				}
+			},
+			fail:function(err,status)
+			{
+				ok = false;
+				alert(err);
+			}
+		});
+	}
+	if(document.getElementById("password").value=="")
+	{
+		document.getElementById("id_td_password_check").innerHTML = "请输入密码";
+		ok = false;
+	}
+	//if(document.getElementById("code").value=="")
+	//{
+	//	document.getElementById("td_phone_send").style.color = "red";
+	//	document.getElementById("td_phone_send").innerHTML = "请输入手机验证码";
+	//	ok = false;
+	//}
+	if(document.getElementById("vertifyCode").value=="")
+	{
+		document.getElementById("id_td_code").innerHTML = "请输入图片验证码";
+		ok = false;
+	}
+	else
+	{
+		$.ajax
+		({
+			url:"${ctx}/user/userAddCheckCode?code="+$("#vertifyCode").val(),
+			type:"post",
+			async:false,
+			success:function(result)
+			{
+				if(result=="no")
+				{
+					document.getElementById("id_td_code").innerHTML = "图片验证码不正确";
+					ok = false;
+				}
+			},
+			fail:function(err,status)
+			{
+				ok = false;
+				alert(err);
+			}
+		});
+	}
+	
+	if(!ok)
+	{
+		return;
+	}
+	
+	$.ajax
+	({
+		url:"${ctx}/user/sendsms?phone="+$("#phone").val()+"&code="+$("#vertifyCode").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="image")
+			{
+				document.getElementById("id_td_code").innerHTML = "图形验证码不正确";
+			}
+			else if(result=="more")
+			{
+				alert("发送手机验证码次数超过${count}次，请${time}分钟后再试");
+			}
+			else
+			{
+				document.getElementById("td_phone_send").innerHTML = "短信已发送";
+				document.getElementById("td_phone_send").style.color = "blue";
+				document.getElementById("id_send_sms").value = "60秒后重发";
+				document.getElementById("id_send_sms").disabled = true;
+				document.getElementById("id_send_sms").style.color = "#AAAAAA";
+				sendtime = 60;
+				intervalsms = setInterval("resendsms()",1000);
+				//document.getElementById("img_vertify").click();
+				document.getElementById("phone").readOnly = true;
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+}
+
+function useradd()
+{
+	if(!document.getElementById("id_checkbox").checked)
+	{
+		//alert("您必须接受大坝科技用户协议");
+		//return;
+	}
+	
+	var ok = true;
+	
+	if(document.getElementById("phone").value=="")
+	{
+		document.getElementById("id_td_phone_check").innerHTML = "请输入手机号";
+		ok = false;
+	}
+	else
+	{
+		var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+		if(!myreg.test(document.getElementById("phone").value))
+		{
+			document.getElementById('id_td_phone_check').innerHTML="请输入正确格式的手机号";
+			ok = false;
+		}
+		else
+		{
+			$.ajax
+			({
+				url:"${ctx}/user/userAddCheckPhone?phone="+$("#phone").val(),
+				type:"post",
+				async:false,
+				success:function(result)
+				{
+					if(result=="has")
+					{
+						document.getElementById("id_td_phone_check").innerHTML = "手机号已存在";
+						ok = false;
+					}
+				},
+				fail:function(err,status)
+				{
+					ok = false;
+					alert(err);
+				}
+			});
+		}
+	}
+	if(document.getElementById("username").value=="")
+	{
+		document.getElementById("id_td_username_check").innerHTML = "请输入用户名";
+		ok = false;
+	}
+	else
+	{
+		$.ajax
+		({
+			url:"${ctx}/user/userAddCheckUserName?username="+$("#username").val(),
+			type:"post",
+			async:false,
+			success:function(result)
+			{
+				if(result=="has")
+				{
+					document.getElementById("id_td_username_check").innerHTML = "用户名已存在";
+					ok = false;
+				}
+			},
+			fail:function(err,status)
+			{
+				ok = false;
+				alert(err);
+			}
+		});
+	}
+	if(document.getElementById("password").value=="")
+	{
+		document.getElementById("id_td_password_check").innerHTML = "请输入密码";
+		ok = false;
+	}
+	if(document.getElementById("code").value=="")
+	{
+		document.getElementById("td_phone_send").style.color = "red";
+		document.getElementById("td_phone_send").innerHTML = "请输入手机验证码";
+		ok = false;
+	}
+	if(document.getElementById("vertifyCode").value=="")
+	{
+		document.getElementById("id_td_code").innerHTML = "请输入图片验证码";
+		ok = false;
+	}
+	else
+	{
+		$.ajax
+		({
+			url:"${ctx}/user/userAddCheckCode?code="+$("#vertifyCode").val(),
+			type:"post",
+			async:false,
+			success:function(result)
+			{
+				if(result=="no")
+				{
+					document.getElementById("id_td_code").innerHTML = "图片验证码不正确";
+					ok = false;
+				}
+			},
+			fail:function(err,status)
+			{
+				ok = false;
+				alert(err);
+			}
+		});
+	}
+	
+	if(!ok)
+	{
+		return;
+	}
+	
+	$.ajax
+	({
+		url:"${ctx}/user/useraddok?phone="+$("#phone").val()+"&password="+$("#password").val()+"&code="+$("#code").val()+"&username="+$("#username").val()+"&vcode="+$("#vertifyCode").val(),
 		type:"post",
 		success:function(result)
 		{
-			document.getElementById("td_phone_send").innerHTML = "短信已发送";
-			document.getElementById("td_phone_send").style.color = "blue";
-			document.getElementById("id_send_sms").value = "60秒后点击重新发送";
-			document.getElementById("id_send_sms").disabled = true;
-			document.getElementById("id_send_sms").style.color = "#AAAAAA";
-			document.getElementById("phone").disabled = true;
-			sendtime = 60;
-			intervalsms = setInterval("resendsms()",1000);
+			if(result=="code")
+			{
+				document.getElementById("td_phone_send").style.color = "red";
+				document.getElementById("td_phone_send").innerHTML = "手机验证码不正确";
+			}
+			else if(result=="timeout")
+			{
+				document.getElementById("td_phone_send").style.color = "red";
+				document.getElementById("td_phone_send").innerHTML = "手机验证码超时";
+			}
+			else if(result=="phone")
+			{
+				document.getElementById("id_td_phone_check").innerHTML = "手机已存在";
+			}
+			else if(result=="username")
+			{
+				document.getElementById("id_td_username_check").innerHTML = "用户名已存在";
+			}
+			else if(result=="image")
+			{
+				document.getElementById("id_td_code").innerHTML = "图片验证码不正确";
+			}
+			else if(result=="error")
+			{
+				alert("用户注册出错");
+			}
+			else
+			{
+				alert("用户注册成功，跳转至管理信息界面");
+				window.location.href = "${ctx}/new";
+			}
 		},
 		fail:function(err,status)
 		{
@@ -234,86 +426,140 @@ function sendsms()
 	padding-left:30px;
 }
 
+td
+{
+	font-size:14px;
+}
+
+.m11 {background:url(${ctx}/pages/sys/images/logodb.png) no-repeat;}
+
 </style>
 </head>
-<body style="background-color:#FFFFFF;height:500px;">
+<body style="background-color:#E9ECF0;height:500px;">
 <div style="height:70px;"></div>
-<form id="registerForm" method="post" action="${ctx}/user/useraddok">
-  <input type="hidden" name="h_phone" id="h_phone" value="">
-  <table border="0" width="700" align="center">
+  <table align="center">
     <tr>
-      <td colspan="4" height="40" style="font-weight:bold;font-size:14px;" align="center">用户注册</td>
-    </tr>
-    <tr>
-      <td width="140" height="40" align="right">手机号码</td>
-      <td width="30"></td>
-      <td colspan="2">
-        <input type="text" class="col-xs-10 col-sm-5" name="phone" id="phone" style="width:270px;">
+      <td height="60" align="center">
+        <div class="m11" style="width:90px;height:46px;margin-left:-30px;"></div>
       </td>
     </tr>
     <tr>
-      <td height="40" align="right">密码</td>
-      <td></td>
-      <td colspan="2">
-        <input type="password" class="col-xs-10 col-sm-5" name="password" id="password" style="width:270px;">
-      </td>
+      <td style="font-size:34px;">大坝科技能力平台</td>
     </tr>
     <tr>
-      <td height="40" align="right">手机验证码</td>
-      <td></td>
-      <td colspan="2">
-        <input type="text" class="col-xs-10 col-sm-5" name="code" id="code" maxlength="4" style="width:270px;">
-      </td>
-    </tr>
-    <tr>
-      <td height="40" align="right">图片验证码</td>
-      <td></td>
-      <td width="300">
-        <input type="text" maxlength="4" class="col-xs-10 col-sm-5" name="vertifyCode" id="vertifyCode" style="width:60px;height:34px;display:inline;" onchange="checkRandomCode();">
-        <a href="javascript:void(0);" title="点击刷新">
-		    <img alt="验证码" id="img_vertify" src="${ctx}/user/randomImage" onclick="getRandomImage(this);" width="95px" height="33px" style="margin-left:4px;border:1px solid blue;">
-	      </a>
-      </td>
-      <td id="id_td_code"></td>
-    </tr>
-    <tr>
-      <td height="10" colspan="4"></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td colspan="2">
-        <table border="0">
-          <tr>
-            <td width="190">
-              <input type="button" id="id_send_sms" disabled value="免费获取短信验证码" onclick="sendsms();" style="width:180px;color:#AAAAAA">
-            </td>
-            <td width="110"></td>
-            <td style="color:blue;" id="td_phone_send"></td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td height="10" colspan="4"></td>
+      <td height="20"></td>
     </tr>
   </table>
-  <table border="0" align="center" width="700">
+  <table align="center">
     <tr>
-      <td width="170" height="50"></td>
-      <td width="60">
-        <button class="btn btn-info" type="submit">
-        提交
-          </button>
-      </td>
-      <td width="30"></td>
       <td>
-        <button class="btn" type="button" onclick="javascript:history.back();">
-        返回
-          </button>
+        <div style="background-color:#FFFFFF;border-radius:6px;">
+          <table>
+            <tr>
+              <td width="30"></td>
+              <td>
+                <table align="center">
+                  <tr>
+                    <td height="30"></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="text" class="col-xs-10 col-sm-5" name="phone" id="phone" style="width:370px;height:34px" placeholder="请输入手机号码" onchange="document.getElementById('id_td_phone_check').innerHTML='';">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="id_td_phone_check" style="color:red;"></td>
+                  </tr>
+                  <tr>
+                    <td height="10"></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="text" class="col-xs-10 col-sm-5" name="username" id="username" style="width:370px;height:34px" placeholder="请输入用户名" onchange="document.getElementById('id_td_username_check').innerHTML='';">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="id_td_username_check" style="color:red;"></td>
+                  </tr>
+                  <tr>
+                    <td height="10"></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="password" class="col-xs-10 col-sm-5" name="password" id="password" style="width:370px;height:34px" placeholder="请输入密码" onchange="document.getElementById('id_td_password_check').innerHTML='';">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="id_td_password_check" style="color:red;""></td>
+                  </tr>
+                  <tr>
+                    <td height="10"></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="text" class="col-xs-10 col-sm-5" name="code" id="code" maxlength="4" style="width:264px;height:34px;" placeholder="请输入手机验证码" onchange="document.getElementById('td_phone_send').innerHTML='';">
+                      <input type="button" id="id_send_sms" value="获取验证码" onclick="sendsms();" style="height:34px;margin-left:4px;width:103px;color:#808080;border:1px solid #C1C1C1;background-color:#F2F2F2;">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="color:blue;" id="td_phone_send"></td>
+                  </tr>
+                  <tr>
+                    <td height="10"></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="text" maxlength="4" class="col-xs-10 col-sm-5" name="vertifyCode" id="vertifyCode" style="width:264px;height:34px;display:inline;" onchange="document.getElementById('id_td_code').innerHTML='';" placeholder="请输入图片验证码">
+                        <a href="javascript:void(0);" title="点击刷新">
+	              	      <img alt="验证码" id="img_vertify" src="${ctx}/user/randomImageUserAdd" onclick="getRandomImageUserAdd(this);" width="103px" height="33px" style="margin-left:4px;border:1px solid blue;">
+	                    </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="id_td_code" style="color:red;"></td>
+                  </tr>
+                  <tr>
+                    <td height="10"></td>
+                  </tr>
+                  <tr>
+                    <td height="36">
+                      <table>
+                        <tr>
+                          <td><input type="checkbox" id="id_checkbox"></td>
+                          <td style="padding-top:4px;"><span style="font-size:12px;">阅读并接受</span><span style="color:#1B66C7;font-size:12px;">《大坝科技用户协议》</span></td>
+                        <tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td height="10"></td>
+                  </tr>
+                  <tr>
+                    <td align="center">
+                      <input type="button" value="注册" onclick="useradd();" style="color:white;background-color:#87CDA9;font-weight:bold;font-size:15px;border-width:0px;width:370px;height:40px;border-radius:2px;">
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="30"></td>
+            </tr>
+            <tr>
+              <td colspan="3" height="30"></td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td height="10"></td>
+    </tr>
+  </table>
+  <table align="center">
+    <tr>
+      <td>
+      已注册账号？<a href="${ctx}/user" style="text-decoration:none;color:#87CDA9">请登录</a>
       </td>
     </tr>
   </table>
-</form>
 </body>
 </html>

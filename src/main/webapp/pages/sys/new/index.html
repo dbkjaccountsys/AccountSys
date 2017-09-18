@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>控制台 - Bootstrap后台管理系统模版Ace下载</title>
+<script src="${ctx}/pages/sys/js/jquery-2.2.3.min.js"></script>
+<script type="text/javascript">
+
+var old_id = "4";
+
+function change_menu(id)
+{
+	document.getElementById("div"+old_id).className="m"+old_id+"1";
+	document.getElementById("div"+id).className="m"+id+"2";
+	document.getElementById("td"+old_id).className="td2";
+	document.getElementById("td"+id).className="td1";
+	document.getElementById("span"+old_id).className="span1";
+	document.getElementById("span"+id).className="span2";
+	old_id = id;
+	old_div = "";
+}
+
+var old_div;
+var old_td;
+var old_span;
+
+function over(id)
+{
+	old_div = document.getElementById("div"+id).className;
+	old_td = document.getElementById("td"+id).className;
+	old_span = document.getElementById("span"+id).className;
+	
+	document.getElementById("div"+id).className = "m"+id+"2";
+	document.getElementById("td"+id).className = "tdmove";
+	document.getElementById("span"+id).className = "span2";
+}
+
+function out(id)
+{
+	if(old_div!="")
+	{
+		document.getElementById("div"+id).className = old_div;
+		document.getElementById("td"+id).className = old_td;
+		document.getElementById("span"+id).className = old_span;
+	}
+}
+
+var old_tr_menu;
+var old_td_menu;
+var old_line;
+
+function over_menu(id)
+{
+	old_tr_menu = document.getElementById("tr"+id).className;
+	old_td_menu = document.getElementById("tdmenu"+id).className;
+	old_line = document.getElementById("line"+id).className;
+	
+	document.getElementById("tr"+id).className = "tr1";
+	document.getElementById("tdmenu"+id).className = "tdmenu2";
+	document.getElementById("line"+id).className = "line1";
+}
+
+function out_menu(id)
+{
+	if(old_tr_menu!="")
+	{
+		document.getElementById("tr"+id).className = old_tr_menu;
+		document.getElementById("tdmenu"+id).className = old_td_menu;
+		document.getElementById("line"+id).className = old_line;
+	}
+}
+
+var old_menu_id = "41";
+
+function change_menu_sub(id)
+{
+	document.getElementById("tr"+old_menu_id).className="tr2";
+	document.getElementById("tr"+id).className="tr1";
+	document.getElementById("tdmenu"+old_menu_id).className="tdmenu1";
+	document.getElementById("tdmenu"+id).className="tdmenu2";
+	document.getElementById("line"+old_menu_id).className="line2";
+	document.getElementById("line"+id).className="line1";
+	old_menu_id = id;
+	old_tr_menu = "";
+}
+
+function resize()
+{
+	var w1 = document.body.scrollWidth;
+	var h1 = document.body.scrollHeight;
+	document.getElementById("div_mask").style.width = w1 + "px";
+	document.getElementById("div_mask").style.height = h1 + "px";
+	document.getElementById("div_mask_favorable").style.width = w1 + "px";
+	document.getElementById("div_mask_favorable").style.height = h1 + "px";
+	document.getElementById("div_mask_pay").style.width = w1 + "px";
+	document.getElementById("div_mask_pay").style.height = h1 + "px";
+	var left1 = (document.body.clientWidth - parseInt(document.getElementById("div_email").style.width)) / 2 + "px";
+	var top1 = (document.body.clientHeight - parseInt(document.getElementById("div_email").style.height)) / 2 + "px";
+	document.getElementById("div_email").style.left = left1;
+	document.getElementById("div_email").style.top = top1;
+	var left2 = (document.body.clientWidth - parseInt(document.getElementById("div_phone").style.width)) / 2 + "px";
+	var top2 = (document.body.clientHeight - parseInt(document.getElementById("div_phone").style.height)) / 2 + "px";
+	document.getElementById("div_phone").style.left = left2;
+	document.getElementById("div_phone").style.top = top2;
+	var left3 = (document.body.clientWidth - parseInt(document.getElementById("div_favorable").style.width)) / 2 + "px";
+	var top3 = (document.body.clientHeight - parseInt(document.getElementById("div_favorable").style.height)) / 2 + "px";
+	document.getElementById("div_favorable").style.left = left3;
+	document.getElementById("div_favorable").style.top = top3;
+	var left4 = (document.body.clientWidth - parseInt(document.getElementById("div_favorable_title").style.width)) / 2 + "px";
+	var top4 = parseInt(document.getElementById("div_favorable").style.height) + 80 + "px";
+	document.getElementById("div_favorable_title").style.left = left4;
+	document.getElementById("div_favorable_title").style.top = top4;
+	var left5 = (document.body.clientWidth - parseInt(document.getElementById("div_pay").style.width)) / 2 + "px";
+	var top5 = (document.body.clientHeight - parseInt(document.getElementById("div_pay").style.height)) / 2 + "px";
+	document.getElementById("div_pay").style.left = left5;
+	document.getElementById("div_pay").style.top = top5;
+}
+
+function getRandomImageEmail(im)
+{
+	im.src = "${ctx}/user/randomImageEmail?"+Math.random();
+}
+
+function getRandomImagePhone(im)
+{
+	im.src = "${ctx}/user/randomImagePhone?"+Math.random();
+}
+
+function send_email_link()
+{
+	var email = document.getElementById("email").value;
+	if(email=="")
+	{
+		document.getElementById('id_td_email_check').innerHTML="请输入邮箱地址";
+		return;
+	}
+	var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+	if(!myreg.test(email))
+	{
+		document.getElementById('id_td_email_check').innerHTML="请输入正确格式的邮箱地址";
+		return;
+	}
+	
+	var ok = false;
+	
+	$.ajax
+	({
+		url:"${ctx}/user/checkEmail?email="+$("#email").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="no")
+			{
+				ok = true;
+			}
+			else if(result=="self")
+			{
+				document.getElementById('id_td_email_check').innerHTML="新邮箱地址不能与当前邮箱地址相同";
+			}
+			else if(result=="yes")
+			{
+				document.getElementById('id_td_email_check').innerHTML="邮箱地址已存在";
+			}
+			else if(result=="session")
+			{
+				top.location.href = "${ctx}/user/timeout";
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	
+	if(!ok)
+	{
+		return;
+	}
+	
+	var code = document.getElementById("vertifyCode").value;
+	if(code=="")
+	{
+		document.getElementById('id_td_code_check').innerHTML="请输入验证码";
+		return;
+	}
+	
+	$.ajax
+	({
+		url:"${ctx}/user/testSendResetEmail?email="+$("#email").val()+"&vertifyCode="+$("#vertifyCode").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="more")
+			{
+				alert("您今天变更邮箱/手机号码已超过${count}次，请明天再试");
+				ok = false;
+			}
+			else if(result=="imagetime")
+			{
+				document.getElementById('id_td_code_check').innerHTML="图片验证码超时";
+				ok = false;
+			}
+			else if(result=="no")
+			{
+				document.getElementById('id_td_code_check').innerHTML="图片验证码不正确";
+				ok = false;
+			}
+			else if(result=="session")
+			{
+				ok = false;
+				top.location.href = "${ctx}/user/timeout";
+			}
+			else
+			{
+				ok = true;
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	
+	if(!ok)
+	{
+		return;
+	}
+	
+	$.ajax
+	({
+		url:"${ctx}/user/SendResetEmail?email="+$("#email").val()+"&vertifyCode="+$("#vertifyCode").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="ok")
+			{
+				document.getElementById("id_td_send_email_finish").innerHTML = "验证信息邮件已发往新邮箱,请进入邮箱点击验证链接";
+				document.getElementById("email").readOnly = true;
+				document.getElementById("vertifyCode").readOnly = true;
+				document.getElementById("id_button_send_email").disabled = true;
+				document.getElementById("rightframe").contentWindow.document.getElementById("id_img_email").style.display = "";
+				document.getElementById("rightframe").contentWindow.document.getElementById("id_p_email").innerHTML = "变更邮箱「"+$("#email").val()+"」的过程中，只有新邮箱被重新认证才能启用，未验证之前请使用旧邮箱登录";
+			}
+			else if(result=="timeout")
+			{
+				document.getElementById('id_td_code_check').innerHTML="图片验证码不正确";
+			}
+			else if(result=="session")
+			{
+				top.location.href = "${ctx}/user/timeout";
+			}
+			else if(result=="no")
+			{
+				document.getElementById('id_td_code_check').innerHTML="图片验证码不正确";
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+}
+
+function send_phone_link()
+{
+	var phone = document.getElementById("phone").value;
+	if(phone=="")
+	{
+		document.getElementById('id_td_phone_check').innerHTML="请输入新手机号";
+		return;
+	}
+	var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+	if(!myreg.test(phone))
+	{
+		document.getElementById('id_td_phone_check').innerHTML="请输入正确格式的手机号";
+		return;
+	}
+	
+	var ok = false;
+	
+	$.ajax
+	({
+		url:"${ctx}/user/checkPhone?phone="+$("#phone").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="no")
+			{
+				ok = true;
+			}
+			else if(result=="self")
+			{
+				document.getElementById('id_td_phone_check').innerHTML="新手机号不能与当前手机号相同";
+			}
+			else if(result=="yes")
+			{
+				document.getElementById('id_td_phone_check').innerHTML="手机号已存在";
+			}
+			else if(result=="session")
+			{
+				top.location.href = "${ctx}/user/timeout";
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	
+	if(!ok)
+	{
+		return;
+	}
+	
+	var code = document.getElementById("vertifyCodePhone").value;
+	if(code=="")
+	{
+		document.getElementById('id_td_code_phone_check').innerHTML="请输入验证码";
+		return;
+	}
+
+	$.ajax
+	({
+		url:"${ctx}/user/testSendResetPhone?phone="+$("#phone").val()+"&vertifyCode="+$("#vertifyCodePhone").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="more")
+			{
+				alert("您今天变更邮箱/手机号码已超过${count}次，请明天再试");
+				ok = false;
+			}
+			else if(result=="timeout")
+			{
+				document.getElementById('id_td_code_phone_check').innerHTML="图片验证码超时";
+				ok = false;
+			}
+			else if(result=="no")
+			{
+				document.getElementById('id_td_code_phone_check').innerHTML="图片验证码不正确";
+				ok = false;
+			}
+			else if(result=="session")
+			{
+				ok = false;
+				top.location.href = "${ctx}/user/timeout";
+			}
+			else
+			{
+				ok = true;
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	
+	if(!ok)
+	{
+		return;
+	}
+	
+	$.ajax
+	({
+		url:"${ctx}/user/SendResetPhone?phone="+$("#phone").val()+"&vertifyCode="+$("#vertifyCodePhone").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="ok")
+			{
+				document.getElementById("id_td_send_phone_finish").innerHTML = "手机验证码已发送，请查收";
+				document.getElementById("phone").readOnly = true;
+				document.getElementById("vertifyCodePhone").readOnly = true;
+				document.getElementById("id_button_send_phone").disabled = true;
+			}
+			else if(result=="timeout")
+			{
+				document.getElementById("id_td_code_phone_check").innerHTML = "图片验证码超时";
+			}
+			else if(result=="session")
+			{
+				top.location.href = "${ctx}/user/timeout";
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+}
+
+function close_email_send()
+{
+	document.getElementById("id_td_send_email_finish").innerHTML = "";
+	document.getElementById("email").readOnly = false;
+	document.getElementById("email").value = "";
+	document.getElementById("vertifyCode").readOnly = false;
+	document.getElementById("vertifyCode").value = "";
+	document.getElementById("id_button_send_email").disabled = false;
+	document.getElementById("div_mask").style.display = "none";
+	document.getElementById("div_email").style.display = "none";
+	document.getElementById("img_vertify").click();
+}
+
+function close_phone_send()
+{
+	document.getElementById("id_td_send_phone_finish").innerHTML = "";
+	document.getElementById("phone").readOnly = false;
+	document.getElementById("phone").value = "";
+	document.getElementById("vertifyCodePhone").readOnly = false;
+	document.getElementById("vertifyCodePhone").value = "";
+	document.getElementById("id_button_send_phone").disabled = false;
+	document.getElementById("div_mask").style.display = "none";
+	document.getElementById("div_phone").style.display = "none";
+	document.getElementById("img_vertify_phone").click();
+	document.getElementById("code_phone").value = "";
+}
+
+function ok_phone_send()
+{
+	var code = document.getElementById("code_phone").value;
+	if(code=="")
+	{
+		document.getElementById("id_td_code_phone_reset_check").innerHTML = "请输入手机验证码";
+		return;
+	}
+	
+	$.ajax
+	({
+		url:"${ctx}/user/SendResetPhoneOk?phone="+$("#phone").val()+"&code="+$("#code_phone").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			if(result=="ok")
+			{
+				alert("手机更改成功，请重新登录");
+				window.location.href = "${ctx}/user";
+			}
+			else if(result=="codetime")
+			{
+				document.getElementById("id_td_code_phone_reset_check").innerHTML = "手机验证码超时";
+			}
+			else if(result=="no")
+			{
+				document.getElementById("id_td_code_phone_reset_check").innerHTML = "手机验证码不正确";
+			}
+			else if(result=="timeout")
+			{
+				document.getElementById("id_td_code_phone_reset_check").innerHTML = "手机验证码超时";
+			}
+			else if(result=="session")
+			{
+				top.location.href = "${ctx}/user/timeout";
+			}
+			else
+			{
+				alert("修改手机号码出错");
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+}
+
+function setCookie(cname,cvalue)
+{
+	var d = new Date();
+	d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+	var expires = "expires=" + d.toGMTString();
+	document.cookie = cname + "=" + cvalue + ";" + expires;
+}
+
+function delCookie(name)
+{
+	var exp = new Date();
+	exp.setTime(exp.getTime() - 1);
+	var cval = getCookie(name);
+	if(cval!=null)
+	{
+		document.cookie= name + "=" + cval + ";expires=" + exp.toGMTString();
+	}
+}
+
+function getCookie(cname)
+{
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i<ca.length;i++)
+	{
+		var c = ca[i].trim();
+		if(c.indexOf(name)==0)
+		{
+			return c.substring(name.length,c.length);
+		}
+	}
+	return "";
+}
+
+var old_table = "4";
+
+function change_table(id)
+{
+	document.getElementById("table"+old_table).style.display = "none";
+	document.getElementById("table"+id).style.display = "";
+	old_table = id;
+}
+
+function ok_favorable()
+{
+	var is_selected = false;
+	var es = document.getElementsByName("radio_favorable");
+	for(i=0;i<es.length;i++)
+	{
+		if(es[i].checked)
+		{
+			document.getElementById("rightframe").contentWindow.ok_select_favorable(es[i].value);
+			document.getElementById("div_mask_favorable").style.display = "none";
+			document.getElementById("div_favorable").style.display = "none";
+			document.getElementById("div_favorable_title").style.display = "none";
+			return;
+		}
+	}
+	if(!is_selected)
+	{
+		alert("请选择一个优惠活动");
+	}
+}
+
+function cancel_favorable()
+{
+	document.getElementById("div_mask_favorable").style.display = "none";
+	document.getElementById("div_favorable").style.display = "none";
+	document.getElementById("div_favorable_title").style.display = "none";
+}
+
+function init()
+{
+	<#if flag??>
+	document.getElementById("rightframe").src = "${ctx}/money/payReturnOk?total_amount=${total_amount}";
+	</#if>
+}
+
+function show_trade()
+{
+	document.getElementById("div_mask_pay").style.display = "none";
+	document.getElementById("div_pay").style.display = "none";
+	document.getElementById("rightframe").src = "${ctx}/money/moneyRecordList";
+}
+
+</script>
+<style type="text/css">
+
+.m11 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center 0px;}
+.m12 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center -30px;}
+
+.m21 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center -60px;}
+.m22 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center -90px;}
+
+.m31 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center -300px;}
+.m32 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center -330px;}
+
+.m41 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center -120px;}
+.m42 {background:url(${ctx}/pages/sys/images/nav_bg.png) center bottom no-repeat;height:30px;background-position:center -150px;}
+
+.td1 {background-color:#FFFFFF;}
+.td2 {background-color:#02B9EF;}
+.tdmove {background-color:#C2E7F1;}
+
+.span1 {color:#FFFFFF;}
+.span2 {color:#02B9EF;}
+
+.tr1 {background-color:#FFFFFF;}
+.tr2 {background-color:#F2F2F2;}
+
+.tdmenu1 {color:#000000;}
+.tdmenu2 {color:#02B9EF;}
+
+.line1 {background-color:#FFFFFF;}
+.line2 {background-color:#CCCCCC;}
+
+a
+{
+	text-decoration:none;
+}
+
+.td_font_1
+{
+	font-size:14px;
+}
+
+.td_font_2
+{
+	font-size:18px;
+}
+
+.error
+{
+	color:red;
+	font-size:14px;
+	padding-left:30px;
+}
+
+.button_style
+{
+	background-color:#F7BA59;
+	color:#FFFFFF;
+	border-width:0px;
+}
+
+.button_style_cancel
+{
+	background-color:#CCCCCC;
+	color:#FFFFFF;
+	border-width:0px;
+}
+
+td
+{
+	font-size:14px;
+}
+
+</style>
+</head>
+<body onload="resize();init();" onresize="resize();" style="margin:0px;">
+<div style="width:100px;height:100px;background-color:#000000;z-index:10000;position:absolute;left:0px;top:0px;display:none;" id="div_mask_pay">
+  <div id="div_pay" style="position:absolute;left:0px;top:0px;width:700px;height:260px;background-color:#FFFFFF;display:none;z-index:1000;">
+    <table width="100%">
+      <tr>
+        <td height="70"></td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="40"></td>
+              <td>将在新窗口为你打开付款界面，请按提示进行操作。</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td height="70"></td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="340"></td>
+              <td>
+                <input type="button" value="已完成付款" onclick="show_trade();" style="width:150px;height:40px;color:#FFFFFF;background-color:#F2AE43;border-width:0px;font-size:20px;">
+              </td>
+              <td width="20"></td>
+              <td>
+                <input type="button" value="查看订单" onclick="show_trade();" style="width:150px;height:40px;color:#FFFFFF;background-color:#28B779;border-width:0px;font-size:20px;">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div style="width:100px;height:100px;background-color:#000000;z-index:10000;position:absolute;left:0px;top:0px;display:none;" id="div_mask_favorable">
+  <div id="div_favorable_title" style="position:absolute;left:0px;top:0px;width:160px;height:40px;background-color:#02B9EF;;display:none;z-index:2000;text-align:center;padding-top:12px;color:#FFFFFF;border:1px solid #FFFFFF;">选择优惠活动</div>
+  <div id="div_favorable" style="position:absolute;left:0px;top:0px;width:900px;height:450px;background-color:#FFFFFF;margin:30px;display:none;z-index:1000;border:1px solid yellow;">
+    <br><br>
+    <div style="height:310px;overflow:auto;overflow-x:hidden;">
+      <table id="table_favorable" width="100%" cellspacing="0" cellpadding="0">
+      </table>
+    </div>
+    <table align="center">
+      <tr>
+        <td>
+          <input type="button" value="确定" class="button_style" style="font-size:26px;width:150px;height:50px;" onclick="ok_favorable();">
+        </td>
+        <td width="80"></td>
+        <td>
+          <input type="button" value="取消" class="button_style_cancel" style="font-size:26px;width:150px;height:50px;" onclick="cancel_favorable();">
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div style="width:100px;height:100px;background-color:#000000;z-index:10000;position:absolute;left:0px;top:0px;display:none;" id="div_mask">
+  <div id="div_email" style="position:absolute;left:0px;top:0px;width:700px;height:450px;background-color:#FFFFFF;margin:30px;display:none;">
+    <table>
+      <tr>
+        <td height="20" colspan="2"></td>
+      </tr>
+      <tr>
+        <td width="20" height="30"></td>
+        <td class="td_font_2">更换邮箱</td>
+      </tr>
+      <tr>
+        <td height="10" colspan="2"></td>
+      </tr>
+      <tr>
+        <td height="30"></td>
+        <td class="td_font_1">变更邮箱的过程中，只有新邮箱被重新认证才能启用，未验证之前请使用旧邮箱登录</td>
+      </tr>
+      <tr>
+        <td height="20" colspan="2"></td>
+      </tr>
+      <tr>
+        <td width="20"></td>
+        <td>
+          <table>
+            <tr>
+              <td width="30"></td>
+              <td class="td_font_1" width="100">新邮箱：</td>
+              <td width="70"></td>
+              <td width="200">
+                <input type="text" name="email" id="email" style="width:178px;height:34px;border:1px solid #A9A9A9;" onfocus="this.style.borderColor='#7B9DD4';" onblur="this.style.borderColor='#A9A9A9';" onchange="document.getElementById('id_td_email_check').innerHTML='';" placeholder="请填写新邮箱">
+              </td>
+              <td class="td_font_1" id="id_td_email_check" style="color:red;"></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="6" height="10"></td>
+            </tr>
+            <tr>
+              <td width="30" height="50"></td>
+              <td class="td_font_1">图片验证码：</td>
+              <td></td>
+              <td>
+                <input type="text" maxlength="4" name="vertifyCode" id="vertifyCode" style="width:90px;height:34px;border:1px solid #A9A9A9;" onfocus="this.style.borderColor='#7B9DD4';" onblur="this.style.borderColor='#A9A9A9';" onchange="document.getElementById('id_td_code_check').innerHTML='';" placeholder="图片验证码">
+                <a href="javascript:void(0);" title="点击刷新" style="position:relative;">
+                  <img alt="验证码" id="img_vertify" src="${ctx}/user/randomImageEmail" onclick="getRandomImageEmail(this);" width="80" height="38" style="border:1px solid blue;position:absolute;left:0px;top:-7px;">
+                </a>
+              </td>
+              <td class="td_font_1" id="id_td_code_check" style="color:red;"></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="6" height="10"></td>
+            </tr>
+            <tr>
+              <td colspan="3"></td>
+              <td>
+                <input type="button" value="发送邮箱验证链接" class="button_style" id="id_button_send_email" style="width:150px;height:30px;" onclick="send_email_link();">
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="6" height="10"></td>
+            </tr>
+            <tr>
+              <td colspan="3"></td>
+              <td class="td_font_1" colspan="3">请前往您的新邮箱获取验证链接，并点击验证链接进行验证</td>
+            </tr>
+            <tr>
+              <td height="10" colspan="6"></td>
+            </tr>
+            <tr>
+              <td colspan="3" height="30"></td>
+              <td class="td_font_1" colspan="3" style="color:blue;" id="id_td_send_email_finish"></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td height="10" colspan="4"></td>
+      </tr>
+      <tr>
+        <td width="350"></td>
+        <td>
+          <input type="button" value="确定" class="button_style" style="width:140px;height:36px;" onclick="close_email_send();">
+        </td>
+        <td width="10"></td>
+        <td>
+          <input type="button" value="取消" class="button_style_cancel" style="width:140px;height:36px;" onclick="close_email_send();">
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div id="div_phone" style="position:absolute;left:0px;top:0px;width:700px;height:470px;background-color:#FFFFFF;margin:30px;display:none;">
+    <table>
+      <tr>
+        <td height="20" colspan="2"></td>
+      </tr>
+      <tr>
+        <td width="20" height="30"></td>
+        <td class="td_font_2">更换手机号</td>
+      </tr>
+      <tr>
+        <td height="10" colspan="2"></td>
+      </tr>
+      <tr>
+        <td height="30"></td>
+        <td class="td_font_1">新手机号将会替换旧手机号，相关短信将会在变更成功后发送至新手机</td>
+      </tr>
+      <tr>
+        <td height="20" colspan="2"></td>
+      </tr>
+      <tr>
+        <td width="20"></td>
+        <td>
+          <table>
+            <tr>
+              <td width="30"></td>
+              <td class="td_font_1" width="100">新手机号：</td>
+              <td width="70"></td>
+              <td width="200">
+                <input type="text" name="phone" id="phone" style="width:178px;height:34px;border:1px solid #A9A9A9;" onfocus="this.style.borderColor='#7B9DD4';" onblur="this.style.borderColor='#A9A9A9';" onchange="document.getElementById('id_td_phone_check').innerHTML='';" placeholder="请填写新手机号">
+              </td>
+              <td class="td_font_1" id="id_td_phone_check" style="color:red;"></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="6" height="10"></td>
+            </tr>
+            <tr>
+              <td width="30"></td>
+              <td class="td_font_1">图片验证码：</td>
+              <td></td>
+              <td>
+                <input type="text" maxlength="4" name="vertifyCodePhone" id="vertifyCodePhone" style="width:90px;height:34px;border:1px solid #A9A9A9;" onfocus="this.style.borderColor='#7B9DD4';" onblur="this.style.borderColor='#A9A9A9';" onchange="document.getElementById('id_td_code_phone_check').innerHTML='';" placeholder="图片验证码">
+                <a href="javascript:void(0);" title="点击刷新" style="position:relative;">
+                  <img alt="验证码" id="img_vertify_phone" src="${ctx}/user/randomImagePhone" onclick="getRandomImagePhone(this);" width="80" height="38" style="border:1px solid blue;position:absolute;left:0px;top:-7px;">
+                </a>
+              </td>
+              <td class="td_font_1" id="id_td_code_phone_check" style="color:red;"></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="6" height="10"></td>
+            </tr>
+            <tr>
+              <td colspan="3"></td>
+              <td>
+                <input type="button" value="获取短信验证码" class="button_style" id="id_button_send_phone" style="width:150px;height:30px;" onclick="send_phone_link();">
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td height="10" colspan="6"></td>
+            </tr>
+            <tr>
+              <td width="30"></td>
+              <td class="td_font_1" width="100">手机验证码：</td>
+              <td width="70"></td>
+              <td width="200">
+                <input type="text" name="code_phone" id="code_phone" style="width:178px;height:34px;border:1px solid #A9A9A9;" onfocus="this.style.borderColor='#7B9DD4';" onblur="this.style.borderColor='#A9A9A9';" onchange="document.getElementById('id_td_code_phone_reset_check').innerHTML='';" placeholder="请填写手机验证码">
+              </td>
+              <td class="td_font_1" id="id_td_code_phone_reset_check" style="color:red;"></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td height="10" colspan="6"></td>
+            </tr>
+            <tr>
+              <td colspan="3" height="30"></td>
+              <td class="td_font_1" colspan="3" style="color:blue;" id="id_td_send_phone_finish"></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td height="10" colspan="4"></td>
+      </tr>
+      <tr>
+        <td width="350"></td>
+        <td>
+          <input type="button" value="确定" class="button_style" style="width:140px;height:36px;" onclick="ok_phone_send();">
+        </td>
+        <td width="10"></td>
+        <td>
+          <input type="button" value="取消" class="button_style_cancel" style="width:140px;height:36px;" onclick="close_phone_send();">
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<table width="1400" align="center" cellspacing="0" cellpadding="0">
+  <tr bgcolor="#DDDDDD">
+    <td><img src="${ctx}/pages/sys/images/logodb.png"></td>
+  </tr>
+</table>
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr bgcolor="#CCCCCC">
+  <td height="1"></td>
+</tr>
+</table>
+<table width="1400" align="center" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="80" valign="top">
+      <table cellspacing="0" cellpadding="0">
+        <tr bgcolor="#02B9EF">
+          <td colspan="2" height="80" width="80"></td>
+        </tr>
+        <tr bgcolor="#02B9EF" onmouseover="over('1');" onmouseout="out('1');">
+          <td width="1" height="90"></td>
+          <td style="font-size:12px;" align="center" id="td1" class="td2">
+            <a href="javascript:void(0);" onclick="change_menu('1');">
+              <div id="div1" class="m11"></div>
+              <span id="span1" class="span1">管理</span> 
+            </a>
+          </td>
+        </tr>
+        <tr bgcolor="#02B9EF" onmouseover="over('2');" onmouseout="out('2');">
+          <td width="1" height="90"></td>
+          <td style="font-size:12px;" align="center" id="td2" class="td2">
+            <a href="${ctx}/money/" target="rightframe" onclick="change_menu('2');change_table('2');change_menu_sub('21');">
+              <div id="div2" class="m21"></div>
+              <span id="span2" class="span1">财务</span> 
+            </a>
+          </td>
+        </tr>
+        <tr bgcolor="#02B9EF" onmouseover="over('3');" onmouseout="out('3');">
+          <td width="1" height="90"></td>
+          <td style="font-size:12px;" align="center" id="td3" class="td2">
+            <a href="javascript:void(0);" onclick="change_menu('3');">
+              <div id="div3" class="m31"></div>
+              <span id="span3" class="span1">详单</span> 
+            </a>
+          </td>
+        </tr>
+        <tr bgcolor="#02B9EF" onmouseover="over('4');" onmouseout="out('4');">
+          <td width="1" height="90"></td>
+          <td style="font-size:12px;" align="center" id="td4" class="td1">
+            <a href="${ctx}/user/editprofile" target="rightframe" onclick="change_menu('4');change_table('4');change_menu_sub('41');">
+              <div id="div4" class="m42"></div>
+              <span id="span4" class="span2">账号</span> 
+            </a>
+          </td>
+        </tr>
+        <tr bgcolor="#02B9EF">
+          <td colspan="2" height="500" id="td_body"></td>
+        </tr>
+      </table>
+    </td>
+    <td valign="top" width="200" height="100%">
+      <table cellspacing="0" cellpadding="0" bgcolor="#F2F2F2" height="100%" id="table4">
+        <tr>
+          <td height="40" width="200" colspan="2"></td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr>
+          <td width="40" height="50"></td>
+          <td style="font-size:16px;">账号管理</td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr class="tr1" id="tr41" onmouseover="over_menu('41');" onmouseout="out_menu('41');">
+          <td width="40" height="50"></td>
+          <td style="font-size:12px;">
+            <a href="${ctx}/user/editprofile" id="tdmenu41" class="tdmenu2" target="rightframe" onclick="change_menu_sub('41');">用户信息</a>
+          </td>
+          <td width="1" class="line1" id="line41"></td>
+        </tr>
+        <tr class="tr2" id="tr42" onmouseover="over_menu('42');" onmouseout="out_menu('42');">
+          <td width="40" height="50"></td>
+          <td style="font-size:12px;">
+            <a href="${ctx}/user/editpassword" id="tdmenu42" class="tdmenu1" target="rightframe" onclick="change_menu_sub('42');">修改密码</a>
+          </td>
+          <td width="1" class="line2" id="line42"></td>
+        </tr>
+        <tr class="tr2" id="tr43" onmouseover="over_menu('43');" onmouseout="out_menu('43');">
+          <td width="40" height="50"></td>
+          <td style="font-size:12px;">
+            <a href="${ctx}/user/userinfo" id="tdmenu43" class="tdmenu1" target="rightframe" onclick="change_menu_sub('43');">信息审核</a>
+          </td>
+          <td width="1" class="line2" id="line43"></td>
+        </tr>
+        <tr class="tr2" id="tr44" onmouseover="over_menu('44');" onmouseout="out_menu('44');">
+          <td width="40" height="50"></td>
+          <td style="font-size:12px;">
+            <a href="${ctx}/user/listVoice" id="tdmenu44" class="tdmenu1" target="rightframe" onclick="change_menu_sub('44');">语音审核</a>
+          </td>
+          <td width="1" class="line2" id="line44"></td>
+        </tr>
+        <tr>
+          <td height="10" width="200" colspan="2"></td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr>
+          <td width="40" height="50"></td>
+          <td style="font-size:16px;">消息通知</td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr class="tr2" id="tr45" onmouseover="over_menu('45');" onmouseout="out_menu('45');">
+          <td width="40" height="50"></td>
+          <td style="font-size:12px;">
+            <a href="javascript:void(0);" id="tdmenu45" class="tdmenu1" target="rightframe" onclick="change_menu_sub('45');">系统消息（0）</a>
+          </td>
+          <td width="1" class="line2" id="line45"></td>
+        </tr>
+        <tr>
+          <td height="20" colspan="2"></td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr>
+          <td width="40" height="20"></td>
+          <td>
+            <table cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="120" height="1" bgcolor="#CCCCCC"></td>
+              </tr>
+              <tr>
+                <td height="10"></td>
+              </tr>
+              <tr>
+                <td align="center"><img src="${ctx}/pages/sys/images/code.jpg" width="100" height="100"></td>
+              </tr>
+              <tr>
+                <td style="font-size:14px;" align="center">扫一扫绑定服务号<br/>账户信息快速掌握</td>
+              </tr>
+            </table>
+          </td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr>
+          <td colspan="2"></td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+      </table>
+      <table cellspacing="0" cellpadding="0" bgcolor="#F2F2F2" height="100%" id="table2" style="display:none;">
+        <tr>
+          <td height="40" width="200" colspan="2"></td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr>
+          <td width="40" height="50"></td>
+          <td style="font-size:16px;">财务信息</td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr class="tr1" id="tr21" onmouseover="over_menu('21');" onmouseout="out_menu('21');">
+          <td width="40" height="50"></td>
+          <td style="font-size:12px;">
+            <a href="${ctx}/money" id="tdmenu21" class="tdmenu2" target="rightframe" onclick="change_menu_sub('21');">立即充值</a>
+          </td>
+          <td width="1" class="line1" id="line21"></td>
+        </tr>
+        <tr class="tr1" id="tr22" onmouseover="over_menu('22');" onmouseout="out_menu('22');">
+          <td width="40" height="50"></td>
+          <td style="font-size:12px;">
+            <a href="${ctx}/money/moneyRecordList" id="tdmenu22" class="tdmenu1" target="rightframe" onclick="change_menu_sub('22');">充值记录</a>
+          </td>
+          <td width="1" class="line1" id="line22"></td>
+        </tr>
+        <tr>
+          <td height="20" colspan="2"></td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr>
+          <td width="40" height="20"></td>
+          <td>
+            <table cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="120" height="1" bgcolor="#CCCCCC"></td>
+              </tr>
+              <tr>
+                <td height="10"></td>
+              </tr>
+              <tr>
+                <td align="center"><img src="${ctx}/pages/sys/images/code.jpg" width="100" height="100"></td>
+              </tr>
+              <tr>
+                <td style="font-size:14px;" align="center">扫一扫绑定服务号<br/>账户信息快速掌握</td>
+              </tr>
+            </table>
+          </td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+        <tr>
+          <td colspan="2"></td>
+          <td width="1" bgcolor="#CCCCCC"></td>
+        </tr>
+      </table>
+    </td>
+    <td valign="top">
+      <div style="margin:20px;">
+        <iframe id="rightframe" name="rightframe" src="${ctx}/user/editprofile" width="1000" height="1000" frameborder="0"></iframe>
+      </div>
+    </td>
+  </tr>
+</table>
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr bgcolor="#EEEEEE">
+  <td align="center">
+    <table cellspacing="0" cellpadding="0">
+      <tr>
+        <td height="50" style="font-size:12px;">© Copyright 2017 云通讯平台&nbsp;&nbsp;京ICP备09068088-5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All Rights Reserved 杭州大坝科技有限公司</td>
+        <td width="200"></td>
+        <td style="font-size:12px;">在线咨询：</td>
+        <td><img src="${ctx}/pages/sys/images/qq.png"></td>
+        <td width="80"></td>
+        <td style="font-size:12px;">客服电话：400-610-1019</td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+</body>
+</html>
+

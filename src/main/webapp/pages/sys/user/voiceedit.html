@@ -118,6 +118,17 @@ function testupload(id,id_text)
 	document.getElementById(id_text).value = filename;
 }
 
+function init()
+{
+	var h1 = document.getElementById("table_body").offsetHeight;
+	if(h1<1000)
+	{
+		h1 = 1000;
+	}
+	parent.document.getElementById("rightframe").height = h1 + 100;
+	parent.document.getElementById("td_body").height = h1 - 300;
+}
+
 </script>
 <style type="text/css">
 
@@ -128,103 +139,131 @@ function testupload(id,id_text)
 	padding-left:30px;
 }
 
+.button_style
+{
+	background-color:#F7BA59;
+	color:#FFFFFF;
+	border-width:0px;
+}
+
+.bg1 {background:url(${ctx}/pages/sys/images/ico_bg.png) 0 0 no-repeat;height:40px;background-position:0 -360px;}
+
+.tr_background
+{
+	background-color:#F2F2F2;
+}
+
+td
+{
+	font-size:14px;
+}
+
 </style>
 </head>
-<body style="background-color:#FFFFFF;height:500px;">
-<form id="voiceInfoForm" action="${ctx}/user/voiceInfoUpdate" method="post">
-  <input type="hidden" id="id" name="id" value="${id}">
-  <input type="hidden" id="voice" name="voice">
-  <input type="hidden" id="audit" name="audit">
-  <table border="0" width="700" align="center">
-    <tr>
-      <td height="50" align="center" colspan="3">语音信息编辑</td>
-    </tr>
-    <tr>
-      <td width="140" height="50" align="right">文件名</td>
-      <td width="30"></td>
-      <td>
-        <input type="text" class="col-xs-10 col-sm-5" name="filename" id="filename" value="${filename}" style="width:280px;" onchange="checkform();">
-      </td>
-    </tr>
-    <tr>
-      <td height="50" align="right">语音名称</td>
-      <td></td>
-      <td>
-        <input type="text" class="col-xs-10 col-sm-5" name="voicename" id="voicename" value="${voicename}" style="width:280px;" onchange="checkform();">
-      </td>
-    </tr>
-    <tr>
-      <td colsnap="3" height="6"></td>
-    </tr>
-    <tr>
-      <td align="right">语音内容</td>
-      <td width="30"></td>
-      <td>
-        <textarea rows="10" cols="36" name="content" id="content">${content}</textarea>
-      </td>
-    </tr>
-    <tr>
-      <td height="50" align="right">审核状态</td>
-      <td></td>
-      <td style="font-weight:bold;">${status_text}</td>
-    </tr>
-  </table>
-</form>
-<table border="0" width="700" align="center">
+<body style="background-color:#FFFFFF;height:500px;" onload="init();">
+<table width="1000">
   <tr>
-    <td width="140" height="50" align="right" style="padding-bottom:12px;">语音上传</td>
-    <td width="30"></td>
+    <td height="20"></td>
+  </tr>
+  <tr>
+    <td style="font-size:28px;">语音审核</td>
+  </tr>
+  <tr bgcolor="#E7E5E5">
+    <td width="1000" height="4"></td>
+  </tr>
+  <tr>
+    <td height="20"></td>
+  </tr>
+  <tr>
     <td>
-      <form id="voiceForm" name="voiceForm" onsubmit="return testupload('f_voice','id_text_voice');" action="${ctx}/user/uploadFileVoice" enctype="multipart/form-data" method="post" target="frame_upload">
-        <input type="hidden" id="h_voice" name="h_voice" value="${filepath}">
-        <table border="0">
+      <div class="bg1" style="padding-top:6px;"><span style="margin-left:40px;font-size:20px;">语音编辑</span></div>
+    </td>
+  </tr>
+  <tr>
+    <td height="10"></td>
+  </tr>
+</table>
+<table width="1000" id="table_body">
+  <tr class="tr_background">
+    <td>
+      <div style="margin:20px;">
+        <form id="voiceInfoForm" action="${ctx}/user/voiceInfoUpdate" method="post">
+          <input type="hidden" id="id" name="id" value="${id}">
+          <input type="hidden" id="voice" name="voice">
+          <input type="hidden" id="audit" name="audit">
+          <table>
+            <tr>
+              <td width="100" height="50">文件名</td>
+              <td width="30"></td>
+              <td>
+                <input type="text" placeholder="请输入文件名" class="col-xs-10 col-sm-5" name="filename" id="filename" value="${filename}" style="width:280px;" onchange="checkform();">
+              </td>
+            </tr>
+            <tr>
+              <td height="50">语音名称</td>
+              <td width="30"></td>
+              <td>
+                <input type="text" placeholder="请输入语音名称" class="col-xs-10 col-sm-5" name="voicename" id="voicename" value="${voicename}" style="width:280px;" onchange="checkform();">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" height="6"></td>
+            </tr>
+            <tr>
+              <td>语音内容</td>
+              <td width="30"></td>
+              <td>
+                <textarea rows="10" cols="36" name="content" id="content">${content}</textarea>
+              </td>
+            </tr>
+            <tr>
+              <td height="50">审核状态</td>
+              <td></td>
+              <td style="font-weight:bold;">${status_text}</td>
+            </tr>
+          </table>
+        </form>
+        <table>
           <tr>
-            <td>
-              <input type="file" name="f_voice" id="f_voice" style="width:170px;display:none;" onchange="testupload('f_voice','id_text_voice');">
-              <input type="text" id="id_text_voice" readonly style="width:176px;height:42px;" value="${filepath}">
-            </td>
-            <td width="10"></td>
-            <td>
-              <input type="button" value="选择文件" class="btn btn-info" onclick="document.getElementById('f_voice').click();">
-            </td>
-            <td width="10"></td>
-            <td>
-              <input type="submit" value="上传" class="btn btn-info">
-            </td>
+            <td width="100" height="50" style="padding-bottom:12px;">语音上传</td>
             <td width="30"></td>
-            <td id="id_td_voice" style="color:red;display:none;">请上传语音文件</td>
+            <td>
+              <form id="voiceForm" name="voiceForm" onsubmit="return testupload('f_voice','id_text_voice');" action="${ctx}/user/uploadFileVoice" enctype="multipart/form-data" method="post" target="frame_upload">
+                <input type="hidden" id="h_voice" name="h_voice" value="${filepath}">
+                <table>
+                  <tr>
+                    <td>
+                      <input type="file" name="f_voice" id="f_voice" style="width:170px;display:none;" onchange="testupload('f_voice','id_text_voice');">
+                      <input type="text" id="id_text_voice" readonly style="width:176px;height:42px;" value="${filepath}">
+                    </td>
+                    <td width="10"></td>
+                    <td>
+                      <input type="button" value="选择文件" class="button_style" style="width:90px;height:40px" onclick="document.getElementById('f_voice').click();">
+                    </td>
+                    <td width="10"></td>
+                    <td>
+                      <input type="submit" value="上传" class="button_style" style="width:70px;height:40px">
+                    </td>
+                    <td width="30"></td>
+                    <td id="id_td_voice" style="color:red;display:none;">请上传语音文件</td>
+                  </tr>
+                </table>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td height="50" colspan="2"></td>
+            <td>
+              <input type="button" value="保存" onclick="submitvoiceinfo();" class="button_style" style="width:80px;height:40px">&nbsp;
+              <input type="button" value="保存并提交审核" onclick="submitvoiceinfoandaudit();" class="button_style" style="width:130px;height:40px">&nbsp;
+              <input type="button" value="返回" onclick="javascript:history.back();" class="button_style" style="width:80px;height:40px">
+            </td>
           </tr>
         </table>
-      </form>
+      </div>
     </td>
   </tr>
 </table>
-<div class="clearfix form-actions">
-    <table border="0" align="center">
-      <tr>
-        <td>
-          <button class="btn btn-info" type="button" onclick="submitvoiceinfo();">
-            <i class="icon-ok bigger-110"></i>
-        保存
-          </button>
-        </td>
-        <td width="40"></td>
-        <td>
-          <button class="btn btn-info" type="button" onclick="submitvoiceinfoandaudit();">
-            <i class="icon-ok bigger-110"></i>
-        保存并提交审核
-          </button>
-        </td>
-        <td width="40"></td>
-        <td>
-          <button class="btn" type="button" onclick="javascript:history.back();">
-            <i class="icon-undo bigger-110"></i>
-        返回
-          </button>
-        </td>
-      </tr>
-    </table>
-</div>
 <iframe id="frame_upload" name="frame_upload" style="display:none;"></iframe>
 </body>
 </html>

@@ -1,0 +1,435 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+jQuery.validator.addMethod("isMobile",function(value,element)
+{
+	var length = value.length;
+	var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
+	var ok = this.optional(element) || (length == 11 && mobile.test(value));
+    return ok;
+},"请正确填写您的手机号码");
+
+function check()
+{
+	return $("#userInfoForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element);
+		},
+		rules:
+		{
+			companyname:
+			{
+				required:true
+			},
+			contact:
+			{
+				required:true
+			},
+			contactphone:
+			{
+				required:true,
+				isMobile:true
+			},
+			publicaccount:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			companyname:
+			{
+				required:"请输入公司名称"
+			},
+			contact:
+			{
+				required:"请输入联系人"
+			},
+			contactphone:
+			{
+				required:"请输入联系人手机",
+				isMobile:"请输入正确格式的手机号码"
+			},
+			publicaccount:
+			{
+				required:"请输入企业对公账号"
+			}
+		},
+		submitHandler:function(form)
+		{
+		}
+	});
+}
+
+function showimage(type)
+{
+	if(type=="licence")
+	{
+		document.getElementById("img1").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_licence").value+"&t="+Math.random();
+		document.getElementById("img_source").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_licence").value+"&t="+Math.random();
+	}
+	else if(type=="idcard")
+	{
+		document.getElementById("img1").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_idcard").value+"&t="+Math.random();
+		document.getElementById("img_source").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_idcard").value+"&t="+Math.random();
+	}
+	else if(type=="safety")
+	{
+		document.getElementById("img1").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_safety").value+"&t="+Math.random();
+		document.getElementById("img_source").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_safety").value+"&t="+Math.random();
+	}
+	document.getElementById("div1").style.display = "";
+}
+
+function hideimage()
+{
+	document.getElementById("div1").style.display = "none";
+}
+
+function checkform()
+{
+	check().form();
+}
+
+function submituserinfo()
+{
+	var ok = true;
+	if(document.getElementById("h_licence").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_licence").style.display = "";
+	}
+	if(document.getElementById("h_idcard").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_idcard").style.display = "";
+	}
+	if(document.getElementById("h_safety").value=="")
+	{
+		ok = false;
+		document.getElementById("id_td_safety").style.display = "";
+	}
+	if(check().form() && ok)
+	{
+		document.getElementById("licence").value = document.getElementById("h_licence").value;
+		document.getElementById("idcard").value = document.getElementById("h_idcard").value;
+		document.getElementById("safety").value = document.getElementById("h_safety").value;
+		document.getElementById("userInfoForm").submit();
+	}
+}
+
+function testupload(id,id_text)
+{
+	var dom = document.getElementById(id);
+	var name = dom.value;
+	var pos = name.lastIndexOf(".");
+	if(pos==-1)
+	{
+		alert("请上传正确格式的图片文件，文件类型为：jpg,png,gif");
+		return false;
+	}
+	else
+	{
+		var ext = name.substring(pos+1);
+		if(ext=="jpg" || ext=="png" || ext=="gif")
+		{
+		}
+		else
+		{
+			alert("请上传正确格式的图片文件，文件类型为：jpg,png,gif");
+			return false;
+		}
+	}
+	var fileSize = dom.files[0].size/(1024*1024);
+	if(fileSize>5)
+	{
+		alert("上传文件大小不能大于5M");
+		return false;
+	}
+	
+	pos = name.lastIndexOf("\\");
+	var filename = name.substring(pos+1);
+	document.getElementById(id_text).value = filename;
+}
+
+var loadbigimage = false;
+
+var imgbig;
+
+function resize()
+{
+	var w = imgbig.width;
+	var h = imgbig.height;
+	var rate = w / h;
+	var h1 = document.body.clientHeight - 60;
+	if(h<h1)
+	{
+		h1 = h;
+	}
+	var w1 = parseInt(h1 * rate);
+	document.getElementById("img1").width = w1
+	document.getElementById("img1").height = h1;
+	var left = parseInt((document.body.clientWidth - w1 - 60) / 2) + "px";
+	var top = parseInt((document.body.clientHeight - h1 - 30) / 2) + "px";
+	document.getElementById("div1").style.left = left;
+	document.getElementById("div1").style.top = top;
+}
+
+function init()
+{
+	imgbig = document.getElementById("img_source");
+	imgbig.onload = function()
+	{
+		var w = imgbig.width;
+		var h = imgbig.height;
+		var rate = w / h;
+		var h1 = document.body.clientHeight - 60;
+		if(h<h1)
+		{
+			h1 = h;
+		}
+		var w1 = parseInt(h1 * rate);
+		document.getElementById("img1").width = w1
+		document.getElementById("img1").height = h1;
+		var left = parseInt((document.body.clientWidth - w1 - 60) / 2) + "px";
+		var top = parseInt((document.body.clientHeight - h1 - 30) / 2) + "px";
+		document.getElementById("div1").style.left = left;
+		document.getElementById("div1").style.top = top;
+	};
+}
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:16px;
+	padding-left:30px;
+}
+
+</style>
+</head>
+<body onload="init();resize();" onresize="resize();" style="background-color:#FFFFFF;height:700px;">
+<img id="img_source" style="display:none;">
+<div id="div1" style="display:none;position:absolute;left:0px;top:0px;z-index:1000;">
+  <img id="img1" width="300" height="300" onclick="hideimage();">
+</div>
+<form id="userInfoForm" action="${ctx}/user/userInfoEnter" method="post">
+  <input type="hidden" id="licence" name="licence" value="${licence}">
+  <input type="hidden" id="idcard" name="idcard" value="${idcard}">
+  <input type="hidden" id="safety" name="safety" value="${safety}">
+  <table border="0" width="740" align="center">
+    <tr>
+      <td width="140" height="50" align="right">手机号码</td>
+      <td width="30"></td>
+      <td>${phone}</td>
+    </tr>
+    <tr>
+      <td height="50" align="right">公司名称</td>
+      <td></td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="col-xs-10 col-sm-5" name="companyname" id="companyname" value="${companyname}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td height="50" align="right">联系人</td>
+      <td></td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="col-xs-10 col-sm-5" name="contact" id="contact" value="${contact}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td height="50" align="right">联系人手机号码</td>
+      <td></td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="col-xs-10 col-sm-5" name="contactphone" id="contactphone" value="${contactphone}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+    <tr>
+      <td height="50" align="right">企业对公账号</td>
+      <td></td>
+      <td>
+        <input type="text" <#if ispass=="0" || ispass=="1">readonly</#if> class="col-xs-10 col-sm-5" name="publicaccount" id="publicaccount" value="${publicaccount}" style="width:270px;" onchange="checkform();">
+      </td>
+    </tr>
+  </table>
+</form>
+<table border="0" width="740" align="center">
+  <tr>
+    <td width="140" height="50" align="right" style="padding-bottom:12px;">营业执照</td>
+    <td width="30"></td>
+    <td>
+      <form id="licenceForm" name="licenceForm" onsubmit="return testupload('f_licence','id_text_licence');" action="${ctx}/user/uploadFile?type=licence" enctype="multipart/form-data" method="post" target="frame_upload">
+        <input type="hidden" id="h_licence" name="h_licence" value="${licence}">
+        <table border="0">
+          <tr>
+            <#if ispass=="" || ispass=="2">
+            <td>
+              <input type="file" name="f_licence" id="f_licence" style="width:170px;display:none;" onchange="testupload('f_licence','id_text_licence');">
+              <input type="text" id="id_text_licence" readonly style="width:160px;height:42px;" value="${licence}">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="button" value="选择文件" class="btn btn-info" onclick="document.getElementById('f_licence').click();">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="上传" class="btn btn-info">
+            </td>
+            <td width="10"></td>
+            </#if>
+            <td>
+              <#if idcard!="">
+                <img src="${ctx}/user/showImage?filepath=${licence}" id="id_img_licence" width="40" height="40" onclick="showimage('licence');">
+                <script type="text/javascript">
+                	if(!loadbigimage)
+                	{
+                		document.getElementById("img_source").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_licence").value+"&t="+Math.random();
+                		loadbigimage = true;
+                	}
+                </script>
+              <#else>
+                <img src="" style="display:none;" id="id_img_licence" width="40" height="40" onclick="showimage('licence');">
+              </#if>
+            </td>
+            <td width="10"></td>
+            <td id="id_td_licence" style="color:red;display:none;">请上传公司营业执照</td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" height="50" align="right" style="padding-bottom:12px;">身份证</td>
+    <td width="30"></td>
+    <td>
+      <form id="idcardForm" name="idcardForm" onsubmit="return testupload('f_idcard','id_text_idcard');" action="${ctx}/user/uploadFile?type=idcard" enctype="multipart/form-data" method="post" target="frame_upload">
+        <input type="hidden" id="h_idcard" name="h_idcard" value="${idcard}">
+        <table border="0">
+          <tr>
+            <#if ispass=="" || ispass=="2">
+            <td>
+              <input type="file" name="f_idcard" id="f_idcard" style="width:170px;display:none;" onchange="testupload('f_idcard','id_text_idcard');">
+              <input type="text" id="id_text_idcard" readonly style="width:160px;height:42px;" value="${idcard}">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="button" value="选择文件" class="btn btn-info" onclick="document.getElementById('f_idcard').click();">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="上传" class="btn btn-info">
+            </td>
+            <td width="10"></td>
+            </#if>
+            <td>
+              <#if idcard!="">
+                <img src="${ctx}/user/showImage?filepath=${idcard}" id="id_img_idcard" width="40" height="40" onclick="showimage('idcard');">
+                <script type="text/javascript">
+                	if(!loadbigimage)
+                	{
+                		document.getElementById("img_source").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_idcard").value+"&t="+Math.random();
+                		loadbigimage = true;
+                	}
+                </script>
+              <#else>
+                <img src="" style="display:none;" id="id_img_idcard" width="40" height="40" onclick="showimage('idcard');">
+              </#if>
+            </td>
+            <td width="10"></td>
+            <td id="id_td_idcard" style="color:red;display:none;">请上传身份证</td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" height="50" align="right" style="padding-bottom:12px;">安全责任书</td>
+    <td width="30"></td>
+    <td>
+      <form id="safetyForm" name="safetyForm" onsubmit="return testupload('f_safety','id_text_safety');" action="${ctx}/user/uploadFile?type=safety" enctype="multipart/form-data" method="post" target="frame_upload">
+        <input type="hidden" id="h_safety" name="h_safety" value="${safety}">
+        <table border="0">
+          <tr>
+            <#if ispass=="" || ispass=="2">
+            <td>
+              <input type="file" name="f_safety" id="f_safety" style="width:170px;display:none;" onchange="testupload('f_safety','id_text_safety');">
+              <input type="text" id="id_text_safety" readonly style="width:160px;height:42px;" value="${safety}">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="button" value="选择文件" class="btn btn-info" onclick="document.getElementById('f_safety').click();">
+            </td>
+            <td width="10"></td>
+            <td>
+              <input type="submit" value="上传" class="btn btn-info">
+            </td>
+            <td width="10"></td>
+            </#if>
+            <td>
+              <#if safety!="">
+                <img src="${ctx}/user/showImage?filepath=${safety}" id="id_img_safety" width="40" height="40" onclick="showimage('safety');">
+                <script type="text/javascript">
+                	if(!loadbigimage)
+                	{
+                		document.getElementById("img_source").src = "${ctx}/user/showImage?filepath="+document.getElementById("h_safety").value+"&t="+Math.random();
+                		loadbigimage = true;
+                	}
+                </script>
+              <#else>
+                <img src="" style="display:none;" id="id_img_safety" width="40" height="40" onclick="showimage('safety');">
+              </#if>
+            </td>
+            <td width="10"></td>
+            <td id="id_td_safety" style="color:red;display:none;">请上传安全责任书</td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <#if ispass!="">
+  <tr>
+    <td height="50" align="right">审核状态</td>
+    <td></td>
+    <td style="font-weight:bold;">${ispass_text}</td>
+  </tr>
+  </#if>
+</table>
+<#if ispass=="" || ispass=="2"> 
+  <div class="clearfix form-actions">
+    <table border="0" align="center" width="700">
+      <tr>
+        <td width="140"></td>
+        <td>
+          <button class="btn btn-info" type="button" onclick="submituserinfo();">
+            <i class="icon-ok bigger-110"></i>
+        提交
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</#if>
+<iframe id="frame_upload" name="frame_upload" style="display:none;"></iframe>
+</body>
+</html>

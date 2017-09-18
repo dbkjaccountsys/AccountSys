@@ -1,0 +1,127 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link href="${ctx}/pages/sys/css/bootstrap.min.css" rel="stylesheet" />
+<script src="${ctx}/pages/sys/js/jquery-3.2.1.min.js"></script>
+<script src="${ctx}/pages/sys/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+$().ready(function()
+{
+	$("#loginForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element.parent());
+		},
+		rules:
+		{
+			phone:
+			{
+				required:true
+			},
+			password:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			phone:
+			{
+				required:"请输入手机号"
+			},
+			password:
+			{
+				required:"请输入密码"
+			}
+		},
+		submitHandler:function(form)
+		{
+			$.ajax
+			({
+				url:"${ctx}/user/checkLogin?phone="+$("#phone").val()+"&password="+$("#password").val(),
+				type:"post",
+				async:false,
+				success:function(result)
+				{
+					if(result=="no")
+					{
+						document.getElementById("id_login").style.display = "";
+					}
+					else if(result=="more")
+					{
+						document.getElementById("loginphone").value = $("#phone").val();
+						loginErrorForm.submit();
+					}
+					else if(result=="ok")
+					{
+						form.submit();
+						//alert("ok");
+					}
+				},
+				fail:function(err,status)
+				{
+					alert(err);
+				}
+			});
+		}
+	});
+});
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	margin-top:8px;
+}
+
+</style>
+</head>
+<body>
+<form id="loginForm" method="post" action="${ctx}/user/userloginOk">
+  <table border="0" width="600" align="center">
+    <tr>
+      <td colspan="2" height="40" style="font-weight:bold;font-size:14px;" align="center">用户登录</td>
+    </tr>
+    <tr>
+      <td width="140" height="40">手机号码：</td>
+      <td>
+        <input type="text" class="form-control" name="phone" id="phone" style="width:270px;">
+      </td>
+    </tr>
+    <tr>
+      <td width="140" height="40">密码：</td>
+      <td>
+        <input type="password" class="form-control" name="password" id="password" style="width:270px;">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" id="id_login" height="40" style="color:red;display:none;" align="center">登录信息不正确</td>
+    </tr>
+  </table>
+  <table border="0" align="center" width="600">
+    <tr>
+      <td align="center">
+        <input type="submit" value="登录" style="margin-right:20px;">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="${ctx}/user/useradd" style="color:blue;text-decoration:none;">用户注册</a>
+      </td>
+    </tr>
+  </table>
+</form>
+<form id="loginErrorForm" name="loginErrorForm" method="post" action="${ctx}/user/smsLogin">
+  <input type="hidden" name="loginphone" id="loginphone">
+</form>
+</body>
+</html>

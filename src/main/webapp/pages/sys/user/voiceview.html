@@ -25,63 +25,117 @@
 	padding-left:30px;
 }
 
+.button_style
+{
+	background-color:#F7BA59;
+	color:#FFFFFF;
+	border-width:0px;
+}
+
+.bg1 {background:url(${ctx}/pages/sys/images/ico_bg.png) 0 0 no-repeat;height:40px;background-position:0 -360px;}
+
+.tr_background
+{
+	background-color:#F2F2F2;
+}
+
+td
+{
+	font-size:14px;
+}
+
 </style>
+<script type="text/javascript">
+
+function init()
+{
+	var h1 = document.getElementById("table_body").offsetHeight;
+	if(h1<1000)
+	{
+		h1 = 1000;
+	}
+	parent.document.getElementById("rightframe").height = h1 + 100;
+	parent.document.getElementById("td_body").height = h1 - 300;
+}
+
+</script>
 </head>
-<body style="background-color:#FFFFFF;height:500px;">
-<table border="0" width="700" align="center">
+<body style="background-color:#FFFFFF;height:500px;" onload="init();">
+<table width="1000">
   <tr>
-    <td height="50" align="center" colspan="3">语音信息查看</td>
+    <td height="20"></td>
   </tr>
   <tr>
-    <td width="140" height="50" align="right">文件名</td>
-    <td width="30"></td>
+    <td style="font-size:28px;">语音审核</td>
+  </tr>
+  <tr bgcolor="#E7E5E5">
+    <td width="1000" height="4"></td>
+  </tr>
+  <tr>
+    <td height="20"></td>
+  </tr>
+  <tr>
     <td>
-      <input type="text" class="col-xs-10 col-sm-5" name="filename" id="filename" value="${filename}" readonly style="width:280px;">
+      <div class="bg1" style="padding-top:6px;"><span style="margin-left:40px;font-size:20px;">语音查看</span></div>
     </td>
   </tr>
   <tr>
-    <td height="50" align="right">语音名称</td>
-    <td></td>
-    <td>
-      <input type="text" class="col-xs-10 col-sm-5" name="voicename" id="voicename" value="${voicename}" readonly style="width:280px;">
-    </td>
+    <td height="10"></td>
   </tr>
-  <tr>
-    <td colspan="3" height="6"></td>
-  </tr>
-  <tr>
-    <td align="right">语音内容</td>
+</table>
+<table width="1000" id="table_body">
+  <tr class="tr_background">
     <td>
-    <td>
-      <textarea rows="10" cols="36" name="content" id="content" readonly>${content}</textarea>
-    </td>
-  </tr>
-  <tr>
-    <td height="50" align="right">审核状态</td>
-    <td></td>
-    <td style="font-weight:bold;">${status_text}</td>
-  </tr>
-  <tr>
-    <td height="50" align="right">播放语音文件</td>
-    <td></td>
-    <td>
-      <audio controls>
-        <source src="${ctx}/uploadvoices/${filepath}">
-      </audio>
+      <div style="margin:20px;">
+        <table>
+          <tr>
+            <td width="100" height="50">文件名</td>
+            <td width="30"></td>
+            <td>
+              <input type="text" class="col-xs-10 col-sm-5" name="filename" id="filename" value="${filename}" readonly style="width:280px;">
+            </td>
+          </tr>
+          <tr>
+            <td height="50">语音名称</td>
+            <td width="30"></td>
+            <td>
+              <input type="text" class="col-xs-10 col-sm-5" name="voicename" id="voicename" value="${voicename}" readonly style="width:280px;">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" height="6"></td>
+          </tr>
+          <tr>
+            <td>语音内容</td>
+            <td width="30"></td>
+            <td>
+              <textarea rows="10" cols="36" name="content" id="content" readonly>${content}</textarea>
+            </td>
+          </tr>
+          <tr>
+            <td height="50">审核状态</td>
+            <td></td>
+            <td style="font-weight:bold;">${status_text}</td>
+          </tr>
+          <tr>
+            <td height="50">播放语音文件</td>
+            <td></td>
+            <td>
+              <audio controls>
+                <source src="${ctx}/uploadvoices/${filepath}">
+              </audio>
+            </td>
+          </tr>
+          <tr>
+            <td height="50" colspan="2"></td>
+            <td>
+              <input type="button" value="返回" onclick="javascript:history.back();" class="button_style" style="width:80px;height:40px">
+            </td>
+          </tr>
+        </table>
+      </div>
     </td>
   </tr>
 </table>
-<div class="clearfix form-actions">
-    <table border="0" align="center">
-      <tr>
-        <td>
-          <button class="btn" type="button" onclick="javascript:history.back();">
-            <i class="icon-undo bigger-110"></i>
-        返回
-          </button>
-        </td>
-      </tr>
-    </table>
-</div>
 </body>
 </html>

@@ -1,0 +1,648 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+var old_img_id = "";
+
+function radio_click(id)
+{
+	if(old_img_id!="")
+	{
+		document.getElementById("div"+old_img_id).className = "radio-off";
+	}
+	document.getElementById("div"+id).className = "radio-off-on";
+	old_img_id = id;
+	
+	if(id=="3")
+	{
+		document.getElementById("next1").style.display = "none";
+		document.getElementById("next2").style.display = "";
+	}
+	else
+	{
+		document.getElementById("next1").style.display = "";
+		document.getElementById("next2").style.display = "none";
+	}
+	
+	document.getElementById("type").value = document.getElementById("radio"+id).value;
+}
+
+function radio_over(id)
+{
+	if(document.getElementById("div"+id).className!="radio-off-on")
+	{
+		document.getElementById("div"+id).className = "radio-off-hover";
+	}
+}
+
+function radio_out(id)
+{
+	if(document.getElementById("div"+id).className!="radio-off-on")
+	{
+		document.getElementById("div"+id).className = "radio-off";
+	}
+}
+
+function next1()
+{
+	if(change_money())
+	{
+		document.getElementById("money").value = document.getElementById("textmoney").value;
+		document.getElementById("favorable_money").value = favorable_money;
+		document.getElementById("form1").submit();
+	}
+}
+
+function change_money()
+{
+	var v = document.getElementById("textmoney").value;
+	if(v=="")
+	{
+		document.getElementById("id_money").style.color = "red";
+		document.getElementById("id_money").innerHTML = "充值金额不能为空";
+		return false;
+	}
+	var reg = /^[0-9]*(\.[0-9]{1,2})?$/;
+	if(!reg.test(v))
+	{
+		document.getElementById("id_money").style.color = "red";
+		document.getElementById("id_money").innerHTML = "请输入正确的金额，如8.88";
+		return false;
+	}
+	if(v.length>=2 && v.substring(0,2)=="00")
+	{
+		document.getElementById("id_money").style.color = "red";
+		document.getElementById("id_money").innerHTML = "请输入正确的金额，如8.88";
+		return false;
+	}
+	var f = parseFloat(v);
+	if(f<0.01)
+	{
+		document.getElementById("id_money").style.color = "red";
+		document.getElementById("id_money").innerHTML = "充值金额不能小于0.01";
+		return false;
+	}
+	document.getElementById("id_money").innerHTML = "";
+	
+	if(favorable_id!="")
+	{
+		use_favorable();
+	}
+	
+	return true;
+}
+
+function init()
+{
+	var h1 = document.getElementById("table_body").offsetHeight;
+	if(h1<1000)
+	{
+		h1 = 1000;
+	}
+	parent.document.getElementById("rightframe").height = h1 + 100;
+	parent.document.getElementById("td_body").height = h1 - 300;
+}
+
+function init()
+{
+	var h1 = document.getElementById("table_body").offsetHeight;
+	if(h1<1000)
+	{
+		h1 = 1000;
+	}
+	parent.document.getElementById("rightframe").height = h1 + 100;
+	parent.document.getElementById("td_body").height = h1 - 300;
+	
+	<#if (favorable?size>0)>
+	var html = "<tr style='font-weight:bold;' bgcolor='#DDDDDD'>\r\n";
+	html += "<td height='40' width='10'>\r\n";
+	html += "  <td>优惠名称</td>\r\n";
+	html += "  <td width='160'>开始时间</td>\r\n";
+	html += "  <td width='160'>结束时间</td>\r\n";
+	html += "  <td width='70'>状态</td>\r\n";
+	html += "  <td>优惠比率</td>\r\n";
+	html += "  <td>使用优惠最小金额</td>\r\n";
+	html += "  <td>使用优惠最大金额</td>\r\n";
+	html += "  <td>选择</td>\r\n";
+	html += "</tr>\r\n";
+	<#list favorable as v>
+	var s = "<tr>\r\n";
+	s += "<td height='40' width='10'>\r\n";
+	s += "  <td>${v.name}</td>\r\n";
+	s += "  <td>${v.begintime}</td>\r\n";
+	s += "  <td>${v.endtime}</td>\r\n";
+	s += "  <td>上线</td>\r\n";
+	s += "  <td>${v.rate}%</td>\r\n";
+	s += "  <td>${v.mincharge}</td>\r\n";
+	s += "  <td>${v.maxcharge}</td>\r\n";
+	s += "  <td><input type='radio' name='radio_favorable' value='${v.id}' style='width:24px;height:24px;'></td>\r\n";
+	s += "</tr>\r\n";
+	s += "<tr bgcolor='#DDDDDD'>\r\n";
+	s += "  <td height='1' colspan='9'></td>\r\n";
+	s += "</tr>\r\n";
+	html += s;
+	
+	var o = new Object();
+	o.id = ${v.id};
+	o.name = "${v.name}";
+	o.rate = ${v.rate};
+	o.mincharge = ${v.mincharge};
+	o.maxcharge = ${v.maxcharge};
+	favorable_arr.push(o);
+	
+	</#list>
+	parent.document.getElementById("table_favorable").innerHTML = html;
+	</#if>
+	
+	parent.resize();
+	
+	//alert(favorable_arr.length);
+}
+
+function select_favorable()
+{
+	parent.document.getElementById("div_mask_favorable").style.display = "";
+	parent.document.getElementById("div_favorable").style.display = "";
+	parent.document.getElementById("div_favorable_title").style.display = "";
+}
+
+var favorable_arr = new Array();
+
+var favorable_id = "";
+var favorable_name = "";
+var favorable_rate = "";
+var favorable_mincharge = "";
+var favorable_maxcharge = "";
+
+var favorable_money = 0;
+
+function use_favorable()
+{
+	var v = parseFloat(document.getElementById("textmoney").value);
+	if(v<favorable_mincharge)
+	{
+		document.getElementById("id_money").style.color = "blue";
+		document.getElementById("id_money").innerHTML = "已选择优惠活动："+favorable_name+"<br>充值满"+favorable_mincharge+"元可享受"+favorable_rate+"%的优惠";
+		favorable_money = 0;
+	}
+	else if(v>=favorable_mincharge && v<favorable_maxcharge)
+	{
+		var more = v*favorable_rate/100;
+		more = Math.round(more*100)/100;
+		favorable_money = more;
+		document.getElementById("id_money").style.color = "blue";
+		document.getElementById("id_money").innerHTML = "已选择优惠活动："+favorable_name+"<br>充值"+v+"元将享受"+more+"元的优惠";
+	}
+	else
+	{
+		var more = favorable_maxcharge*favorable_rate/100;
+		more = Math.round(more*100)/100;
+		favorable_money = more;
+		document.getElementById("id_money").style.color = "blue";
+		document.getElementById("id_money").innerHTML = "已选择优惠活动："+favorable_name+"<br>充值"+v+"元将享受"+more+"元的优惠，充值最大额度："+favorable_maxcharge+"元";
+	}
+}
+
+function ok_select_favorable(id)
+{
+	for(i=0;i<favorable_arr.length;i++)
+	{
+		var o = favorable_arr[i];
+		if(o.id==id)
+		{
+			favorable_id = o.id;
+			favorable_name = o.name;
+			favorable_rate = o.rate;
+			favorable_mincharge = o.mincharge;
+			favorable_maxcharge = o.maxcharge;
+			break;
+		}
+	}
+	if(change_money())
+	{
+		use_favorable();
+	}
+}
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:14px;
+	padding-left:30px;
+	padding-top:2px;
+}
+
+.tr_background
+{
+	background-color:#F2F2F2;
+}
+
+.button_style
+{
+	background-color:#F7BA59;
+	color:#FFFFFF;
+	width:160px;
+	height:40px;
+	border-width:0px;
+}
+
+td
+{
+	font-size:14px;
+}
+
+.jd
+{
+	font-size:18px;
+}
+
+.jdbig
+{
+	font-size:24px;
+}
+
+.jd1{width:22px;height:22px;float:left;margin:13px 0 12 12px;background:url(${ctx}/pages/sys/images/step_s_def.png) 0 0 no-repeat;line-height:22px;text-align:center;font-size:14px;font-weight:bold;color:#58cb8e;}
+
+.jd2{width:22px;height:22px;float:left;margin:13px 0 12 12px;background:url(${ctx}/pages/sys/images/step_s_sel.png) 0 0 no-repeat;line-height:22px;text-align:center;font-size:14px;font-weight:bold;color:#FFFFFF;}
+
+.jdbig1{width:68px;height:68px;background:url(${ctx}/pages/sys/images/step_bg.png) 0 0 no-repeat;line-height:68px;text-align:center;display:block;float:left;margin:0 12px 0 0;color:#54db93;}
+
+.jdbig2{width:68px;height:68px;background:url(${ctx}/pages/sys/images/step_bg1.png) 0 0 no-repeat;line-height:68px;text-align:center;color:#f2ae43;font-size:30px;display:block;float:right;}
+
+.radio1{background:url(${ctx}/pages/sys/images/green.png) -168px 0 no-repeat;}
+
+.radio-off{background:url(${ctx}/pages/sys/images/green.png) -120px 0 no-repeat;}
+.radio-off-hover{background:url(${ctx}/pages/sys/images/green.png) -144px 0 no-repeat;}
+.radio-off-on{background:url(${ctx}/pages/sys/images/green.png) -168px 0 no-repeat;}
+
+.img_border
+{
+	border:1px solid #D2D1D1;
+}
+
+</style>
+</head>
+<body style="background-color:#FFFFFF;" onload="init();">
+<form action="${ctx}/money/addmoneystart" method="post" id="form1" style="display:none;">
+  <input type="hidden" name="money" id="money">
+  <input type="hidden" name="type" id="type">
+  <input type="hidden" name="favorable_money" id="favorable_money">
+</form>
+<table border="0" width="1000" id="table_body">
+  <tr>
+    <td height="20"></td>
+  </tr>
+  <tr>
+    <td style="font-size:28px;">在线充值</td>
+  </tr>
+  <tr bgcolor="#E7E5E5">
+    <td width="1000" height="4"></td>
+  </tr>
+  <tr>
+    <td height="16"></td>
+  </tr>
+  <tr bgcolor="#FEFAF1">
+    <td>
+      <div style="margin:20px;">
+        <table>
+          <tr>
+            <td height="40"><span style="font-size:16px;">充值说明：</span></td>
+          </tr>
+          <tr>
+            <td height="40"><span style="font-size:12px;">1、我们提供在线充值服务（支付宝、银联、微信）及<a href="javascript:void(0);" style="color:#44CAF9;text-decoration:underline;">银行对公汇款</a></span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:12px;">2、请尽量保障账户余额大于您在资费配置内设置的保底套餐额度，避免因余额不足造成业务中断</span></td>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td height="30"></td>
+  </tr>
+  <tr>
+    <td>
+      <table cellspacing="0" cellpadding="0" style="border:1px solid #54DB93" width="100%">
+        <tr>
+          <td id="td1" width="20%" bgcolor="#54DB93" height="50">
+            <table>
+              <tr>
+                <td><span class="jd2">1</span></td>
+                <td width="5"></td>
+                <td class="jd" style="color:#FFFFFF;">输入金额</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td2" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">2</span></td>
+                <td width="5"></td>
+                <td class="jd">选择充值方式</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td3" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">3</span></td>
+                <td width="5"></td>
+                <td class="jd">确认订单</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td4" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">4</span></td>
+                <td width="5"></td>
+                <td class="jd">进行付款</td>
+              </tr>
+            </table>
+          </td>
+          <td id="td5" width="20%" height="50">
+            <table>
+              <tr>
+                <td><span class="jd1">5</span></td>
+                <td width="5"></td>
+                <td class="jd">完成</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td height="40"></td>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr>
+          <td height="70">
+            <table>
+              <tr>
+                <td><span class="jdbig1" style="font-size:24px;">1</span></td>
+                <td width="5"></td>
+                <td class="jdbig">输入金额</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#F4FAFD">
+    <td>
+      <table width="100%">
+        <tr>
+          <td height="60">
+            <div style="margin:30px 0px 30px 30px;">
+              <table>
+                <tr>
+                  <td width="40"></td>
+                  <td style="font-size:16px;" width="90">充值金额：</td>
+                  <td width="186">
+                    <input type="text" id="textmoney" name="textmoney" style="width:180px;height:40px;" onkeyup="change_money();">
+                  </td>
+                  <td style="font-size:12px;">元</td>
+                  <td width="10"></td>
+                  <td>
+                    <#if (favorable?size>0)>
+                      <img src="${ctx}/pages/sys/images/ico_qes.png">
+                      <a href="javascript:void(0)" onclick="select_favorable();" style="color:#44CAF9;text-decoration:none;">选择优惠活动</a>
+                    </#if>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" height="20"></td>
+                  <td colspan="4" style="font-size:12px;color:red;" id="id_money"></td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td></td>
+          <td style="background-color:#EACB9B;" width="400">
+            <table>
+              <tr>
+                <td width="24"></td>
+                <td>
+                  <table>
+                    <tr>
+                      <td><img src="${ctx}/pages/sys/images/img_s2.png"></td>
+                    </tr>
+                    <tr>
+                      <td height="5"></td>
+                    </tr>
+                    <tr>
+                      <td style="color:#FFFFFF;font-size:14px;">账户余额</td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="100"></td>
+                <td>
+                  <table>
+                    <tr>
+                      <td height="10"></td>
+                    </tr>
+                    <tr>
+                      <td style="color:#FFFFFF;font-size:30px;" align="right">${charge}&nbsp;元</td>
+                    </tr>
+                    <!--
+                    <tr>
+                      <td height="5"></td>
+                    </tr>
+                    <tr>
+                      <td style="color:#FFFFFF;font-size:14px;">含赠送金额 8.00 元</td>
+                    </tr>-->
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td height="30"></td>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr>
+          <td height="70">
+            <table>
+              <tr>
+                <td><span class="jdbig2" style="font-size:24px;">2</span></td>
+                <td width="5"></td>
+                <td class="jdbig">选择充值方式</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#F4FAFD">
+    <td>
+      <table width="100%">
+        <tr>
+          <td height="60">
+            <div style="margin:30px 0px 30px 30px;">
+              <table>
+                <tr>
+                  <td width="24">
+                    <div class="radio-off" id="div1"><input type="radio" name="channel" value="1" style="width:24px;height:24px;opacity:0;" id="radio1" onclick="radio_click('1');" onmouseover="radio_over('1');" onmouseout="radio_out('1');"></div>
+                  </td>
+                  <td width="15"></td>
+                  <td>
+                    <img src="${ctx}/pages/sys/images/pay_m1.jpg" class="img_border">
+                  </td>
+                  <td width="35"></td>
+                  <td width="24">
+                    <div class="radio-off" id="div2"><input type="radio" name="channel" value="2" style="width:24px;height:24px;opacity:0;" id="radio2" onclick="radio_click('2');" onmouseover="radio_over('2');" onmouseout="radio_out('2');"></div>
+                  </td>
+                  <td width="15"></td>
+                  <td>
+                    <img src="${ctx}/pages/sys/images/pay_m2.jpg" class="img_border">
+                  </td>
+                  <td width="35"></td>
+                  <td width="24">
+                    <div class="radio-off" id="div3"><input type="radio" name="channel" value="3" style="width:24px;height:24px;opacity:0;" id="radio3" onclick="radio_click('3');" onmouseover="radio_over('3');" onmouseout="radio_out('3');"></div>
+                  </td>
+                  <td width="15"></td>
+                  <td>
+                    <img src="${ctx}/pages/sys/images/pay_m4.jpg" class="img_border">
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td height="30"></td>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr>
+          <td width="60"></td>
+          <td id="next1">
+            <input type="button" value="下一步" onclick="next1();" style="width:150px;height:50px;color:#FFFFFF;font-size:26px;background-color:#F2AE43;border-width:0px;">
+          </td>
+          <td id="next2" style="display:none;">
+            <table>
+              <tr>
+                <td><img src="${ctx}/pages/sys/images/paycode_img.png" width="100" height="100"></td>
+                <td width="10"></td>
+                <td style="font-size:18px;">扫码快速充值</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td height="30"></td>
+  </tr>
+  <tr>
+    <td style="font-size:28px;">银行对公汇款</td>
+  </tr>
+  <tr bgcolor="#E7E5E5">
+    <td width="1000" height="4"></td>
+  </tr>
+  <tr>
+    <td height="16"></td>
+  </tr>
+  <tr>
+    <td style="font-size:12px;">
+      <table>
+        <tr>
+          <td><span>汇款时请在备注中写明您在云通讯的认证名，以便入账；</span><br></td>
+        </tr>
+        <tr>
+          <td height="5"></td>
+        </tr>
+        <tr>
+          <td><span>到账时间取决于汇款行与开户行间的结算，正常为1个工作日，若有疑问请联系客户经理或客服。</span></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td height="20"></td>
+  </tr>
+  <tr bgcolor="#F7F7F7">
+    <td>
+      <div style="margin:40px;">
+        <table width="100%">
+          <tr>
+            <td width="120"></td>
+            <td>
+              <table>
+                <tr>
+                  <td style="font-size:16px;">开户名称：杭州大坝科技有限公司</td>
+                </tr>
+                <tr>
+                  <td height="10"></td>
+                </tr>
+                <tr>
+                  <td style="font-size:16px;">收款账号：110906635210301</td>
+                </tr>
+                <tr>
+                  <td height="10"></td>
+                </tr>
+                <tr>
+                  <td style="font-size:16px;">开户银行：招商银行北京北苑路支行</td>
+                </tr>
+              </table>
+            </td>
+            <td width="100"></td>
+            <td>
+              <table>
+                <tr>
+                  <td><img src="${ctx}/pages/sys/images/paycode_img.png" width="100" height="100"></td>
+                </tr>
+                <tr>
+                  <td style="font-size:12px;" align="center">关注服务号</td>
+                </tr>
+                <tr>
+                  <td style="font-size:12px;" align="center">汇款到账早知道</td>
+                </tr>
+              </table>
+            </td>
+            <td width="100"></td>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

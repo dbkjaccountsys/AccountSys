@@ -1,0 +1,128 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+$().ready(function()
+{
+	$("#smsForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element);
+		},
+		rules:
+		{
+			code:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			code:
+			{
+				required:"请输入验证码"
+			}
+		},
+		submitHandler:function(form)
+		{
+			$.ajax
+			({
+				url:"${ctx}/user/checkCode?phone=${phone}&code="+$("#code").val(),
+				type:"post",
+				async:false,
+				success:function(result)
+				{
+					if(result=="no")
+					{
+						document.getElementById("id_sms").style.display = "";
+					}
+					else if(result=="ok")
+					{
+						form.submit();
+						//alert("ok");
+					}
+				},
+				fail:function(err,status)
+				{
+					alert(err);
+				}
+			});
+		}
+	});
+});
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:16px;
+	padding-left:30px;
+}
+
+</style>
+</head>
+<body style="background-color:#FFFFFF;height:500px;">
+<div style="height:100px;"></div>
+<form id="smsForm" method="post" action="${ctx}/user/smsloginSend">
+  <input type="hidden" name="phone" value="${phone}">
+  <table border="0" width="600" align="center">
+    <tr>
+      <td colspan="3" height="40" align="center">密码输入错误超过3次，用户短信登录验证</td>
+    </tr>
+    <tr>
+      <td width="140" height="40" align="right">手机号码</td>
+      <td width="30"></td>
+      <td>${phone}</td>
+    </tr>
+    <tr>
+      <td height="40" align="right">验证码</td>
+      <td></td>
+      <td>
+        <input type="text" class="col-xs-10 col-sm-5" name="code" id="code" maxlength="4" style="width:270px;">
+      </td>
+    </tr>
+    <tr>
+      <td height="40" align="right" id="id_sms" style="color:red;display:none;">验证码信息不正确</td>
+      <td colspan="2"></td>
+    </tr>
+  </table>
+  <table border="0" align="center" width="600">
+    <tr>
+      <td colspan="3" height="10"></td>
+    </tr>
+    <tr>
+      <td width="170" height="40"></td>
+      <td width="100">
+      <button class="btn btn-info" type="submit">
+        提交
+      </button>
+      </td>
+      <td>
+        <button class="btn" type="button" onclick="javascript:history.back();">
+        返回
+      </button>
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

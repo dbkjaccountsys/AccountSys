@@ -1,0 +1,150 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>登陆</title>
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/bootstrap.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${ctx}/pages/sys/myui/assets/css/ace-skins.min.css" />
+
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='${ctx}/pages/sys/myui/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+</script>
+<script src="${ctx}/pages/sys/myui/assets/js/bootstrap.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/jquery.validate.min.js"></script>
+<script src="${ctx}/jquery-validation-1.16.0/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+
+jQuery.validator.addMethod("isUserNameHas",function(value,element)
+{
+	var ok = true;
+	$.ajax
+	({
+		url:"${ctx}/user/checkUserName?username="+$("#username").val(),
+		type:"post",
+		async:false,
+		success:function(result)
+		{
+			//不存在
+			if(result=="no")
+			{
+			}
+			//已存在
+			else
+			{
+				ok = false;
+			}
+		},
+		fail:function(err,status)
+		{
+			alert(err);
+		}
+	});
+	return ok;
+},"用户名已存在");
+
+$().ready(function()
+{
+	$("#userForm").validate
+	({
+		errorPlacement:function(error,element)
+		{
+			error.insertAfter(element);
+		},
+		rules:
+		{
+			username:
+			{
+				required:true,
+				isUserNameHas:true
+			},
+			name:
+			{
+				required:true
+			}
+		},
+		messages:
+		{
+			username:
+			{
+				required:"请输入用户名",
+				isUserNameHas:"用户名已存在"
+			},
+			name:
+			{
+				required:"请输入姓名"
+			}
+		},
+		submitHandler:function(form)
+		{
+			form.submit();
+		}
+	});
+});
+
+</script>
+<style type="text/css">
+
+.error
+{
+	color:red;
+	font-size:16px;
+	padding-left:30px;
+}
+
+</style>
+</head>
+<body style="background-color:#FFFFFF;height:600px;">
+<form id="userForm" action="${ctx}/user/userProfileUpdate" method="post">
+  <table border="0" width="700" align="center">
+    <tr>
+      <td width="140" height="40" align="right">手机号码</td>
+      <td width="30"></td>
+      <td>${phone}</td>
+    </tr>
+    <tr>
+      <td height="40" align="right">邮箱</td>
+      <td></td>
+      <td>
+        ${email}
+      </td>
+    </tr>
+    <tr>
+      <td height="40" align="right">用户名</td>
+      <td></td>
+      <td>
+        <#if username=="">
+          <input type="text" class="col-xs-10 col-sm-5" name="username" id="username" style="width:270px;" placeholder="用户名设置后不能修改">
+        <#else>
+          ${username}
+          <input type="hidden" name="usernamehas" id="usernamehas" value="yes">
+        </#if>
+      </td>
+    </tr>
+    <tr>
+      <td height="40" align="right">姓名</td>
+      <td></td>
+      <td>
+        <input type="text" class="col-xs-10 col-sm-5" name="name" id="name" value="${name}" style="width:270px;">
+      </td>
+    </tr>
+  </table>
+  <div class="clearfix form-actions">
+    <table border="0" align="center" width="700">
+      <tr>
+        <td width="140"></td>
+        <td>
+          <button class="btn btn-info" type="submit">
+            <i class="icon-ok bigger-110"></i>
+        提交
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</form>
+</body>
+</html>
