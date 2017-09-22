@@ -5,6 +5,7 @@ import com.alibaba.druid.wall.WallConfig;
 import com.alibaba.druid.wall.WallFilter;
 import com.dbkj.account.controller.ForgetPasswordController;
 import com.dbkj.account.controller.VertifyCodeController;
+import com.dbkj.account.handler.MyDruidStatViewHandler;
 import com.dbkj.account.interceptor.*;
 import com.dbkj.account.model._MappingKit;
 import com.dbkj.account.service.OperaTypeService;
@@ -22,11 +23,13 @@ import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.core.JFinal;
 import com.jfinal.ext.handler.ContextPathHandler;
+import com.jfinal.ext.handler.UrlSkipHandler;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.CaseInsensitiveContainerFactory;
 import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
 import com.jfinal.plugin.druid.DruidPlugin;
+import com.jfinal.plugin.druid.DruidStatViewHandler;
 import com.jfinal.plugin.ehcache.EhCachePlugin;
 import com.jfinal.plugin.redis.RedisPlugin;
 import com.jfinal.render.ViewType;
@@ -133,6 +136,12 @@ public class AppConfig extends JFinalConfig{
 	@Override
 	public void configHandler(Handlers me) {
 		me.add(new ContextPathHandler("ctx"));
+		//全局配置处理器，druid监控页面展示
+		me.add(new MyDruidStatViewHandler("/manage/druid"));
+
+		// 全局配置处理器，设置跳过哪些URL不处理
+		me.add(new UrlSkipHandler("/ca/.*|/se/.*|.*.jsp|.*.htm|.*.html|.*.js|.*.css|.*.json|.*.png|.*.gif|.*.jpg|.*.jpeg|.*.bmp|.*.ico|.*.exe|.*.txt|.*.zip|.*.rar|.*.7z",
+				false));
 	}
 
 	@Override
@@ -158,4 +167,6 @@ public class AppConfig extends JFinalConfig{
 	public static void main(String[] args) {
 		JFinal.start("src/main/webapp", 80, "/");
 	}
+
+
 }

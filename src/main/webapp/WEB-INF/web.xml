@@ -42,10 +42,6 @@
 	      <param-name>configClass</param-name>
 	      <param-value>com.dbkj.account.config.AppConfig</param-value>
 	    </init-param>
-	    <init-param>
-	    	<param-name>exclusions</param-name>
-	    	<param-value>/druid/*</param-value>
-	    </init-param>
 	  </filter>
 	  <filter-mapping>
 	    <filter-name>jfinal</filter-name>

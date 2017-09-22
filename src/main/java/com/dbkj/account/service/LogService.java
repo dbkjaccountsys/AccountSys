@@ -115,7 +115,6 @@ public class LogService {
 	 * @param month 月份
 	 * @param userType 用户类型
 	 * @param operaResult 操作结果
-	 * @param userId 用户id
 	 * @param startTime 
 	 * @param endTime
 	 */
@@ -131,11 +130,9 @@ public class LogService {
 		List<Object> params=new ArrayList<Object>(10);
 		params.add(userType);
 		params.add(operaResult);
-		
-		StringBuilder where=new StringBuilder();
+
 		if(!StrKit.isBlank(username)){
 			username=username.trim();
-			StringBuilder sb=new StringBuilder("(");
 			List<Long> idList=new ArrayList<>();
 			if(userType==UserType.ADMIN.getValue()){
 				List<Admin> list=Admin.dao.find(SqlContext.getSqlByFreeMarker(Admin.class, "getListByUsername"),username+"%");
@@ -167,20 +164,14 @@ public class LogService {
 		String sql= SqlContext.getSqlByFreeMarker(UserLog.class,"getPage",paraMap);
 		String countSql=SqlContext.getSqlByFreeMarker(UserLog.class,"getCount",paraMap);
 		
-		long count=Db.queryLong(countSql+where, params.toArray(new Object[params.size()]));
+		long count=Db.queryLong(countSql, params.toArray(new Object[params.size()]));
 		page.setRecords(count);
 		page.setTotalCount((int)Math.ceil(count/(double)page.getPageSize()));
 		
 		int limit = (page.getCurrentPage()-1)*page.getPageSize();
 		params.add(limit);
 		params.add(page.getPageSize());
-		
-		if(where.length()>0){
-			int index=sql.indexOf("order");
-			String str1=sql.substring(0, index);
-			String str2=sql.substring(index);
-			sql=str1+where.toString()+str2;
-		}
+
 		if(logger.isInfoEnabled()){
 			logger.info("分页SQL：{}，查询参数：{}",sql,JSON.toJSON(params));
 		}
