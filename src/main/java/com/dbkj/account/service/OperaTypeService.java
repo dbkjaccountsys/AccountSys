@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.model.OperaType;
-import com.dbkj.account.util.SqlUtil;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -15,7 +15,7 @@ public class OperaTypeService {
 	private static final Map<String, Integer> OPERA_TYPE_MAP=new HashMap<String, Integer>();
 	
 	public static void init(){
-		List<Record> list = Db.find(SqlUtil.getSql(OperaType.class, "getOperaList"));
+		List<Record> list = Db.find(SqlContext.getSqlByFreeMarker(OperaType.class, "getOperaList"));
 		for(Record r:list){
 			OperaTypeService.OPERA_TYPE_MAP.put(r.getStr("action_url"), r.getInt("id"));
 		}

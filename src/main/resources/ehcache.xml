@@ -1149,6 +1149,29 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
            memoryStoreEvictionPolicy="LFU">
     </cache>
 
+    <!---->
+    <cache name="tokenCache"
+            maxElementsInMemory="50000"
+            clearOnFlush="false"
+            eternal="false"
+            timeToIdleSeconds="36000"
+            timeToLiveSeconds="36000"
+
+            overflowToDisk="true"
+
+            diskSpoolBufferSizeMB="1024"
+            maxElementsOnDisk="100000"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+
+            memoryStoreEvictionPolicy="LFU"
+            transactionalMode="off"
+
+            copyOnWrite="true"
+            copyOnRead="true">
+
+    </cache>
+
     <!--
     Sample cache named sampleCache2
     This cache has a maximum of 1000 elements in memory. There is no overflow to disk, so 1000

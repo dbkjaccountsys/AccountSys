@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.User">
+
+    <sql id="isExistsPhone">
+        select count(1) as `count` from user where phone=? and available=1
+    </sql>
+    <sql id="getRechargeList">
+        <![CDATA[
+            SELECT t2.id,t2.username,t1.companyname,t2.charge FROM
+            (
+                SELECT userid,companyname FROM user_info
+                WHERE ispass=1 AND available=1
+                <#if userId??>
+                    and userid=?
+                </#if>
+                ORDER BY id DESC LIMIT ?,?
+            ) t1
+            INNER JOIN `user` t2 ON t1.userid=t2.id
+        ]]>
+    </sql>
+
+    <sql id="getRechargeCount">
+        <![CDATA[
+            SELECT COUNT(1) AS `count` FROM user_info
+            WHERE ispass=1 AND available=1
+            <#if userId??>
+                and userid=?
+            </#if>
+        ]]>
+    </sql>
+    <sql id="getRechargeInfo">
+        SELECT t2.id,t2.username,t1.companyname FROM (
+        SELECT userid,companyname FROM user_info WHERE ispass=1 AND available=1 AND userid=?
+        ) t1 INNER JOIN `user` t2 ON t1.userid=t2.id
+    </sql>
+    <sql id="getUserList">
+        <![CDATA[
+            SELECT t1.id,t1.username,t1.name,t1.phone,t1.email,t1.charge,t2.companyname,t2.contact,
+            t2.contactphone,t2.publicaccount,t2.accountname,t2.bank,t2.taxaccount,t2.ispass FROM
+            (
+                SELECT id,username,`name`,phone,email,charge FROM `user`
+                where available=1
+                <#if username??>
+                    and username like ?
+                </#if>
+                ORDER BY id DESC LIMIT ?,?
+            ) t1 LEFT JOIN user_info t2 ON t1.id=t2.userid
+        ]]>
+    </sql>
+
+    <sql id="getCount">
+        <![CDATA[
+            SELECT COUNT(1) AS `count` FROM `user`
+            WHERE available=1
+            <#if username??>
+                and username like ?
+            </#if>
+        ]]>
+    </sql>
+
+    <sql id="getUserById">
+        SELECT t1.id,t1.username,t1.name,t1.phone,t1.email,t1.charge,t2.companyname,t2.contact,t2.contactphone,t2.publicaccount,t2.accountname,t2.bank,t2.taxaccount FROM
+        (SELECT id,username,`name`,phone,email,charge FROM `user` WHERE available=1 AND id=?) t1 LEFT JOIN user_info t2 ON t1.id=t2.userid
+    </sql>
+    <sql id="getListByUsername">
+        select id from user where username like ?
+    </sql>
+</sql-statement>

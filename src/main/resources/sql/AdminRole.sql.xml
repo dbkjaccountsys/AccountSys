@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.AdminRole">
+
+    <sql id="getList">
+        select id,rolename,remark,available from admin_role where available=1
+    </sql>
+    <sql id="getPage">
+        <![CDATA[
+            select id,rolename,remark,available from admin_role
+            where available=1
+            <#if roleName??>
+                and rolename like ?
+            </#if>
+            order by id desc limit ?,?
+        ]]>
+    </sql>
+    <sql id="getCount">
+        <![CDATA[
+            select count(1) from admin_role
+            where available=1
+            <#if roleName??>
+                and rolename like ?
+            </#if>
+        ]]>
+    </sql>
+    <sql id="isExistByRoleName">
+        select count(1) from admin_role where available=1 and rolename=?
+    </sql>
+    <sql id="isExistByRoleNameAndId">
+        select count(1) from admin_role where available=1 and rolename=? and id<![CDATA[<>]]>?
+    </sql>
+
+</sql-statement>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.UserVoice">
+
+    <sql id="getList">
+        <![CDATA[
+            SELECT t1.id,t2.username,t1.uploadtime,t1.voicename,t1.content
+            FROM
+            (
+                SELECT user_voice.id FROM user_voice
+                INNER JOIN `user` ON user_voice.userid=`user`.id
+                WHERE user_voice.`status`=0 AND user_voice.available=1
+                <#if fromDate??>
+                    and user_voice.uploadtime>=?
+                </#if>
+                <#if toDate??>
+                    and user_voice.uploadtime<=?
+                </#if>
+                <#if username??>
+                    and username like ?
+                </#if>
+                ORDER BY user_voice.uploadtime DESC LIMIT ?,?
+            ) t0 INNER JOIN user_voice t1 ON t0.id=t1.id
+            INNER JOIN `user` t2 ON t1.userid=t2.id
+        ]]>
+    </sql>
+    <sql id="getCount">
+        <![CDATA[
+            select count(1) as `count` from user_voice
+            inner join `user` on user_voice.userid=`user`.id
+            where user_voice.`status`<>1 and user_voice.available=1
+            <#if fromDate??>
+                and user_voice.uploadtime>=?
+            </#if>
+            <#if toDate??>
+               and user_voice.uploadtime<=?
+            </#if>
+            <#if username??>
+               and username like ?
+            </#if>
+        ]]>
+    </sql>
+    <sql id="findById">
+        select views.id,t2.username,views.uploadtime,views.filepath,views.voicename,views.content from(
+        select t1.id, t1.userid,t1.uploadtime,t1.filepath,t1.voicename,t1.content
+        from user_voice t1
+        where t1.`status`=0
+        and t1.id=?
+        ) views
+        inner join `user` t2 on  views.userid=t2.id
+    </sql>
+</sql-statement>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.UserAuth">
+
+    <sql id="getAuthList">
+        select id,auth_name,desc,action_url,icon,parent_id,menu,order from user_auth where id in
+    </sql>
+</sql-statement>

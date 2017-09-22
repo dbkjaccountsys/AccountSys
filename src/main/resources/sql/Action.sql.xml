@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.Action">
+    <sql id="getActionsUrlByAdminRoleId">
+        select t5.action_url from admin_role t1 inner join admin_role_auth t2 on t1.id=t2.role_id inner join admin_auth t3 on t3.id=t2.auth_id inner
+        join admin_action t4 on t3.id=t4.auth_id inner join action t5 on t4.action_id=t5.id where t1.id=? and t1.available=1
+        union all
+        select t5.action_url from admin_role t1 inner join admin_role_auth t2 on t1.id=t2.role_id inner join admin_auth t3 on t3.id=t2.auth_id inner
+        join admin_action t4 on t3.id=t4.auth_id inner join action t5 on t4.action_id=t5.parent_id where t1.id=? and t1.available=1
+    </sql>
+    <sql id="getActionsUrlByUserRoleId">
+        select t5.action_url from user_role t1 inner join user_role_auth t2 on t1.id=t2.role_id inner join user_auth t3 on t3.id=t2.auth_id inner
+        join user_action t4 on t3.id=t4.auth_id inner join action t5 on t4.action_id=t5.id where t1.id=? and t1.available=1
+    </sql>
+</sql-statement>

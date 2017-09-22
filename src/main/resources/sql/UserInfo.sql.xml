@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.UserInfo">
+
+    <sql id="getList">
+        SELECT t1.id,t1.userid,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.modify_time FROM
+        (SELECT user_info.id FROM user_info INNER JOIN `user` ON user_info.userid=`user`.id WHERE ispass=0 AND user_info.available=1
+        ORDER BY user_info.modify_time DESC LIMIT ?,?) t0 INNER JOIN user_info t1 ON t0.id=t1.id INNER JOIN `user` t2 ON t1.userid=t2.id
+    </sql>
+    <sql id="getCount">
+        select count(1) as `count` from user_info inner join `user` on user_info.userid=`user`.id where user_info.available=1 and user_info.ispass<![CDATA[<>]]>0
+    </sql>
+    <sql id="findById">
+        select t1.id,t2.username,t1.companyname,t1.contact,t1.contactphone,t1.publicaccount,t1.licence,t1.idcard,t1.safety
+        from user_info t1 inner join `user` t2 on t1.userid=t2.id where t1.ispass=0 and t1.id=?
+    </sql>
+    <sql id="getCompanys">
+        SELECT userid,companyname FROM user_info WHERE ispass=1 AND available=1
+    </sql>
+    <sql id="getCompanyNameByUserId">
+        select companyname from user_info where userid=?
+    </sql>
+    <sql id="findByUserId">
+        SELECT * FROM user_info WHERE userid=?
+    </sql>
+    <sql id="findByCompanyName">
+        SELECT userid FROM user_info WHERE companyname LIKE ?
+    </sql>
+</sql-statement>

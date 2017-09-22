@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.Admin">
+
+    <sql id="findByUsernameAndPassword">
+        select id,username,password,name,phone,email,role_id,create_time,modify_time,available from admin
+        where username=? and password=? and available=1 limit 0,1
+    </sql>
+
+    <sql id="getIdByUsername">
+        select id from admin where username=? and available=1 limit 0,1
+    </sql>
+
+    <sql id="isExistsPhone">
+        select count(1) from admin where phone=? and available=1
+    </sql>
+
+    <sql id="getPageList">
+        <![CDATA[
+            SELECT t1.*,t2.rolename,t2.remark FROM
+            (
+                SELECT id,username,`name`,phone,email,role_id,create_time FROM admin
+                WHERE available=1
+                <#if username??>
+                    and username like ?
+                </#if>
+                ORDER BY id DESC LIMIT ?,?
+            ) t1
+            INNER JOIN admin_role t2 ON t1.role_id=t2.id
+        ]]>
+    </sql>
+
+    <sql id="getCount">
+        <![CDATA[
+            SELECT COUNT(1) FROM admin
+            WHERE available=1
+            <#if username??>
+                and username like ?
+            </#if>
+        ]]>
+    </sql>
+
+    <sql id="getListByUsername">
+        select id from admin where username like ?
+    </sql>
+</sql-statement>

@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dto.MenuNode;
 import com.dbkj.account.model.AdminAuth;
-import com.dbkj.account.util.SqlUtil;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -24,11 +24,11 @@ public class ManageHomeService {
 		List<MenuNode> menuList=new ArrayList<MenuNode>();
 		MenuNode mn=new MenuNode();
 		mn.setId("0");
-		mn.setText("我的工作�?");
+		mn.setText("我的工作台");
 		mn.setIsHeader(true);
 		menuList.add(mn);
 		
-		List<Record> rlist=Db.find(SqlUtil.getSql(AdminAuth.class, "getRoleAuthByRoleId"),roleId);
+		List<Record> rlist=Db.find(SqlContext.getSqlByFreeMarker(AdminAuth.class, "getRoleAuthByRoleId"),roleId);
 		
 		boolean isFirst=true;
 		for(Record r:rlist){
@@ -47,7 +47,7 @@ public class ManageHomeService {
 				menuList.add(node);
 			}
 		}
-		//按照order的大小排�?
+		//按照order的大小排�?
 		Collections.sort(menuList, new MenuComparator());
 		menuList.add(getDefaultNode());
 		return menuList;
@@ -99,7 +99,7 @@ public class ManageHomeService {
 			}
 		}
 		if(children.size()>0){
-			//按照order的大小排�?
+			//按照order的大小排�?
 			Collections.sort(children, new MenuComparator());
 			menu.setChildren(children);
 		}

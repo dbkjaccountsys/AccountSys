@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.OperaType">
+    <sql id="getOperaList">
+        select t1.id,t3.action_url from opera_type t1 inner join opera_action t2 on t1.id=t2.opera_type inner join action t3 on t3.id=t2.action_id
+    </sql>
+    <sql id="getAll">
+        SELECT id,`desc` FROM opera_type
+    </sql>
+</sql-statement>

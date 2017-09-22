@@ -1,17 +1,7 @@
 package com.dbkj.account.service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSON;
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.Constant;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dic.UserType;
@@ -21,13 +11,18 @@ import com.dbkj.account.model.Admin;
 import com.dbkj.account.model.OperaType;
 import com.dbkj.account.model.User;
 import com.dbkj.account.model.UserLog;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.WebUtil;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.jfinal.plugin.ehcache.IDataLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 操作日志相关操作
@@ -125,19 +120,14 @@ public class LogService {
 	 * @param endTime
 	 */
 	public void getPage(Page<LogDto> page,String month,int userType,int operaResult,String username,String startTime,String endTime,int operaType){
-		String sql=SqlUtil.getSql(UserLog.class, "getPage").toLowerCase();
-		String countSql=SqlUtil.getSql(UserLog.class, "getCount").toLowerCase();
-		
 		if(StrKit.isBlank(month)){
 			SimpleDateFormat monthFormat=new SimpleDateFormat("yyyyMM");
 			Date date=new Date();
 			month=monthFormat.format(date);
 		}
-		String oldTableName="user_log";
-		String newTableName=oldTableName+"_"+month;
-		sql=sql.replace(oldTableName, newTableName);
-		countSql=countSql.replace(oldTableName, newTableName);
 
+		Map<String,Object> paraMap=new HashMap<>();
+		paraMap.put("month",month);
 		List<Object> params=new ArrayList<Object>(10);
 		params.add(userType);
 		params.add(operaResult);
@@ -146,50 +136,36 @@ public class LogService {
 		if(!StrKit.isBlank(username)){
 			username=username.trim();
 			StringBuilder sb=new StringBuilder("(");
+			List<Long> idList=new ArrayList<>();
 			if(userType==UserType.ADMIN.getValue()){
-				List<Admin> list=Admin.dao.find(SqlUtil.getSql(Admin.class, "getListByUsername"),username+"%");
-				if(list.size()>0){
-					for(int i=0,size=list.size();i<size;i++){
-						sb.append(list.get(i).getId());
-						if(i!=size-1){
-							sb.append(",");
-						}
-					}
-				}else{
-					sb.append("0");
+				List<Admin> list=Admin.dao.find(SqlContext.getSqlByFreeMarker(Admin.class, "getListByUsername"),username+"%");
+				for(Admin admin:list){
+					idList.add(admin.getId());
 				}
 			}else{
-				List<User> list=User.dao.find(SqlUtil.getSql(User.class, "getListByUsername"),username+"%");
-				if(list.size()>0){
-					for(int i=0,size=list.size();i<size;i++){
-						sb.append(list.get(i).getId());
-						if(i!=size-1){
-							sb.append(",");
-						}
-					}
-				}else{
-					sb.append("0");
+				List<User> list=User.dao.find(SqlContext.getSqlByFreeMarker(User.class, "getListByUsername"),username+"%");
+				for(User user:list){
+					idList.add(user.getId());
 				}
 			}
-			sb.append(") ");
-			where.append(" and userid in ").append(sb);
+			paraMap.put("idList",idList);
 		}
-		if(!StrKit.isBlank(startTime)&&!StrKit.isBlank(endTime)){
-			where.append(" and time between ? and ? ");
+		if(!StrKit.isBlank(startTime)){
+			paraMap.put("startTime",startTime);
 			params.add(startTime);
-			params.add(endTime);
-		}else if(!StrKit.isBlank(startTime)&&StrKit.isBlank(endTime)){
-			where.append(" and time>=? ");
-			params.add(startTime);
-		}else if(StrKit.isBlank(startTime)&&!StrKit.isBlank(endTime)){
-			where.append(" and time<=? ");
+		}
+		if(StrKit.notBlank(endTime)){
+			paraMap.put("endTime",endTime);
 			params.add(endTime);
 		}
 		
 		if(operaType!=0){
-			where.append(" and opera_type=? ");
+			paraMap.put("operaType",operaType);
 			params.add(operaType);
 		}
+
+		String sql= SqlContext.getSqlByFreeMarker(UserLog.class,"getPage",paraMap);
+		String countSql=SqlContext.getSqlByFreeMarker(UserLog.class,"getCount",paraMap);
 		
 		long count=Db.queryLong(countSql+where, params.toArray(new Object[params.size()]));
 		page.setRecords(count);
@@ -292,7 +268,7 @@ public class LogService {
 	}
 	
 	public List<OperaType> getOperaTypes(){
-		List<OperaType> list = OperaType.dao.find(SqlUtil.getSql(OperaType.class, "getAll"));
+		List<OperaType> list = OperaType.dao.find(SqlContext.getSqlByFreeMarker(OperaType.class, "getAll"));
 		OperaType df=new OperaType();
 		df.setId(0L);
 		df.setDesc("--请选择--");

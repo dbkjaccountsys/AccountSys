@@ -46,8 +46,8 @@ var ap={
 			var id=$(dom).closest("tr").find("td:eq(1)").text();
 			location.href=common.getContext()+"/manage/adminRole/edit?id="+id;
 		},
-		search:function(username){
-			var queryJson={username:username};
+		search:function(name){
+			var queryJson={roleName:name};
 			$("#gridTable").jqGrid('setGridParam', {
 				url: common.getContext()+"/manage/adminRole/list",
 	            postData: queryJson,

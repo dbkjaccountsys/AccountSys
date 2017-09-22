@@ -35,9 +35,9 @@ public class AdminRoleManageController extends Controller{
 		int rows=getParaToInt("rows",20);
 		page.setPageSize(rows);
 		
-		String desc=getPara("desc");
+		String roleName=getPara("roleName");
 		Admin admin=getSessionAttr(Constant.CURRENT_USER);
-		service.getRolePage(page, desc,admin.getRoleId());
+		service.getRolePage(page, roleName,admin.getRoleId());
 		renderJson(page);
 	}
 	

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.dbkj.account.config.SqlContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,6 @@ import com.dbkj.account.model.UserInfoHistory;
 import com.dbkj.account.model.UserMail;
 import com.dbkj.account.util.FileUtil;
 import com.dbkj.account.util.RandomUtil;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.WebUtil;
 import com.jfinal.i18n.I18n;
 import com.jfinal.i18n.Res;
@@ -47,7 +47,7 @@ public class UserReviewService {
 	 * @param username
 	 */
 	public void getPage(Page<UserReviewDto> page,String fromDate,String toDate,String username,long roleId){
-		String sql=SqlUtil.getSql(UserInfo.class, "getList").toLowerCase();
+		String sql=SqlContext.getSqlByFreeMarker(UserInfo.class, "getList").toLowerCase();
 		int index=sql.lastIndexOf("where")+"where".length();
 		String str1=sql.substring(0,index);
 		String str2=sql.substring(index);
@@ -77,7 +77,7 @@ public class UserReviewService {
 		Object[] paramsArray=params.toArray(new Object[params.size()]);
 		
 		//获取总数据条�?
-		String countSql=SqlUtil.getSql(UserInfo.class, "getCount");
+		String countSql=SqlContext.getSqlByFreeMarker(UserInfo.class, "getCount");
 		if(!StrKit.isBlank(whereStr)){
 			countSql+=" and"+whereStr.substring(0,whereStr.length()-4);
 		}
@@ -159,7 +159,7 @@ public class UserReviewService {
 	 */
 	public UserReviewDto getUserInfo(long id){
 		UserReviewDto userReviewDto=new UserReviewDto();
-		Record userInfo = Db.findFirst(SqlUtil.getSql(UserInfo.class, "findById"), id);
+		Record userInfo = Db.findFirst(SqlContext.getSqlByFreeMarker(UserInfo.class, "findById"), id);
 		if(userInfo!=null){
 			userReviewDto.setId(userInfo.getLong("id"));
 			userReviewDto.setUsername(userInfo.getStr("username"));
@@ -318,7 +318,7 @@ public class UserReviewService {
 	 * @return
 	 */
 	public List<UserReviewDto> getHistoryList(long id){
-		List<Record> rlist=Db.find(SqlUtil.getSql(UserInfoHistory.class, "getList"),id);
+		List<Record> rlist=Db.find(SqlContext.getSqlByFreeMarker(UserInfoHistory.class, "getList"),id);
 		List<UserReviewDto> resultList=new ArrayList<UserReviewDto>();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		for(Record r:rlist){
@@ -343,7 +343,7 @@ public class UserReviewService {
 	 * @return
 	 */
 	public UserReviewDto getUserInfoHistoryDetail(long id){
-		Record r=Db.findFirst(SqlUtil.getSql(UserInfoHistory.class, "findById"),id);
+		Record r=Db.findFirst(SqlContext.getSqlByFreeMarker(UserInfoHistory.class, "findById"),id);
 		UserReviewDto userReviewDto=new UserReviewDto();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		if(r!=null){
@@ -368,7 +368,7 @@ public class UserReviewService {
 		if(!"licence".equals(type)&&!"idcard".equals(type)&&!"safety".equals(type)){
 			return null;
 		}
-		String sql=SqlUtil.getSql(UserInfoHistory.class, "getImg");
+		String sql= SqlContext.getSqlByFreeMarker(UserInfoHistory.class, "getImg");
 		sql=sql.replace("*", type);
 		String path=UserInfoHistory.dao.findFirst(sql,id).getStr(type);
 		if(path!=null){

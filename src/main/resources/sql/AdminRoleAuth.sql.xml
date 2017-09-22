@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.AdminRoleAuth">
+
+    <sql id="getRoleAuths">
+        SELECT auth_id FROM admin_role_auth WHERE available=1 AND role_id=?
+    </sql>
+    <sql id="deleteByRoleId">
+        DELETE FROM admin_role_auth WHERE role_id=?
+    </sql>
+</sql-statement>

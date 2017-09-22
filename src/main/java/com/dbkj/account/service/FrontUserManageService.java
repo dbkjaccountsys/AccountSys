@@ -1,19 +1,7 @@
 package com.dbkj.account.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSON;
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dic.ReviewStatus;
 import com.dbkj.account.dto.FrontUserDto;
@@ -22,7 +10,6 @@ import com.dbkj.account.dto.Result;
 import com.dbkj.account.model.User;
 import com.dbkj.account.model.UserInfo;
 import com.dbkj.account.util.FileUtil;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.WebUtil;
 import com.dbkj.account.vo.FrontUserFormVo;
 import com.jfinal.kit.PropKit;
@@ -30,6 +17,15 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.upload.UploadFile;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
 
 public class FrontUserManageService {
 	
@@ -38,22 +34,14 @@ public class FrontUserManageService {
 	private LogService logService;
 
 	public void getUserPage(Page<FrontUserDto> page,String username,long roleId){
-		String sql=SqlUtil.getSql(User.class, "getUserList").toLowerCase();
-		String countSql=SqlUtil.getSql(User.class, "getCount");
 		List<Object> params=new ArrayList<Object>(3);
+		Map<String,Object> paraMap=new HashMap<>(1);
 		if(!StrKit.isBlank(username)){
-			int index=sql.indexOf("order");
-			String str1=sql.substring(0,index);
-			String str2=sql.substring(index);
-			String searchSql=" and locate(?,username)>0 ";
-			StringBuilder sqlStr=new StringBuilder(str1)
-					.append(searchSql)
-					.append(str2);
-			sql=sqlStr.toString();
-			
-			countSql=countSql+searchSql;
-			params.add(username);
+			paraMap.put("username",username);
+			params.add(username+"%");
 		}
+		String sql= SqlContext.getSqlByFreeMarker(User.class,"getUserList",paraMap);
+		String countSql=SqlContext.getSqlByFreeMarker(User.class,"getCount",paraMap);
 		
 		long count=Db.queryLong(countSql, params.toArray(new Object[params.size()]));
 		page.setRecords(count);
@@ -76,7 +64,7 @@ public class FrontUserManageService {
 	}
 	
 	public boolean existsPhone(String phone){
-		return Db.queryLong(SqlUtil.getSql(User.class, "isExistsPhone"),phone)>0;
+		return Db.queryLong(SqlContext.getSqlByFreeMarker(User.class, "isExistsPhone",null),phone)>0;
 	}
 	
 	private FrontUserDto convert2FrontUserDto(Object obj,Long roleId){
@@ -222,7 +210,7 @@ public class FrontUserManageService {
 	public FrontUserFormVo getUserInfo(Long id){
 		FrontUserFormVo vo=new FrontUserFormVo();
 		if(id!=null){
-			User user=User.dao.findFirst(SqlUtil.getSql(User.class, "getUserById"),id);
+			User user=User.dao.findFirst(SqlContext.getSqlByFreeMarker(User.class, "getUserById"),id);
 			vo.setId(user.getId());
 			vo.setPhone(user.getPhone());
 			vo.setName(user.getName());
@@ -261,7 +249,7 @@ public class FrontUserManageService {
 			
 			public boolean run() throws SQLException {
 				if(user.update()){
-					UserInfo userInfo=UserInfo.dao.findFirst(SqlUtil.getSql(UserInfo.class, "findByUserId"),formVo.getId());
+					UserInfo userInfo=UserInfo.dao.findFirst(SqlContext.getSqlByFreeMarker(UserInfo.class, "findByUserId"),formVo.getId());
 					if(userInfo==null){
 						userInfo=new UserInfo();
 						userInfo.setUserid(user.getId());
@@ -330,7 +318,7 @@ public class FrontUserManageService {
 		}
 		final User user=User.dao.findById(id);
 		user.setAvailable(false);
-		final UserInfo userInfo=UserInfo.dao.findFirst(SqlUtil.getSql(UserInfo.class, "findByUserId"),user.getId());
+		final UserInfo userInfo=UserInfo.dao.findFirst(SqlContext.getSqlByFreeMarker(UserInfo.class, "findByUserId"),user.getId());
 		if(userInfo!=null){
 			userInfo.setAvailable(false);
 		}
@@ -351,7 +339,7 @@ public class FrontUserManageService {
 	}
 	
 	public static void main(String[] args) {
-		String sql=SqlUtil.getSql(User.class, "getUserList").toLowerCase();
+		String sql=SqlContext.getSqlByFreeMarker(User.class, "getUserList").toLowerCase();
 		System.out.println(sql);
 		int index=sql.indexOf("order");
 		String str1=sql.substring(0,index);

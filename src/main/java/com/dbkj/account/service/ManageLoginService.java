@@ -1,22 +1,12 @@
 package com.dbkj.account.service;
 
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.codec.digest.DigestUtils;
-
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.Constant;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dic.UserType;
 import com.dbkj.account.model.Admin;
 import com.dbkj.account.model.UserLog;
 import com.dbkj.account.util.DateUtil;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.WebUtil;
 import com.dbkj.account.vo.LoginVo;
 import com.jfinal.i18n.I18n;
@@ -24,6 +14,14 @@ import com.jfinal.i18n.Res;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ManageLoginService {
 	
@@ -41,7 +39,7 @@ public class ManageLoginService {
 		
 		String operaContent="登陆操作";
 		
-		Admin admin=Admin.dao.findFirst(SqlUtil.getSql(Admin.class, "findByUsernameAndPassword"),username,password);
+		Admin admin=Admin.dao.findFirst(SqlContext.getSqlByFreeMarker(Admin.class, "findByUsernameAndPassword"),username,password);
 		if(admin!=null){
 			session=reGenerateSessionId(request);
 			session.setAttribute(Constant.CURRENT_USER, admin);
@@ -50,7 +48,7 @@ public class ManageLoginService {
 			return true;
 		}
 		//添加操作日志
-		admin=Admin.dao.findFirst(SqlUtil.getSql(Admin.class, "getIdByUsername"),username);
+		admin=Admin.dao.findFirst(SqlContext.getSqlByFreeMarker(Admin.class, "getIdByUsername"),username);
 		if(admin!=null){
 			logService.addLog(request,UserType.ADMIN,admin.getId(), operaContent, OperaResult.FAIL, null);
 		}
@@ -61,14 +59,14 @@ public class ManageLoginService {
 	}
 	
 	/** 
-	 * 重置sessionid，原session中的数据自动转存到新session�? 
+	 * 重置sessionid，原session中的数据自动转存到新session�? 
 	 * @param request 
 	 */  
 	public HttpSession reGenerateSessionId(HttpServletRequest request){  
 	      
 	    HttpSession session = request.getSession();  
 	      
-	    //首先将原session中的数据转移至一临时map�?  
+	    //首先将原session中的数据转移至一临时map�?  
 	    Map<String,Object> tempMap = new HashMap<String,Object>();  
 	    Enumeration<String> sessionNames = session.getAttributeNames();  
 	    while(sessionNames.hasMoreElements()){  
@@ -94,8 +92,8 @@ public class ManageLoginService {
 	 * @return
 	 */
 	public boolean isLoginTooManyTimes(String username,HttpServletRequest request){
-		UserLog.dao.createTable();//先创建表，防止查询错�?
-		String sql=SqlUtil.getSql(UserLog.class, "getLoginFailTimes")
+		UserLog.dao.createTable();//先创建表，防止查询错�?
+		String sql= SqlContext.getSqlByFreeMarker(UserLog.class, "getLoginFailTimes")
 				.replace(Constant.BASE_LOG_TABLE, Constant.BASE_LOG_TABLE+"_"+DateUtil.getDateStr("yyyyMM"));
 		//登陆错误监测时间
 		int loginFailDuration = PropKit.getInt("loginFailDuration",5);

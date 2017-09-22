@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.model.Action;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.WebUtil;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
@@ -28,7 +28,7 @@ public class AuthorityService {
 		List<Record> list =CacheKit.get(AuthorityService.ADMIN_AUTH_CACHE_KEY, "role_id_"+roleId, new IDataLoader() {
 			
 			public Object load() {
-				return Db.find(SqlUtil.getSql(Action.class,"getActionsUrlByAdminRoleId"),roleId,roleId);
+				return Db.find(SqlContext.getSqlByFreeMarker(Action.class,"getActionsUrlByAdminRoleId"),roleId,roleId);
 			}
 		});
 		for(Record r:list){
@@ -55,7 +55,7 @@ public class AuthorityService {
 		List<Record> list =CacheKit.get(AuthorityService.USER_AUTH_CACHE_KEY, "role_id_"+roleId, new IDataLoader() {
 			
 			public Object load() {
-				return Db.find(SqlUtil.getSql(Action.class,"getActionsUrlByUserRoleId"),roleId);
+				return Db.find(SqlContext.getSqlByFreeMarker(Action.class,"getActionsUrlByUserRoleId"),roleId);
 			}
 		});
 		for(Record r:list){

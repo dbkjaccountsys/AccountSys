@@ -1,30 +1,13 @@
 package com.dbkj.account.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dic.ReviewStatus;
 import com.dbkj.account.dto.Page;
 import com.dbkj.account.dto.VoiceReviewDto;
-import com.dbkj.account.model.Admin;
-import com.dbkj.account.model.User;
-import com.dbkj.account.model.UserMail;
-import com.dbkj.account.model.UserVoice;
-import com.dbkj.account.model.UserVoiceAudit;
+import com.dbkj.account.model.*;
 import com.dbkj.account.util.FileUtil;
 import com.dbkj.account.util.IdGen;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.WebUtil;
 import com.jfinal.i18n.I18n;
 import com.jfinal.i18n.Res;
@@ -32,6 +15,15 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class VoiceReviewService {
 	
@@ -49,40 +41,28 @@ public class VoiceReviewService {
 	 * @param roleId
 	 */
 	public void getPage(Page<VoiceReviewDto> page,String fromDate,String toDate,String username,long roleId){
-		String sql=SqlUtil.getSql(UserVoice.class, "getList").toLowerCase();
-		int index=sql.lastIndexOf("where")+"where".length();
-		String str1=sql.substring(0,index);
-		String str2=sql.substring(index);
-		
 		List<Object> params=new ArrayList<Object>();
-		StringBuilder where=new StringBuilder(80);
+		Map<String,Object> paraMap=new HashMap<String,Object>();
 		
 		String start=" 00:00:00";
 		String end=" 23:59:59";
-		if(!StrKit.isBlank(fromDate)&&!StrKit.isBlank(toDate)){
-			where.append(" user_voice.uploadtime between ? and ? and");
+		if(!StrKit.isBlank(fromDate)){
+			paraMap.put("fromDate",fromDate);
 			params.add(fromDate.concat(start));
-			params.add(toDate.concat(end));
-		}else if(!StrKit.isBlank(fromDate)&&StrKit.isBlank(toDate)){
-			where.append(" user_voice.uploadtime>=? and");
-			params.add(fromDate.concat(start));
-		}else if(!StrKit.isBlank(toDate)&&StrKit.isBlank(fromDate)){
-			where.append(" user_voice.uploadtime<=? and");
+		}
+
+		if(StrKit.notBlank(toDate)){
+			paraMap.put("toDate",toDate);
 			params.add(toDate.concat(end));
 		}
 		if(!StrKit.isBlank(username)){
-			where.append(" locate(?,`user`.username)>0 and");
+			paraMap.put("username",username);
 			params.add(username.trim());
 		}
 		
-		String whereStr=where.toString();
+		String sql= SqlContext.getSqlByFreeMarker(UserVoice.class,"getList",paraMap);
+		String countSql = SqlContext.getSqlByFreeMarker(UserVoice.class,"getCount",paraMap);
 		Object[] paramsArray=params.toArray(new Object[params.size()]);
-		
-		//获取总数据条数
-		String countSql=SqlUtil.getSql(UserVoice.class, "getCount");
-		if(!StrKit.isBlank(whereStr)){
-			countSql+=" and"+whereStr.substring(0,whereStr.length()-4);
-		}
 		
 		long count = Db.findFirst(countSql,paramsArray).getLong("count");
 		//获取总页码数
@@ -97,7 +77,6 @@ public class VoiceReviewService {
 //			String s2=str2.substring(n+"desc".length());
 //			str2=s1.concat(s2);
 //		}
-		sql=str1.concat(whereStr).concat(str2);
 		if(logger.isInfoEnabled()){
 			logger.info("分页Sql:{}，分页条件:page:{},fromDate:{},toDate:{},username:{}",sql,page.toString(),fromDate,toDate,username);
 		}
@@ -153,7 +132,7 @@ public class VoiceReviewService {
 	
 	public VoiceReviewDto getVoiceInfo(long id){
 		VoiceReviewDto vDto=new VoiceReviewDto();
-		UserVoice userVoice=UserVoice.dao.findFirst(SqlUtil.getSql(UserVoice.class, "findById"),id);
+		UserVoice userVoice=UserVoice.dao.findFirst(SqlContext.getSqlByFreeMarker(UserVoice.class, "findById"),id);
 		System.out.println(userVoice.toString());
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		if(userVoice!=null){
@@ -300,7 +279,7 @@ public class VoiceReviewService {
 	 * @return
 	 */
 	public List<VoiceReviewDto> getHistoryList(long id){
-		List<Record> rlist=Db.find(SqlUtil.getSql(UserVoiceAudit.class, "getList"),id);
+		List<Record> rlist=Db.find(SqlContext.getSqlByFreeMarker(UserVoiceAudit.class, "getList"),id);
 		List<VoiceReviewDto> resultList=new ArrayList<VoiceReviewDto>();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		for(Record r:rlist){

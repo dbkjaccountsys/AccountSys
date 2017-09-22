@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.UserVoiceAudit">
+    <group class="com.dbkj.account.model.UserVoiceAudit">
+        <sql id="getList">
+            SELECT t1.id,t2.username,t1.v_id,t1.updatetime,t1.voicename,t1.content,t3.username as checkuser,t1.filename,t1.`status`,t1.reason FROM
+            (SELECT id,userid,v_id,updatetime,voicename,filename,content,checkuser,`status`,reason FROM user_voice_audit WHERE v_id=?) t1
+            INNER JOIN `user` t2 ON t1.userid=t2.id INNER JOIN admin t3 ON t1.checkuser=t3.id
+        </sql>
+    </group>
+</sql-statement>

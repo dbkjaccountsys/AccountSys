@@ -1,26 +1,22 @@
 package com.dbkj.account.service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSON;
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dto.AdminDto;
 import com.dbkj.account.dto.Page;
 import com.dbkj.account.dto.Result;
 import com.dbkj.account.model.Admin;
 import com.dbkj.account.model.AdminRole;
-import com.dbkj.account.util.SqlUtil;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class BackUserManageService {
 	
@@ -29,23 +25,16 @@ public class BackUserManageService {
 	private Logger logger=LoggerFactory.getLogger(this.getClass());
 
 	public void getAdminPage(Page<AdminDto> page,String username,Admin current){
-		String sql=SqlUtil.getSql(Admin.class, "getPageList");
-		String countSql=SqlUtil.getSql(Admin.class, "getCount");
-		
 		List<Object> params=new ArrayList<Object>(3);
+		Map<String,Object> paraMap=null;
 		if(!StrKit.isBlank(username)){
-			int index=sql.indexOf("order");
-			String str1=sql.substring(0,index);
-			String str2=sql.substring(index);
-			String searchSql=" and locate(?,username)>0 ";
-			StringBuilder sqlStr=new StringBuilder(str1)
-					.append(searchSql)
-					.append(str2);
-			sql=sqlStr.toString();
-			
-			countSql=countSql+searchSql;
+			paraMap=new HashMap<>();
+			paraMap.put("username",username);
+			username="%"+username+"%";
 			params.add(username);
 		}
+		String sql= SqlContext.getSqlByFreeMarker(Admin.class,"getPageList",paraMap);
+		String countSql=SqlContext.getSqlByFreeMarker(Admin.class,"getCount",paraMap);
 		
 		long count=Db.queryLong(countSql, params.toArray(new Object[params.size()]));
 		page.setRecords(count);
@@ -121,12 +110,12 @@ public class BackUserManageService {
 	}
 	
 	public List<AdminRole> getAdminRoleList(){
-		List<AdminRole> list=AdminRole.dao.find(SqlUtil.getSql(AdminRole.class, "getList"));
+		List<AdminRole> list=AdminRole.dao.find(SqlContext.getSqlByFreeMarker(AdminRole.class, "getList",null));
 		return list;
 	}
 	
 	public boolean existsUsername(String username){
-		return Admin.dao.findFirst(SqlUtil.getSql(Admin.class, "getIdByUsername"),username)!=null;
+		return Admin.dao.findFirst(SqlContext.getSqlByFreeMarker(Admin.class, "getIdByUsername",null),username)!=null;
 	}
 	
 	public boolean addUser(AdminDto dto,HttpServletRequest request){

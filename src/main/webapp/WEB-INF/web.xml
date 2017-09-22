@@ -75,6 +75,17 @@
         <servlet-name>DruidStatView</servlet-name>
         <url-pattern>/druid/*</url-pattern>
     </servlet-mapping>
+
+	<!-- Log4j在线查看 -->
+	<!--<servlet>
+		<servlet-name>log4j</servlet-name>
+		<servlet-class>com.dbkj.account.servlet.Log4jServlet</servlet-class>
+		<async-supported>true</async-supported>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>log4j</servlet-name>
+		<url-pattern>/se/log4j</url-pattern>
+	</servlet-mapping>-->
   
   <session-config>
   	<session-timeout>60</session-timeout>

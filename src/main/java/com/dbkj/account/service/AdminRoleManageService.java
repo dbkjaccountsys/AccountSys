@@ -1,15 +1,7 @@
 package com.dbkj.account.service;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSON;
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.Constant;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dto.AdminRoleDto;
@@ -19,13 +11,21 @@ import com.dbkj.account.model.AdminAuth;
 import com.dbkj.account.model.AdminRole;
 import com.dbkj.account.model.AdminRoleAuth;
 import com.dbkj.account.util.CommonUtil;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.vo.RoleFormVo;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.jfinal.plugin.ehcache.IDataLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AdminRoleManageService {
 	
@@ -33,23 +33,16 @@ public class AdminRoleManageService {
 	private LogService logService;
 	private final Logger logger=LoggerFactory.getLogger(this.getClass());
 	
-	public void getRolePage(Page<AdminRoleDto> page,String desc,Long roleId){
-		String sql=SqlUtil.getSql(AdminRole.class, "getPage");
-		String countSql=SqlUtil.getSql(AdminRole.class, "getCount");
+	public void getRolePage(Page<AdminRoleDto> page,String roleName,Long roleId){
 		List<Object> params=new ArrayList<Object>(3);
-		if(!StrKit.isBlank(desc)){
-			int index=sql.indexOf("order");
-			String str1=sql.substring(0,index);
-			String str2=sql.substring(index);
-			String searchSql=" and locate(?,remark)>0 ";
-			StringBuilder sqlStr=new StringBuilder(str1)
-					.append(searchSql)
-					.append(str2);
-			sql=sqlStr.toString();
-			
-			countSql=countSql+searchSql;
-			params.add(desc);
+		Map<String,Object> paraMap=new HashMap<>();
+		if(!StrKit.isBlank(roleName)){
+			paraMap.put("roleName",roleName);
+			roleName="%"+roleName+"%";
+			params.add(roleName);
 		}
+		String sql= SqlContext.getSqlByFreeMarker(AdminRole.class,"getPage",paraMap);
+		String countSql=SqlContext.getSqlByFreeMarker(AdminRole.class,"getCount",paraMap);
 		
 		long count=Db.queryLong(countSql, params.toArray(new Object[params.size()]));
 		page.setRecords(count);
@@ -105,7 +98,7 @@ public class AdminRoleManageService {
 	
 	public List<AuthNode> getAdminAuths(){
 		List<AuthNode> alist=new ArrayList<AuthNode>();
-		List<AdminAuth> list=AdminAuth.dao.find(SqlUtil.getSql(AdminAuth.class, "getList"));
+		List<AdminAuth> list=AdminAuth.dao.find(SqlContext.getSqlByFreeMarker(AdminAuth.class, "getList",null));
 		for(AdminAuth auth:list){
 			//根节点
 			if(auth.getParentId()==0L){
@@ -145,7 +138,8 @@ public class AdminRoleManageService {
 			public Object load() {
 				List<AuthNode> list=getAdminAuths();
 				if(roleId!=null){
-					List<AdminRoleAuth> authList=AdminRoleAuth.dao.find(SqlUtil.getSql(AdminRoleAuth.class, "getRoleAuths"),roleId);
+					List<AdminRoleAuth> authList=AdminRoleAuth.dao.find(SqlContext.getSqlByFreeMarker(AdminRoleAuth.class,
+							"getRoleAuths",null),roleId);
 					for(AdminRoleAuth roleAuth:authList){
 						isChecked(roleAuth.getAuthId(), list);
 					}
@@ -173,8 +167,8 @@ public class AdminRoleManageService {
 	}
 	
 	public boolean isExistRoleName(String roleName){
-		return AdminRole.dao.findFirst(SqlUtil.getSql(AdminRole.class, 
-				"isExistByRoleName"),roleName)!=null;
+		return AdminRole.dao.findFirst(SqlContext.getSqlByFreeMarker(AdminRole.class,
+				"isExistByRoleName",null),roleName)!=null;
 	}
 
 	public boolean isExistRoleName(String roleName,Long id){
@@ -182,8 +176,8 @@ public class AdminRoleManageService {
 			return false;
 		}
 		if(id!=null){
-			return AdminRole.dao.findFirst(SqlUtil.getSql(AdminRole.class, 
-					"isExistByRoleNameAndId"),roleName,id)!=null;
+			return AdminRole.dao.findFirst(SqlContext.getSqlByFreeMarker(AdminRole.class,
+					"isExistByRoleNameAndId",null),roleName,id)!=null;
 		}else{
 			return isExistRoleName(roleName);
 		}
@@ -233,8 +227,10 @@ public class AdminRoleManageService {
 		return vo;
 	}
 	
+	@SuppressWarnings("Since15")
 	private String operaAuths(long roleId){
-		List<AdminRoleAuth> authList=AdminRoleAuth.dao.find(SqlUtil.getSql(AdminRoleAuth.class, "getRoleAuths"),roleId);
+		List<AdminRoleAuth> authList=AdminRoleAuth.dao.find(SqlContext.getSqlByFreeMarker(AdminRoleAuth.class,
+				"getRoleAuths",null),roleId);
 		String[] arr=new String[authList.size()];
 		for(int i=0;i<arr.length;i++){
 			arr[i]=authList.get(i).getAuthId().toString();
@@ -260,7 +256,7 @@ public class AdminRoleManageService {
 			public boolean run() throws SQLException {
 				if(adminRole.update()){
 					//先删除要修改角色的所有关联的权限，然后再重新添加
-					Db.update(SqlUtil.getSql(AdminRoleAuth.class, "deleteByRoleId"), adminRole.getId());
+					Db.update(SqlContext.getSqlByFreeMarker(AdminRoleAuth.class, "deleteByRoleId",null), adminRole.getId());
 					String[] arr=vo.getOperaAuth().split(",");
 					List<AdminRoleAuth> list=new ArrayList<AdminRoleAuth>(arr.length);
 					for(int i=0;i<arr.length;i++){

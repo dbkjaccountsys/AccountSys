@@ -1,18 +1,7 @@
 package com.dbkj.account.service;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSON;
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.ChargeType;
 import com.dbkj.account.dic.Constant;
 import com.dbkj.account.dic.OperaResult;
@@ -24,13 +13,20 @@ import com.dbkj.account.model.Admin;
 import com.dbkj.account.model.User;
 import com.dbkj.account.model.UserInfo;
 import com.dbkj.account.model.UserRecharge;
-import com.dbkj.account.util.SqlUtil;
 import com.dbkj.account.util.ValidateUtil;
 import com.jfinal.i18n.I18n;
 import com.jfinal.i18n.Res;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class RechargeService {
 	
@@ -43,7 +39,7 @@ public class RechargeService {
 	 * @return
 	 */
 	public List<CompanyDto> getCompanyList(){
-		List<UserInfo> ulist = UserInfo.dao.find(SqlUtil.getSql(UserInfo.class, "getCompanys"));
+		List<UserInfo> ulist = UserInfo.dao.find(SqlContext.getSqlByFreeMarker(UserInfo.class, "getCompanys"));
 		List<CompanyDto> clist=new ArrayList<CompanyDto>(ulist.size()+1);
 		CompanyDto cd=new CompanyDto(0L,"全部");
 		clist.add(cd);
@@ -55,20 +51,14 @@ public class RechargeService {
 	}
 	
 	public void getList(Page<RechargeDto> page,Long uid,long roleId){
-		String sql=SqlUtil.getSql(User.class, "getRechargeList").toLowerCase();
-		String countSql=SqlUtil.getSql(User.class, "getRechargeCount").toLowerCase();
 		List<Object> params=new ArrayList<Object>(3);
+		Map<String,Object> paraMap=new HashMap<>(1);
 		if(uid!=null&&uid!=0){
-			int index=sql.indexOf("where")+"where".length();
-			String str1=sql.substring(0, index);
-			String str2=sql.substring(index);
-			String where=" userid=? and";
-			sql=str1.concat(where).concat(str2);
+			paraMap.put("userId",uid);
 			params.add(uid);
-			
-			where=" and userid=?";
-			countSql=countSql+where;
 		}
+		String sql= SqlContext.getSqlByFreeMarker(User.class,"getRechargeList",paraMap);
+		String countSql=SqlContext.getSqlByFreeMarker(User.class,"getRechargeCount",paraMap);
 		
 		//获取数据总行数
 		long count=Db.findFirst(countSql,params.toArray(new Object[params.size()])).getLong("count");
@@ -125,7 +115,7 @@ public class RechargeService {
 	}
 	
 	public RechargeDto getRechargeInfo(Long uid){
-		User user=User.dao.findFirst(SqlUtil.getSql(User.class, "getRechargeInfo"),uid);
+		User user=User.dao.findFirst(SqlContext.getSqlByFreeMarker(User.class, "getRechargeInfo"),uid);
 		return convert2RechargeDto(user, null);
 	}
 	
@@ -179,7 +169,7 @@ public class RechargeService {
 		if(logService==null){
 			logService=new LogService();
 		}
-		String companyName=UserInfo.dao.findFirst(SqlUtil.getSql(UserInfo.class, 
+		String companyName=UserInfo.dao.findFirst(SqlContext.getSqlByFreeMarker(UserInfo.class,
 				"getCompanyNameByUserId"),user.getId()).getCompanyname();
 		StringBuilder content=new StringBuilder("给用户id：")
 				.append(user.getId())
@@ -192,59 +182,32 @@ public class RechargeService {
 	}
 	
 	public void getHistoryList(Page<RechargeHistoryDto> page,String startTime,String endTime,String companyName){
-		String sql=SqlUtil.getSql(UserRecharge.class, "getPage").toLowerCase();
-		String countSql=SqlUtil.getSql(UserRecharge.class, "getCount").toLowerCase();
-		
-		List<Object> params=new ArrayList<Object>(5);
-		StringBuilder where=new StringBuilder();
-		if(!StrKit.isBlank(startTime)&&!StrKit.isBlank(endTime)){
-			where.append(" where time between ? and ? ");
-			params.add(startTime+" 00:00");
-			params.add(endTime+" 23:59");
-		}else if(!StrKit.isBlank(startTime)&&StrKit.isBlank(endTime)){
-			where.append(" where time>=? ");
-			params.add(startTime+" 00:00");
-		}else if(StrKit.isBlank(startTime)&&!StrKit.isBlank(endTime)){
-			where.append(" where time<=? ");
-			params.add(endTime+" 23:59");
+		List<Object> params=new ArrayList<Object>();
+		Map<String,Object> paraMap=new HashMap<>();
+		if(!StrKit.isBlank(startTime)){
+			paraMap.put("startTime",startTime);
+			params.add(startTime);
+		}
+		if(StrKit.notBlank(endTime)){
+			paraMap.put("endTime",endTime);
+			params.add(endTime);
 		}
 		
 		if(!StrKit.isBlank(companyName)){
-			List<UserInfo> list = UserInfo.dao.find(SqlUtil.getSql(UserInfo.class, "findByCompanyName"),companyName+"%");
-			if(where.length()>0){
-				where.append(" and ");
-			}else{
-				where.append(" where ");
-			}
-			where.append(" userid in (");
-			if(list.size()>0){
-				for(int i=0,size=list.size();i<size;i++){
-					if(i<size-1){
-						where.append(list.get(i).getUserid()+",");
-					}else{
-						where.append(list.get(i).getUserid());
-					}
-				}
-			}else{
-				where.append("0");
-			}
-			where.append(") ");
+			List<UserInfo> list = UserInfo.dao.find(SqlContext.getSqlByFreeMarker(UserInfo.class, "findByCompanyName"),companyName+"%");
+			paraMap.put("userList",list);
 		}
+		String sql=SqlContext.getSqlByFreeMarker(UserRecharge.class,"getPage",paraMap);
+		String countSql=SqlContext.getSqlByFreeMarker(UserRecharge.class,"getCount",paraMap);
 		
-		long count=Db.queryLong(countSql+where, params.toArray(new Object[params.size()]));
+		long count=Db.queryLong(countSql, params.toArray(new Object[params.size()]));
 		page.setRecords(count);
 		page.setTotalCount((int)Math.ceil(count/(double)page.getPageSize()));
 		
 		int limit = (page.getCurrentPage()-1)*page.getPageSize();
 		params.add(limit);
 		params.add(page.getPageSize());
-		
-		if(where.length()>0){
-			int index=sql.indexOf("order");
-			String str1=sql.substring(0, index);
-			String str2=sql.substring(index);
-			sql=str1+where.toString()+str2;
-		}
+
 		if(logger.isInfoEnabled()){
 			logger.info("分页SQL：{}，查询参数：{}",sql,JSON.toJSON(params));
 		}
@@ -280,7 +243,7 @@ public class RechargeService {
 	}
 	
 	public static void main(String[] args) {
-//		String sql=SqlUtil.getSql(UserInfo.class, "getRechargeList").toLowerCase();
+//		String sql=SqlContext.getSql(UserInfo.class, "getRechargeList").toLowerCase();
 //		int index=sql.indexOf("where")+"where".length();
 //		String str1=sql.substring(0, index);
 //		String str2=sql.substring(index);

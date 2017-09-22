@@ -1,27 +1,25 @@
 package com.dbkj.account.service;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSON;
+import com.dbkj.account.config.SqlContext;
 import com.dbkj.account.dic.OperaResult;
 import com.dbkj.account.dto.FavorableDto;
 import com.dbkj.account.dto.FavorableStatus;
 import com.dbkj.account.dto.Page;
 import com.dbkj.account.dto.Result;
 import com.dbkj.account.model.Favorable;
-import com.dbkj.account.util.SqlUtil;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FavorableService {
 	
@@ -30,13 +28,13 @@ public class FavorableService {
 	private LogService logService;
 	
 	public void getPage(Page<FavorableDto> page,long roleId){
-		long count = Favorable.dao.findFirst(SqlUtil.getSql(Favorable.class, "getCount")).getLong("count");
+		long count = Favorable.dao.findFirst(SqlContext.getSqlByFreeMarker(Favorable.class, "getCount")).getLong("count");
 		page.setRecords(count);
 		//获取总页码数
 	    double d=count/(double)page.getPageSize();
 	    page.setTotalCount(new Double(Math.ceil(d)).intValue());
 		int limit=(page.getCurrentPage()-1)*page.getPageSize();
-		List<Favorable> flist=Favorable.dao.find(SqlUtil.getSql(Favorable.class, "getPage"),limit,page.getPageSize());
+		List<Favorable> flist=Favorable.dao.find(SqlContext.getSqlByFreeMarker(Favorable.class, "getPage"),limit,page.getPageSize());
 		List<FavorableDto> fdlist=new ArrayList<FavorableDto>(page.getPageSize());
 		
 		String opera=getOpera(roleId);

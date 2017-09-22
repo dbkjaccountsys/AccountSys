@@ -2,7 +2,7 @@ package com.dbkj.account.dic;
 
 /**
  * 公用常量
- * @author 钦春�?
+ * @author 钦春�?
  *
  */
 public interface Constant {
@@ -22,4 +22,8 @@ public interface Constant {
 	 * 通用cache key
 	 */
 	String COMMON_CACHE_KEY="otherCache";
+	/**
+	 * token cache key
+	 */
+	String TOKEN_CACHE_KEY="tokenCache";
 }
