@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sql-statement namespace="com.dbkj.account.model.AdminAuth">
+
+    <sql id="getRoleAuthByRoleId">
+        select t3.id,t3.auth_name,t3.icon,t1.action_url,t3.`order`,t3.parent_id from action t1 inner join admin_action t2
+        on t1.id=t2.action_id right join admin_auth t3 on t2.auth_id=t3.id inner join admin_role_auth t4 on t3.id=t4.auth_id
+        inner join admin_role t5 on t4.role_id=t5.id where t4.role_id=? and t3.menu=1 and t5.available=1
+    </sql>
+    <sql id="getList">
+        SELECT id,auth_name,parent_id,menu,`order` FROM admin_auth
+    </sql>
+</sql-statement>
